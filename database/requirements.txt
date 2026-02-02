@@ -1,0 +1,19 @@
+# HubSpot API Client
+hubspot-api-client>=8.0.0
+
+# Supabase Client
+supabase>=2.0.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# Jupyter
+jupyter>=1.0.0
+ipykernel>=6.0.0
+
+# HTTP Requests
+requests>=2.31.0

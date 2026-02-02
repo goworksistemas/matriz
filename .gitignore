@@ -1,0 +1,76 @@
+# ======================
+# CENTRAL DE RELATÓRIOS
+# ======================
+
+# Dependências
+node_modules/
+.pnp/
+.pnp.js
+
+# Build
+dist/
+build/
+*.local
+
+# Ambiente - NUNCA COMMITAR
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-*
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Cache
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+
+# TypeScript
+*.tsbuildinfo
+
+# Python (notebooks)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.ipynb_checkpoints/
+venv/
+.venv/
+ENV/
+
+# Jupyter
+.jupyter/
+
+# Temporários
+*.tmp
+*.temp
+*.bak
+
+# Arquivos grandes (JSON de dados)
+# Esses arquivos excedem o limite do GitHub (100MB)
+database/Json/*.json
+
+# Notebooks com credenciais (HubSpot API Keys)
+# Esses arquivos contêm chaves de API sensíveis
+database/códigos/*.ipynb

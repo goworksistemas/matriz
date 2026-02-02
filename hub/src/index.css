@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   VARIÁVEIS CSS - Tema NetworkGo
+   ============================================ */
+
+:root {
+  color-scheme: light;
+  
+  /* Cores do sistema - Light */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --border-color: #e5e7eb;
+  --border-subtle: #f3f4f6;
+  
+  /* Primary */
+  --primary-50: #f0f9ff;
+  --primary-100: #e0f2fe;
+  --primary-500: #0ea5e9;
+  --primary-600: #0284c7;
+}
+
+html.dark {
+  color-scheme: dark;
+  
+  /* Cores do sistema - Dark */
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --border-color: #4b5563;
+  --border-subtle: #374151;
+  
+  /* Primary Dark */
+  --primary-50: rgba(14, 165, 233, 0.1);
+  --primary-100: rgba(14, 165, 233, 0.2);
+}
+
+/* ============================================
+   ESTILOS BASE
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================
+   SCROLLBAR CUSTOMIZADA
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ============================================
+   IFRAME CONTAINER
+   ============================================ */
+
+.iframe-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+}
+
+.iframe-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ============================================
+   ANIMAÇÕES
+   ============================================ */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 0%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ============================================
+   SIDEBAR STYLES
+   ============================================ */
+
+.sidebar-item {
+  @apply flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 
+         transition-all duration-200 cursor-pointer;
+}
+
+.sidebar-item:hover {
+  @apply bg-gray-800/50 text-gray-200;
+}
+
+.sidebar-item.active {
+  @apply bg-primary-500/10 text-primary-400 border-l-2 border-primary-500;
+}
+
+/* ============================================
+   FOCUS STATES
+   ============================================ */
+
+*:focus {
+  outline: none;
+}
+
+button:focus-visible,
+a:focus-visible {
+  @apply ring-2 ring-primary-500 ring-offset-2 ring-offset-gray-900;
+}

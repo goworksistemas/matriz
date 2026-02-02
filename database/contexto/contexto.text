@@ -1,0 +1,56 @@
+Project Context: Centralização de Dados e Migração para Supabase
+1. Objetivo do Projeto
+Estamos migrando nossa arquitetura de dados atual (baseada em arquivos JSON locais processados via Jupyter) para uma arquitetura moderna de Data Warehouse no Supabase (PostgreSQL).
+
+O objetivo final é alimentar uma nova aplicação React e Dashboards de BI centralizados, substituindo a leitura direta de JSONs pelo Power BI.
+
+2. Arquitetura
+⛔ Fluxo Legado (Atual)
+API da Aplicação -> Script Jupyter -> Arquivos JSON locais -> Power BI
+
+✅ Novo Fluxo (Alvo)
+API da Aplicação (HubSpot/Omie/Goevo) -> Script Jupyter (ETL) -> Supabase (DB) -> Aplicação React / Dashboards
+
+3. Diretrizes de Engenharia de Dados
+3.1 Nomenclatura e Segregação (Regra Crítica)
+Como vamos ingerir dados de múltiplas fontes (HubSpot, Omie, Goevo), todas as tabelas devem possuir um prefixo identificador para evitar colisão de dados e manter a organização (Camada Silver/Staging).
+
+HubSpot: Prefixo hubspot_ (Ex: hubspot_deals, hubspot_contacts).
+
+Omie: Prefixo omie_ (Futuro).
+
+Goevo: Prefixo goevo_ (Futuro).
+
+3.2 Princípios de ETL
+Idempotência: Os scripts Python devem ser capazes de rodar múltiplas vezes sem duplicar dados. Uso obrigatório de Upsert (Update if exists, Insert if new) baseado no ID original da fonte.
+
+Enriquecimento: Não vamos apenas migrar o que temos. Devemos buscar dados relacionais que faltavam nos JSONs antigos (ex: Tabela de Empresas/Companies, relacionamentos fortes entre tabelas).
+
+Tipagem: Converter strings de data ISO para tipos TIMESTAMP ou DATE no Postgres, e números para NUMERIC/FLOAT.
+
+4. Escopo da Tarefa Atual: Módulo HubSpot
+Estamos focados exclusivamente na ingestão dos dados do HubSpot.
+
+Tabelas Necessárias (Schema)
+O banco deve refletir os objetos do CRM, mantendo as chaves estrangeiras:
+
+hubspot_owners: Proprietários/Usuários do CRM.
+
+hubspot_pipelines: Definições dos funis de vendas.
+
+hubspot_pipeline_stages: Etapas dos funis (FK para Pipelines).
+
+hubspot_companies (Novo): Empresas cadastradas (Dados: Nome, Setor, Domínio, Cidade).
+
+hubspot_contacts: Pessoas (FK para Companies).
+
+hubspot_deals: Negócios (FK para Contacts, Companies, Owners, Stages).
+
+Nota: Manter coluna JSONB raw_data para flexibilidade futura.
+
+hubspot_line_items: Produtos vendidos no negócio (FK para Deals).
+
+hubspot_commissions_obj: Objeto personalizado de comissões (ID 2-45314755).
+
+Código Legado de Referência
+Os scripts Python atuais (que geram JSON) devem ser usados como referência para saber quais propriedades personalizadas já utilizamos (ex: motivo_de_nao_fechar, sdr_responsavel, valor_do_negocio), mas a lógica de salvamento deve mudar de json.dump para supabase.table().upsert().

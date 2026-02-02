@@ -1,0 +1,23 @@
+{
+  "name": "matriz-central-relatorios",
+  "version": "1.0.0",
+  "description": "Central de Relatórios NetworkGO",
+  "private": true,
+  "workspaces": [
+    "hub",
+    "relatorios/*"
+  ],
+  "scripts": {
+    "dev:hub": "npm run dev --workspace=hub",
+    "dev:comissoes": "npm run dev --workspace=relatorios/comissoes",
+    "build:hub": "npm run build --workspace=hub",
+    "build:comissoes": "npm run build --workspace=relatorios/comissoes",
+    "build:all": "npm run build --workspaces"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goworksistemas/matriz.git"
+  },
+  "author": "GoWork Sistemas",
+  "license": "UNLICENSED"
+}
