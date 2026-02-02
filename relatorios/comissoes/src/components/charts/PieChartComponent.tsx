@@ -44,7 +44,7 @@ export function PieChartComponent({
           paddingAngle={2}
           dataKey="value"
           nameKey="name"
-          label={({ name, percent }) =>
+          label={({ percent }) =>
             `${(percent * 100).toFixed(0)}%`
           }
           labelLine={false}

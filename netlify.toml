@@ -9,7 +9,7 @@
 
 # Variáveis de ambiente para o build
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 # Redirecionamentos para SPA (Single Page Application)
 # IMPORTANTE: A ordem importa! Mais específico primeiro.
