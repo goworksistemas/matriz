@@ -12,7 +12,8 @@
     "dev:comissoes": "npm run dev --workspace=relatorios/comissoes",
     "build:hub": "npm run build --workspace=hub",
     "build:comissoes": "npm run build --workspace=relatorios/comissoes",
-    "build:all": "npm run build --workspaces"
+    "build:all": "npm run build --workspaces",
+    "build": "npm run build:comissoes && npm run build:hub && node scripts/combine-builds.js"
   },
   "repository": {
     "type": "git",

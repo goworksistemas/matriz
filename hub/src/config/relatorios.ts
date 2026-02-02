@@ -1,12 +1,15 @@
 import type { Relatorio } from '@/types'
 
+// Detecta se está em produção ou desenvolvimento
+const isProd = import.meta.env.PROD
+
 export const RELATORIOS: Relatorio[] = [
   {
     id: 'comissoes',
     nome: 'Dashboard de Comissões',
     descricao: 'Análise e gestão de comissões de vendedores e SDRs',
     icone: 'coins',
-    url: 'http://localhost:5173',
+    url: isProd ? '/comissoes/' : 'http://localhost:5173',
     categoria: 'vendas',
     ativo: true,
   },
