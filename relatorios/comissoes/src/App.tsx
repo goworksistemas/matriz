@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { LayoutDashboard, Users, UserCheck, Loader2, AlertCircle, RefreshCw, Database, CheckCircle, XCircle } from 'lucide-react';
+import { LayoutDashboard, Users, UserCheck, Loader2, AlertCircle, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
 import { VisaoGeral } from '@/pages/VisaoGeral';
@@ -163,36 +163,28 @@ function App() {
               <h1 className="text-xl font-bold">Dashboard de Comissões</h1>
               <p className="text-xs text-gray-500">Análise e gestão de comissões de vendas</p>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4">
-              {/* Botão Sincronizar HubSpot */}
+            <div className="flex items-center gap-3">
+              {/* Botão Único: Atualizar Dados */}
               <Button 
                 onClick={handleSyncHubSpot} 
                 variant="primary" 
                 size="sm"
                 disabled={syncState.status === 'loading'}
-                className="relative"
               >
                 {syncState.status === 'loading' ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    <span className="hidden sm:inline">Sincronizando...</span>
+                    Atualizando...
                   </>
                 ) : (
                   <>
-                    <Database className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Sincronizar HubSpot</span>
-                    <span className="sm:hidden">Sync</span>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Atualizar Dados
                   </>
                 )}
               </Button>
 
-              {/* Botão Atualizar Dados Locais */}
-              <Button onClick={refetch} variant="ghost" size="sm">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Atualizar</span>
-              </Button>
-
-              <div className="hidden md:flex items-center gap-4 text-sm text-gray-400">
+              <div className="hidden md:flex items-center text-sm text-gray-400">
                 <span className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-green-500"></span>
                   {comissoes.length} comissões
