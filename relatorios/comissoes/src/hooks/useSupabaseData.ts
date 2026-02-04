@@ -13,6 +13,7 @@ interface UseSupabaseDataReturn {
   etapasUnicas: string[];
   vendedoresUnicos: string[];
   sdrsUnicos: string[];
+  ultimaAtualizacao: string | null;
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -48,6 +49,7 @@ export function useSupabaseData(): UseSupabaseDataReturn {
     etapasUnicas: data?.etapasUnicas || [],
     vendedoresUnicos: data?.vendedoresUnicos || [],
     sdrsUnicos: data?.sdrsUnicos || [],
+    ultimaAtualizacao: data?.ultimaAtualizacao || null,
     isLoading,
     error,
     refetch: loadData,

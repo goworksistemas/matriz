@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react';
-import { LayoutDashboard, Users, UserCheck, Loader2, AlertCircle, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
+import { LayoutDashboard, Users, UserCheck, Loader2, AlertCircle, RefreshCw, CheckCircle, XCircle, Download, Clock } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
 import { VisaoGeral } from '@/pages/VisaoGeral';
@@ -31,10 +34,16 @@ function App() {
     etapasUnicas,
     vendedoresUnicos,
     sdrsUnicos,
+    ultimaAtualizacao,
     isLoading,
     error,
     refetch,
   } = useSupabaseData();
+
+  // Formatar data da última atualização
+  const dataAtualizacaoFormatada = ultimaAtualizacao 
+    ? format(parseISO(ultimaAtualizacao), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
+    : null;
 
   // Função para sincronizar dados do HubSpot via N8N
   const handleSyncHubSpot = useCallback(async () => {
@@ -92,6 +101,68 @@ function App() {
     resetFiltrosVendedor,
     resetFiltrosSDR,
   } = useFilters(comissoes);
+
+  // Função para exportar dados para Excel
+  const handleExportExcel = useCallback(() => {
+    // Preparar dados para exportação
+    const dadosExport = comissoesFiltradas.map(c => ({
+      'Cliente': c.nomeCliente,
+      'Vendedor': c.proprietarioNome,
+      'SDR': c.sdrNome,
+      'Produto': c.produto,
+      'Valor Negócio': c.valorNegocio,
+      'Posições': c.posicoes,
+      'Posições Calc.': c.posicoesCalculadas,
+      'Peso': c.peso,
+      'Porcentagem': c.porcentagem,
+      'Comissão Simples': c.comissaoSimples,
+      'Comissão SDR': c.comissaoSimplesSDR,
+      'Status Financeiro': c.statusFinanceiro,
+      'Status Comercial': c.statusComercial,
+      'Status Jurídico': c.statusJuridico,
+      'Etapa': c.nomeEtapa,
+      'Venda de Impacto': c.vendaImpacto ? 'Sim' : 'Não',
+      'Tipo Produto': c.tipoProduto === 'fisico' ? 'Físico' : 'Virtual',
+      'Data Fechamento': c.dataFechamento || '',
+    }));
+
+    // Criar workbook e worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(dadosExport);
+
+    // Ajustar largura das colunas
+    const colWidths = [
+      { wch: 30 }, // Cliente
+      { wch: 20 }, // Vendedor
+      { wch: 20 }, // SDR
+      { wch: 20 }, // Produto
+      { wch: 15 }, // Valor Negócio
+      { wch: 12 }, // Posições
+      { wch: 14 }, // Posições Calc.
+      { wch: 10 }, // Peso
+      { wch: 12 }, // Porcentagem
+      { wch: 16 }, // Comissão Simples
+      { wch: 14 }, // Comissão SDR
+      { wch: 18 }, // Status Financeiro
+      { wch: 18 }, // Status Comercial
+      { wch: 16 }, // Status Jurídico
+      { wch: 20 }, // Etapa
+      { wch: 15 }, // Venda de Impacto
+      { wch: 12 }, // Tipo Produto
+      { wch: 15 }, // Data Fechamento
+    ];
+    ws['!cols'] = colWidths;
+
+    // Adicionar worksheet ao workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Comissões');
+
+    // Gerar nome do arquivo com data
+    const dataHoje = format(new Date(), 'yyyy-MM-dd_HH-mm');
+    const nomeArquivo = `comissoes_${dataHoje}.xlsx`;
+
+    // Fazer download
+    XLSX.writeFile(wb, nomeArquivo);
+  }, [comissoesFiltradas]);
 
   // Hook de cálculos para Visão Geral
   const { kpis, dadosGraficos } = useComissoesCalculations(comissoesFiltradas);
@@ -158,10 +229,31 @@ function App() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-bold">Dashboard de Comissões</h1>
-              <p className="text-xs text-gray-500">Análise e gestão de comissões de vendas</p>
+              <div className="flex items-center gap-3 text-xs text-gray-500">
+                <span>Análise e gestão de comissões de vendas</span>
+                {dataAtualizacaoFormatada && (
+                  <span className="flex items-center gap-1 text-gray-400 border-l border-gray-700 pl-3">
+                    <Clock className="h-3 w-3" />
+                    Atualizado: {dataAtualizacaoFormatada}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              {/* Botão Único: Atualizar Dados */}
+            <div className="flex items-center gap-2">
+              {/* Botão Exportar Excel */}
+              <Button 
+                onClick={handleExportExcel} 
+                variant="secondary" 
+                size="sm"
+                disabled={comissoesFiltradas.length === 0}
+                title="Exportar dados filtrados para Excel"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Exportar Excel</span>
+                <span className="sm:hidden">Excel</span>
+              </Button>
+
+              {/* Botão Sincronizar */}
               <Button 
                 onClick={handleSyncHubSpot} 
                 variant="primary" 
@@ -171,17 +263,17 @@ function App() {
                 {syncState.status === 'loading' ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Sincronizando...
+                    <span className="hidden sm:inline">Sincronizando...</span>
                   </>
                 ) : (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Sincronizar
+                    <span className="hidden sm:inline">Sincronizar</span>
                   </>
                 )}
               </Button>
 
-              <div className="hidden md:flex items-center text-sm text-gray-400">
+              <div className="hidden lg:flex items-center text-sm text-gray-400">
                 <span className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-green-500"></span>
                   {comissoes.length} comissões

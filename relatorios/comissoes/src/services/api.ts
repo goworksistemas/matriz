@@ -299,13 +299,34 @@ export interface DadosDashboardResult {
   etapasUnicas: string[];
   vendedoresUnicos: string[];
   sdrsUnicos: string[];
+  ultimaAtualizacao: string | null;
+}
+
+// ============================================
+// ÚLTIMA DATA DE ATUALIZAÇÃO
+// ============================================
+
+export async function fetchUltimaAtualizacao(): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('hubspot_commissions_obj')
+    .select('_extracted_at')
+    .order('_extracted_at', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error('Erro ao buscar última atualização:', error);
+    return null;
+  }
+
+  return data?.[0]?._extracted_at || null;
 }
 
 export async function fetchDadosDashboard(): Promise<DadosDashboardResult> {
   // Buscar dados em paralelo
-  const [ownersRaw, commissionsRaw] = await Promise.all([
+  const [ownersRaw, commissionsRaw, ultimaAtualizacao] = await Promise.all([
     fetchOwners(),
     fetchCommissions(),
+    fetchUltimaAtualizacao(),
   ]);
 
   // Processar owners
@@ -332,5 +353,6 @@ export async function fetchDadosDashboard(): Promise<DadosDashboardResult> {
     etapasUnicas,
     vendedoresUnicos,
     sdrsUnicos,
+    ultimaAtualizacao,
   };
 }
