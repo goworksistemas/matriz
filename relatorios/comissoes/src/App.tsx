@@ -36,12 +36,9 @@ function App() {
     refetch,
   } = useSupabaseData();
 
-  // Função para sincronizar dados do HubSpot via N8N (assíncrono)
+  // Função para sincronizar dados do HubSpot via N8N
   const handleSyncHubSpot = useCallback(async () => {
-    const startTime = new Date();
-    console.log('🚀 [SYNC] Iniciando sincronização...', startTime.toISOString());
-    
-    setSyncState({ status: 'loading', message: 'Iniciando atualização...' });
+    setSyncState({ status: 'loading', message: 'Sincronizando dados do HubSpot...' });
     
     try {
       const response = await fetch(N8N_WEBHOOK_URL, {
@@ -50,44 +47,31 @@ function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          timestamp: startTime.toISOString(),
+          timestamp: new Date().toISOString(),
           source: 'dashboard-comissoes'
         }),
       });
-      
-      console.log('📥 [SYNC] Resposta:', response.status);
 
-      if (response.ok) {
-        console.log('🎉 [SYNC] Atualização iniciada com sucesso!');
-        setSyncState({ 
-          status: 'success', 
-          message: '🔄 Atualização iniciada! Os dados serão atualizados em alguns minutos.' 
-        });
-        
-        // Mostra mensagem por 5 segundos
+      const data = await response.json();
+
+      if (response.ok && data.status === 'success') {
+        setSyncState({ status: 'success', message: data.message || 'Dados sincronizados com sucesso!' });
         setTimeout(() => {
-          setSyncState({ status: 'idle', message: null });
-        }, 5000);
-        
-        // Agenda verificação dos dados após 2 minutos
-        setTimeout(() => {
-          console.log('🔄 [SYNC] Verificando novos dados...');
           refetch();
-        }, 120000); // 2 minutos
-        
+          setSyncState({ status: 'idle', message: null });
+        }, 2000);
       } else {
-        console.error('❌ [SYNC] Erro ao iniciar:', response.status);
         setSyncState({ 
           status: 'error', 
-          message: 'Erro ao iniciar atualização. Tente novamente.'
+          message: data.message || 'Erro ao sincronizar dados. Tente novamente.' 
         });
         setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
       }
     } catch (err) {
-      console.error('💥 [SYNC] Exceção:', err);
+      console.error('Erro na sincronização:', err);
       setSyncState({ 
         status: 'error', 
-        message: 'Erro de conexão. Verifique sua internet.'
+        message: 'Erro de conexão. Verifique sua internet e tente novamente.' 
       });
       setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
     }
@@ -154,23 +138,16 @@ function App() {
     <div className="min-h-screen bg-gray-900 text-gray-100">
       {/* Toast de Notificação */}
       {syncState.status !== 'idle' && syncState.message && (
-        <div className="fixed top-4 right-4 z-[100] animate-in fade-in slide-in-from-top-2 duration-300 max-w-sm">
-          <div className={`flex flex-col gap-2 px-4 py-3 rounded-lg shadow-lg ${
-            syncState.status === 'loading' ? 'bg-blue-900/95 border border-blue-700' :
-            syncState.status === 'success' ? 'bg-green-900/95 border border-green-700' :
-            'bg-red-900/95 border border-red-700'
+        <div className="fixed top-4 right-4 z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
+            syncState.status === 'loading' ? 'bg-blue-900/90 border border-blue-700' :
+            syncState.status === 'success' ? 'bg-green-900/90 border border-green-700' :
+            'bg-red-900/90 border border-red-700'
           }`}>
-            <div className="flex items-center gap-3">
-              {syncState.status === 'loading' && <Loader2 className="h-5 w-5 text-blue-400 animate-spin flex-shrink-0" />}
-              {syncState.status === 'success' && <CheckCircle className="h-5 w-5 text-green-400 flex-shrink-0" />}
-              {syncState.status === 'error' && <XCircle className="h-5 w-5 text-red-400 flex-shrink-0" />}
-              <span className="text-sm font-medium text-gray-100">{syncState.message}</span>
-            </div>
-            {syncState.status === 'success' && (
-              <p className="text-xs text-gray-400 pl-8">
-                Clique no botão ↻ para verificar os novos dados.
-              </p>
-            )}
+            {syncState.status === 'loading' && <Loader2 className="h-5 w-5 text-blue-400 animate-spin" />}
+            {syncState.status === 'success' && <CheckCircle className="h-5 w-5 text-green-400" />}
+            {syncState.status === 'error' && <XCircle className="h-5 w-5 text-red-400" />}
+            <span className="text-sm font-medium text-gray-100">{syncState.message}</span>
           </div>
         </div>
       )}
@@ -183,36 +160,25 @@ function App() {
               <h1 className="text-xl font-bold">Dashboard de Comissões</h1>
               <p className="text-xs text-gray-500">Análise e gestão de comissões de vendas</p>
             </div>
-            <div className="flex items-center gap-2">
-              {/* Botão Sincronizar - Executa ETL */}
+            <div className="flex items-center gap-3">
+              {/* Botão Único: Atualizar Dados */}
               <Button 
                 onClick={handleSyncHubSpot} 
                 variant="primary" 
                 size="sm"
                 disabled={syncState.status === 'loading'}
-                title="Busca novos dados do HubSpot (pode levar alguns minutos)"
               >
                 {syncState.status === 'loading' ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    <span className="hidden sm:inline">Iniciando...</span>
+                    Atualizando...
                   </>
                 ) : (
                   <>
-                    <RefreshCw className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Sincronizar HubSpot</span>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Atualizar Dados
                   </>
                 )}
-              </Button>
-
-              {/* Botão Recarregar - Busca dados do Supabase */}
-              <Button 
-                onClick={refetch} 
-                variant="ghost" 
-                size="sm"
-                title="Recarrega os dados já processados"
-              >
-                <RefreshCw className="h-4 w-4" />
               </Button>
 
               <div className="hidden md:flex items-center text-sm text-gray-400">
