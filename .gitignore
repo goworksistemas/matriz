@@ -71,6 +71,7 @@ ENV/
 # Esses arquivos excedem o limite do GitHub (100MB)
 database/Json/*.json
 
-# Notebooks com credenciais (HubSpot API Keys)
+# Scripts e Notebooks com credenciais (HubSpot/Supabase API Keys)
 # Esses arquivos contêm chaves de API sensíveis
 database/códigos/*.ipynb
+database/códigos/*.py
