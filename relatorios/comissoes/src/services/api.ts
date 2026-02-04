@@ -318,7 +318,12 @@ export async function fetchUltimaAtualizacao(): Promise<string | null> {
     return null;
   }
 
-  return data?.[0]?._extracted_at || null;
+  if (data && data.length > 0) {
+    const row = data[0] as { _extracted_at: string };
+    return row._extracted_at || null;
+  }
+  
+  return null;
 }
 
 export async function fetchDadosDashboard(): Promise<DadosDashboardResult> {
