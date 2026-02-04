@@ -22,7 +22,7 @@
         "host": "161.35.104.75",
         "port": 22,
         "authentication": "password",
-        "command": "cd '/home/luiscuba/Central de Dados' && jupyter nbconvert --to notebook --execute etl_hubspot_supabase.ipynb --output executed_output.ipynb --ExecutePreprocessor.timeout=600"
+        "command": "cd /home/luiscuba/Central && jupyter nbconvert --to notebook --execute etl_hubspot_supabase.ipynb --output executed_output.ipynb --ExecutePreprocessor.timeout=600 2>&1"
       },
       "id": "ssh-execute",
       "name": "Executar ETL via SSH",
