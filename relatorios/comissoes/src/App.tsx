@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { LayoutDashboard, Users, UserCheck, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { LayoutDashboard, Users, UserCheck, Loader2, AlertCircle, RefreshCw, Database, CheckCircle, XCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
 import { VisaoGeral } from '@/pages/VisaoGeral';
@@ -9,8 +9,20 @@ import { useSupabaseData } from '@/hooks/useSupabaseData';
 import { useFilters } from '@/hooks/useFilters';
 import { useComissoesCalculations } from '@/hooks/useComissoesCalculations';
 
+// URL do Webhook N8N para sincronização
+const N8N_WEBHOOK_URL = 'https://flux.gowork.com.br/webhook/atualizar_comissoes';
+
+// Tipos para o estado de sincronização
+type SyncStatus = 'idle' | 'loading' | 'success' | 'error';
+
+interface SyncState {
+  status: SyncStatus;
+  message: string | null;
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState('visao-geral');
+  const [syncState, setSyncState] = useState<SyncState>({ status: 'idle', message: null });
 
   // Carregar dados do Supabase
   const {
@@ -23,6 +35,50 @@ function App() {
     error,
     refetch,
   } = useSupabaseData();
+
+  // Função para sincronizar dados do HubSpot via N8N
+  const handleSyncHubSpot = useCallback(async () => {
+    setSyncState({ status: 'loading', message: 'Sincronizando dados do HubSpot...' });
+    
+    try {
+      const response = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          timestamp: new Date().toISOString(),
+          source: 'dashboard-comissoes'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.status === 'success') {
+        setSyncState({ status: 'success', message: data.message || 'Dados sincronizados com sucesso!' });
+        // Aguarda 2 segundos e recarrega os dados
+        setTimeout(() => {
+          refetch();
+          setSyncState({ status: 'idle', message: null });
+        }, 2000);
+      } else {
+        setSyncState({ 
+          status: 'error', 
+          message: data.message || 'Erro ao sincronizar dados. Tente novamente.' 
+        });
+        // Limpa mensagem de erro após 5 segundos
+        setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
+      }
+    } catch (err) {
+      console.error('Erro na sincronização:', err);
+      setSyncState({ 
+        status: 'error', 
+        message: 'Erro de conexão. Verifique sua internet e tente novamente.' 
+      });
+      // Limpa mensagem de erro após 5 segundos
+      setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
+    }
+  }, [refetch]);
 
   // Hook de filtros (recebe dados do Supabase)
   const {
@@ -83,6 +139,22 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
+      {/* Toast de Notificação */}
+      {syncState.status !== 'idle' && syncState.message && (
+        <div className="fixed top-4 right-4 z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
+            syncState.status === 'loading' ? 'bg-blue-900/90 border border-blue-700' :
+            syncState.status === 'success' ? 'bg-green-900/90 border border-green-700' :
+            'bg-red-900/90 border border-red-700'
+          }`}>
+            {syncState.status === 'loading' && <Loader2 className="h-5 w-5 text-blue-400 animate-spin" />}
+            {syncState.status === 'success' && <CheckCircle className="h-5 w-5 text-green-400" />}
+            {syncState.status === 'error' && <XCircle className="h-5 w-5 text-red-400" />}
+            <span className="text-sm font-medium text-gray-100">{syncState.message}</span>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-gray-700 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -91,11 +163,35 @@ function App() {
               <h1 className="text-xl font-bold">Dashboard de Comissões</h1>
               <p className="text-xs text-gray-500">Análise e gestão de comissões de vendas</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              {/* Botão Sincronizar HubSpot */}
+              <Button 
+                onClick={handleSyncHubSpot} 
+                variant="primary" 
+                size="sm"
+                disabled={syncState.status === 'loading'}
+                className="relative"
+              >
+                {syncState.status === 'loading' ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <span className="hidden sm:inline">Sincronizando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Database className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Sincronizar HubSpot</span>
+                    <span className="sm:hidden">Sync</span>
+                  </>
+                )}
+              </Button>
+
+              {/* Botão Atualizar Dados Locais */}
               <Button onClick={refetch} variant="ghost" size="sm">
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Atualizar
+                <span className="hidden sm:inline">Atualizar</span>
               </Button>
+
               <div className="hidden md:flex items-center gap-4 text-sm text-gray-400">
                 <span className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-green-500"></span>

@@ -1,0 +1,143 @@
+{
+  "name": "Atualizar Comissões - ETL HubSpot → Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atualizar_comissoes",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": false
+        }
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "atualizar_comissoes"
+    },
+    {
+      "parameters": {
+        "host": "161.35.104.75",
+        "port": 22,
+        "authentication": "password",
+        "command": "cd '/home/luiscuba/Central de Dados' && jupyter nbconvert --to notebook --execute etl_hubspot_supabase.ipynb --output executed_output.ipynb --ExecutePreprocessor.timeout=600"
+      },
+      "id": "ssh-execute",
+      "name": "Executar ETL via SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "sshPassword": {
+          "id": "SUBSTITUIR_PELO_ID_DA_CREDENCIAL",
+          "name": "JupyterHub SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.stderr }}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      },
+      "id": "check-success",
+      "name": "Verificar Sucesso",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'success', message: 'Dados do HubSpot sincronizados com sucesso!', timestamp: new Date().toISOString(), details: { source: 'HubSpot API', destination: 'Supabase', tables: ['vw_comissoes_calculadas'] } }) }}"
+      },
+      "id": "response-success",
+      "name": "Resposta Sucesso",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'error', message: 'Erro ao sincronizar dados. Tente novamente.', timestamp: new Date().toISOString(), error: $json.stderr || 'Erro desconhecido' }) }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "response-error",
+      "name": "Resposta Erro",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 400]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Executar ETL via SSH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Executar ETL via SSH": {
+      "main": [
+        [
+          {
+            "node": "Verificar Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Sucesso": {
+      "main": [
+        [
+          {
+            "node": "Resposta Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resposta Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "ETL",
+      "createdAt": "2026-02-04T00:00:00.000Z",
+      "updatedAt": "2026-02-04T00:00:00.000Z"
+    },
+    {
+      "name": "Comissões",
+      "createdAt": "2026-02-04T00:00:00.000Z",
+      "updatedAt": "2026-02-04T00:00:00.000Z"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-04T00:00:00.000Z",
+  "versionId": "1"
+}
