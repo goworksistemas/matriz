@@ -6,96 +6,191 @@
         "httpMethod": "POST",
         "path": "atualizar_comissoes",
         "responseMode": "responseNode",
-        "options": {
-          "rawBody": false
-        }
+        "options": {}
       },
-      "id": "webhook-trigger",
-      "name": "Webhook Trigger",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [240, 300],
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "webhook-comissoes",
+      "name": "Webhook",
       "webhookId": "atualizar_comissoes"
     },
     {
       "parameters": {
-        "host": "161.35.104.75",
-        "port": 22,
-        "authentication": "password",
-        "command": "cd /home/luiscuba/Central && jupyter nbconvert --to notebook --execute etl_hubspot_supabase.ipynb --output executed_output.ipynb --ExecutePreprocessor.timeout=600 2>&1"
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "notebook_path",
+              "value": "Central/etl_hubspot_supabase.ipynb"
+            },
+            {
+              "name": "inicio",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        },
+        "options": {}
       },
-      "id": "ssh-execute",
-      "name": "Executar ETL via SSH",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "definir-notebook",
+      "name": "Definir Notebook",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "command": "=cd /home/jupyter-luiscuba && /opt/tljh/user/bin/jupyter nbconvert --execute --to notebook --inplace {{ $json.notebook_path }} 2>&1",
+        "cwd": "/home/jupyter-luiscuba"
+      },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
-      "position": [460, 300],
+      "position": [
+        480,
+        0
+      ],
+      "id": "executar-notebook",
+      "name": "Executar Notebook",
+      "alwaysOutputData": true,
       "credentials": {
         "sshPassword": {
-          "id": "SUBSTITUIR_PELO_ID_DA_CREDENCIAL",
-          "name": "JupyterHub SSH"
+          "id": "lGn6P6YfhyNiVzDr",
+          "name": "SSH JUPYTER"
         }
-      }
+      },
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
         "conditions": {
-          "string": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
             {
-              "value1": "={{ $json.stderr }}",
-              "operation": "isEmpty"
+              "leftValue": "={{ $json.stderr }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
             }
-          ]
-        }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       },
-      "id": "check-success",
-      "name": "Verificar Sucesso",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [680, 300]
+      "position": [
+        720,
+        0
+      ],
+      "id": "verificar-sucesso",
+      "name": "Verificar Sucesso"
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ status: 'success', message: 'Dados do HubSpot sincronizados com sucesso!', timestamp: new Date().toISOString(), details: { source: 'HubSpot API', destination: 'Supabase', tables: ['vw_comissoes_calculadas'] } }) }}"
-      },
-      "id": "response-success",
-      "name": "Resposta Sucesso",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [900, 200]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ status: 'error', message: 'Erro ao sincronizar dados. Tente novamente.', timestamp: new Date().toISOString(), error: $json.stderr || 'Erro desconhecido' }) }}",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"✅ ETL executado com sucesso! Dados do HubSpot sincronizados.\",\n  \"detalhes\": {\n    \"notebook\": \"{{ $('Definir Notebook').item.json.notebook_path }}\",\n    \"inicio\": \"{{ $('Definir Notebook').item.json.inicio }}\",\n    \"fim\": \"{{ new Date().toISOString() }}\",\n    \"output\": \"{{ $('Executar Notebook').item.json.stdout || 'Execução concluída' }}\"\n  }\n}",
         "options": {
-          "responseCode": 500
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
         }
       },
-      "id": "response-error",
-      "name": "Resposta Erro",
       "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [900, 400]
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        -100
+      ],
+      "id": "resposta-sucesso",
+      "name": "Resposta Sucesso"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"error\",\n  \"message\": \"❌ Erro ao executar ETL. Verifique os logs.\",\n  \"detalhes\": {\n    \"notebook\": \"{{ $('Definir Notebook').item.json.notebook_path }}\",\n    \"inicio\": \"{{ $('Definir Notebook').item.json.inicio }}\",\n    \"fim\": \"{{ new Date().toISOString() }}\",\n    \"erro\": \"{{ $('Executar Notebook').item.json.stderr || 'Erro desconhecido' }}\",\n    \"output\": \"{{ $('Executar Notebook').item.json.stdout || '' }}\"\n  }\n}",
+        "options": {
+          "responseCode": "500",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        100
+      ],
+      "id": "resposta-erro",
+      "name": "Resposta Erro"
     }
   ],
   "connections": {
-    "Webhook Trigger": {
+    "Webhook": {
       "main": [
         [
           {
-            "node": "Executar ETL via SSH",
+            "node": "Definir Notebook",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Executar ETL via SSH": {
+    "Definir Notebook": {
+      "main": [
+        [
+          {
+            "node": "Executar Notebook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Executar Notebook": {
       "main": [
         [
           {
             "node": "Verificar Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resposta Erro",
             "type": "main",
             "index": 0
           }
@@ -121,23 +216,8 @@
       ]
     }
   },
-  "settings": {
-    "executionOrder": "v1"
-  },
-  "staticData": null,
-  "tags": [
-    {
-      "name": "ETL",
-      "createdAt": "2026-02-04T00:00:00.000Z",
-      "updatedAt": "2026-02-04T00:00:00.000Z"
-    },
-    {
-      "name": "Comissões",
-      "createdAt": "2026-02-04T00:00:00.000Z",
-      "updatedAt": "2026-02-04T00:00:00.000Z"
-    }
-  ],
-  "triggerCount": 0,
-  "updatedAt": "2026-02-04T00:00:00.000Z",
-  "versionId": "1"
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
 }

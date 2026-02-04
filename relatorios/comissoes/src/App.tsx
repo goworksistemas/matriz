@@ -38,45 +38,89 @@ function App() {
 
   // Função para sincronizar dados do HubSpot via N8N
   const handleSyncHubSpot = useCallback(async () => {
-    setSyncState({ status: 'loading', message: 'Sincronizando dados do HubSpot...' });
+    const startTime = new Date();
+    console.log('🚀 [SYNC] Iniciando sincronização...', startTime.toISOString());
+    console.log('🔗 [SYNC] URL:', N8N_WEBHOOK_URL);
+    
+    setSyncState({ status: 'loading', message: 'Conectando ao servidor...' });
     
     try {
+      console.log('📤 [SYNC] Enviando requisição...');
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min timeout
+      
       const response = await fetch(N8N_WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          timestamp: new Date().toISOString(),
+          timestamp: startTime.toISOString(),
           source: 'dashboard-comissoes'
         }),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
+      
+      console.log('📥 [SYNC] Resposta recebida:', response.status, response.statusText);
+      
+      const responseText = await response.text();
+      console.log('📄 [SYNC] Conteúdo da resposta:', responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log('✅ [SYNC] JSON parseado:', data);
+      } catch {
+        console.error('❌ [SYNC] Resposta não é JSON válido');
+        data = { status: 'unknown', message: responseText || 'Resposta vazia do servidor' };
+      }
 
-      const data = await response.json();
+      const endTime = new Date();
+      const duration = (endTime.getTime() - startTime.getTime()) / 1000;
+      console.log(`⏱️ [SYNC] Duração: ${duration}s`);
 
       if (response.ok && data.status === 'success') {
-        setSyncState({ status: 'success', message: data.message || 'Dados sincronizados com sucesso!' });
-        // Aguarda 2 segundos e recarrega os dados
+        console.log('🎉 [SYNC] SUCESSO!', data);
+        setSyncState({ 
+          status: 'success', 
+          message: data.message || `✅ Sincronizado em ${duration.toFixed(1)}s!` 
+        });
+        // Aguarda 3 segundos e recarrega os dados
         setTimeout(() => {
+          console.log('🔄 [SYNC] Recarregando dados do Supabase...');
           refetch();
           setSyncState({ status: 'idle', message: null });
-        }, 2000);
+        }, 3000);
       } else {
+        console.error('❌ [SYNC] ERRO:', data);
+        const errorMsg = data.detalhes?.erro || data.message || `Erro ${response.status}`;
         setSyncState({ 
           status: 'error', 
-          message: data.message || 'Erro ao sincronizar dados. Tente novamente.' 
+          message: `❌ ${errorMsg}`
         });
-        // Limpa mensagem de erro após 5 segundos
-        setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
+        // Limpa mensagem de erro após 8 segundos
+        setTimeout(() => setSyncState({ status: 'idle', message: null }), 8000);
       }
     } catch (err) {
-      console.error('Erro na sincronização:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+      console.error('💥 [SYNC] EXCEÇÃO:', errorMessage, err);
+      
+      let userMessage = 'Erro de conexão';
+      if (errorMessage.includes('aborted')) {
+        userMessage = 'Timeout - O servidor demorou muito para responder';
+      } else if (errorMessage.includes('Failed to fetch')) {
+        userMessage = 'Não foi possível conectar ao servidor';
+      }
+      
       setSyncState({ 
         status: 'error', 
-        message: 'Erro de conexão. Verifique sua internet e tente novamente.' 
+        message: `❌ ${userMessage}. Verifique o console (F12) para detalhes.`
       });
-      // Limpa mensagem de erro após 5 segundos
-      setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
+      // Limpa mensagem de erro após 8 segundos
+      setTimeout(() => setSyncState({ status: 'idle', message: null }), 8000);
     }
   }, [refetch]);
 
