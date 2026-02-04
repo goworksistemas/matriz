@@ -69,15 +69,15 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "loose"
           },
           "conditions": [
             {
-              "leftValue": "={{ $json.stderr }}",
-              "rightValue": "",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "0",
               "operator": {
-                "type": "string",
-                "operation": "empty"
+                "type": "number",
+                "operation": "equals"
               }
             }
           ],

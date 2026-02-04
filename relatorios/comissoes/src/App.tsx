@@ -38,7 +38,7 @@ function App() {
 
   // Função para sincronizar dados do HubSpot via N8N
   const handleSyncHubSpot = useCallback(async () => {
-    setSyncState({ status: 'loading', message: 'Sincronizando dados do HubSpot...' });
+    setSyncState({ status: 'loading', message: 'Atualizando base de dados...' });
     
     try {
       const response = await fetch(N8N_WEBHOOK_URL, {
@@ -55,15 +55,15 @@ function App() {
       const data = await response.json();
 
       if (response.ok && data.status === 'success') {
-        setSyncState({ status: 'success', message: data.message || 'Dados sincronizados com sucesso!' });
+        setSyncState({ status: 'success', message: 'Dados atualizados com sucesso!' });
         setTimeout(() => {
           refetch();
           setSyncState({ status: 'idle', message: null });
-        }, 2000);
+        }, 3000);
       } else {
         setSyncState({ 
           status: 'error', 
-          message: data.message || 'Erro ao sincronizar dados. Tente novamente.' 
+          message: data.message || 'Erro ao atualizar. Tente novamente.' 
         });
         setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
       }
@@ -71,7 +71,7 @@ function App() {
       console.error('Erro na sincronização:', err);
       setSyncState({ 
         status: 'error', 
-        message: 'Erro de conexão. Verifique sua internet e tente novamente.' 
+        message: 'Erro de conexão. Verifique sua internet.' 
       });
       setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
     }
@@ -171,12 +171,12 @@ function App() {
                 {syncState.status === 'loading' ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Atualizando...
+                    Sincronizando...
                   </>
                 ) : (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Atualizar Dados
+                    Sincronizar
                   </>
                 )}
               </Button>
