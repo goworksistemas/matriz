@@ -40,9 +40,9 @@ function App() {
     refetch,
   } = useSupabaseData();
 
-  // Formatar data da última atualização
+  // Formatar data da última atualização (convertendo de UTC para horário local)
   const dataAtualizacaoFormatada = ultimaAtualizacao 
-    ? format(parseISO(ultimaAtualizacao), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
+    ? format(new Date(ultimaAtualizacao), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
     : null;
 
   // Função para sincronizar dados do HubSpot via N8N

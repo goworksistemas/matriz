@@ -307,20 +307,42 @@ export interface DadosDashboardResult {
 // ============================================
 
 export async function fetchUltimaAtualizacao(): Promise<string | null> {
-  const { data, error } = await supabase
-    .from('hubspot_commissions_obj')
-    .select('_extracted_at')
-    .order('_extracted_at', { ascending: false })
-    .limit(1);
+  // Buscar o _extracted_at mais recente de TODAS as tabelas principais
+  const tabelas = [
+    'hubspot_commissions_obj',
+    'hubspot_deals',
+    'hubspot_contacts',
+    'hubspot_owners',
+  ];
 
-  if (error) {
-    console.error('Erro ao buscar última atualização:', error);
+  const promises = tabelas.map(async (tabela) => {
+    const { data } = await supabase
+      .from(tabela)
+      .select('_extracted_at')
+      .order('_extracted_at', { ascending: false })
+      .limit(1);
+    
+    if (data && data.length > 0) {
+      const row = data[0] as { _extracted_at: string };
+      return row._extracted_at;
+    }
     return null;
-  }
+  });
 
-  if (data && data.length > 0) {
-    const row = data[0] as { _extracted_at: string };
-    return row._extracted_at || null;
+  try {
+    const resultados = await Promise.all(promises);
+    
+    // Filtrar nulls e pegar o mais recente
+    const datas = resultados
+      .filter((d): d is string => d !== null)
+      .map(d => new Date(d).getTime());
+    
+    if (datas.length > 0) {
+      const maisRecente = Math.max(...datas);
+      return new Date(maisRecente).toISOString();
+    }
+  } catch (error) {
+    console.error('Erro ao buscar última atualização:', error);
   }
   
   return null;
