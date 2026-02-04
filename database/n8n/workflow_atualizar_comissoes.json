@@ -5,7 +5,8 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "atualizar_comissoes",
-        "responseMode": "responseNode",
+        "responseMode": "onReceived",
+        "responseData": "firstEntryJson",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
@@ -25,7 +26,7 @@
           "string": [
             {
               "name": "notebook_path",
-              "value": "Central/etl_hubspot_supabase.ipynb"
+              "value": "etl_hubspot_supabase.ipynb"
             },
             {
               "name": "inicio",
@@ -47,8 +48,8 @@
     },
     {
       "parameters": {
-        "command": "=cd /home/jupyter-luiscuba && /opt/tljh/user/bin/jupyter nbconvert --execute --to notebook --inplace {{ $json.notebook_path }} 2>&1",
-        "cwd": "/home/jupyter-luiscuba"
+        "command": "=sudo -u jupyter-luiscuba bash -c 'cd /home/jupyter-luiscuba/Central && /opt/tljh/user/bin/jupyter nbconvert --execute --to notebook --inplace {{ $json.notebook_path }} 2>&1'",
+        "cwd": "/"
       },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
@@ -66,94 +67,6 @@
         }
       },
       "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "leftValue": "={{ $json.stderr }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "empty"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        720,
-        0
-      ],
-      "id": "verificar-sucesso",
-      "name": "Verificar Sucesso"
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"✅ ETL executado com sucesso! Dados do HubSpot sincronizados.\",\n  \"detalhes\": {\n    \"notebook\": \"{{ $('Definir Notebook').item.json.notebook_path }}\",\n    \"inicio\": \"{{ $('Definir Notebook').item.json.inicio }}\",\n    \"fim\": \"{{ new Date().toISOString() }}\",\n    \"output\": \"{{ $('Executar Notebook').item.json.stdout || 'Execução concluída' }}\"\n  }\n}",
-        "options": {
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "name": "Access-Control-Allow-Origin",
-                "value": "*"
-              }
-            ]
-          }
-        }
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        960,
-        -100
-      ],
-      "id": "resposta-sucesso",
-      "name": "Resposta Sucesso"
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={\n  \"status\": \"error\",\n  \"message\": \"❌ Erro ao executar ETL. Verifique os logs.\",\n  \"detalhes\": {\n    \"notebook\": \"{{ $('Definir Notebook').item.json.notebook_path }}\",\n    \"inicio\": \"{{ $('Definir Notebook').item.json.inicio }}\",\n    \"fim\": \"{{ new Date().toISOString() }}\",\n    \"erro\": \"{{ $('Executar Notebook').item.json.stderr || 'Erro desconhecido' }}\",\n    \"output\": \"{{ $('Executar Notebook').item.json.stdout || '' }}\"\n  }\n}",
-        "options": {
-          "responseCode": "500",
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "name": "Access-Control-Allow-Origin",
-                "value": "*"
-              }
-            ]
-          }
-        }
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        960,
-        100
-      ],
-      "id": "resposta-erro",
-      "name": "Resposta Erro"
     }
   ],
   "connections": {
@@ -181,38 +94,8 @@
     },
     "Executar Notebook": {
       "main": [
-        [
-          {
-            "node": "Verificar Sucesso",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Resposta Erro",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Verificar Sucesso": {
-      "main": [
-        [
-          {
-            "node": "Resposta Sucesso",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Resposta Erro",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [],
+        []
       ]
     }
   },

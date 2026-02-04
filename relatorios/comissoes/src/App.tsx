@@ -36,20 +36,14 @@ function App() {
     refetch,
   } = useSupabaseData();
 
-  // Função para sincronizar dados do HubSpot via N8N
+  // Função para sincronizar dados do HubSpot via N8N (assíncrono)
   const handleSyncHubSpot = useCallback(async () => {
     const startTime = new Date();
     console.log('🚀 [SYNC] Iniciando sincronização...', startTime.toISOString());
-    console.log('🔗 [SYNC] URL:', N8N_WEBHOOK_URL);
     
-    setSyncState({ status: 'loading', message: 'Conectando ao servidor...' });
+    setSyncState({ status: 'loading', message: 'Iniciando atualização...' });
     
     try {
-      console.log('📤 [SYNC] Enviando requisição...');
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min timeout
-      
       const response = await fetch(N8N_WEBHOOK_URL, {
         method: 'POST',
         headers: {
@@ -59,68 +53,43 @@ function App() {
           timestamp: startTime.toISOString(),
           source: 'dashboard-comissoes'
         }),
-        signal: controller.signal,
       });
       
-      clearTimeout(timeoutId);
-      
-      console.log('📥 [SYNC] Resposta recebida:', response.status, response.statusText);
-      
-      const responseText = await response.text();
-      console.log('📄 [SYNC] Conteúdo da resposta:', responseText);
-      
-      let data;
-      try {
-        data = JSON.parse(responseText);
-        console.log('✅ [SYNC] JSON parseado:', data);
-      } catch {
-        console.error('❌ [SYNC] Resposta não é JSON válido');
-        data = { status: 'unknown', message: responseText || 'Resposta vazia do servidor' };
-      }
+      console.log('📥 [SYNC] Resposta:', response.status);
 
-      const endTime = new Date();
-      const duration = (endTime.getTime() - startTime.getTime()) / 1000;
-      console.log(`⏱️ [SYNC] Duração: ${duration}s`);
-
-      if (response.ok && data.status === 'success') {
-        console.log('🎉 [SYNC] SUCESSO!', data);
+      if (response.ok) {
+        console.log('🎉 [SYNC] Atualização iniciada com sucesso!');
         setSyncState({ 
           status: 'success', 
-          message: data.message || `✅ Sincronizado em ${duration.toFixed(1)}s!` 
+          message: '🔄 Atualização iniciada! Os dados serão atualizados em alguns minutos.' 
         });
-        // Aguarda 3 segundos e recarrega os dados
+        
+        // Mostra mensagem por 5 segundos
         setTimeout(() => {
-          console.log('🔄 [SYNC] Recarregando dados do Supabase...');
-          refetch();
           setSyncState({ status: 'idle', message: null });
-        }, 3000);
+        }, 5000);
+        
+        // Agenda verificação dos dados após 2 minutos
+        setTimeout(() => {
+          console.log('🔄 [SYNC] Verificando novos dados...');
+          refetch();
+        }, 120000); // 2 minutos
+        
       } else {
-        console.error('❌ [SYNC] ERRO:', data);
-        const errorMsg = data.detalhes?.erro || data.message || `Erro ${response.status}`;
+        console.error('❌ [SYNC] Erro ao iniciar:', response.status);
         setSyncState({ 
           status: 'error', 
-          message: `❌ ${errorMsg}`
+          message: 'Erro ao iniciar atualização. Tente novamente.'
         });
-        // Limpa mensagem de erro após 8 segundos
-        setTimeout(() => setSyncState({ status: 'idle', message: null }), 8000);
+        setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
-      console.error('💥 [SYNC] EXCEÇÃO:', errorMessage, err);
-      
-      let userMessage = 'Erro de conexão';
-      if (errorMessage.includes('aborted')) {
-        userMessage = 'Timeout - O servidor demorou muito para responder';
-      } else if (errorMessage.includes('Failed to fetch')) {
-        userMessage = 'Não foi possível conectar ao servidor';
-      }
-      
+      console.error('💥 [SYNC] Exceção:', err);
       setSyncState({ 
         status: 'error', 
-        message: `❌ ${userMessage}. Verifique o console (F12) para detalhes.`
+        message: 'Erro de conexão. Verifique sua internet.'
       });
-      // Limpa mensagem de erro após 8 segundos
-      setTimeout(() => setSyncState({ status: 'idle', message: null }), 8000);
+      setTimeout(() => setSyncState({ status: 'idle', message: null }), 5000);
     }
   }, [refetch]);
 
@@ -185,16 +154,23 @@ function App() {
     <div className="min-h-screen bg-gray-900 text-gray-100">
       {/* Toast de Notificação */}
       {syncState.status !== 'idle' && syncState.message && (
-        <div className="fixed top-4 right-4 z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
-            syncState.status === 'loading' ? 'bg-blue-900/90 border border-blue-700' :
-            syncState.status === 'success' ? 'bg-green-900/90 border border-green-700' :
-            'bg-red-900/90 border border-red-700'
+        <div className="fixed top-4 right-4 z-[100] animate-in fade-in slide-in-from-top-2 duration-300 max-w-sm">
+          <div className={`flex flex-col gap-2 px-4 py-3 rounded-lg shadow-lg ${
+            syncState.status === 'loading' ? 'bg-blue-900/95 border border-blue-700' :
+            syncState.status === 'success' ? 'bg-green-900/95 border border-green-700' :
+            'bg-red-900/95 border border-red-700'
           }`}>
-            {syncState.status === 'loading' && <Loader2 className="h-5 w-5 text-blue-400 animate-spin" />}
-            {syncState.status === 'success' && <CheckCircle className="h-5 w-5 text-green-400" />}
-            {syncState.status === 'error' && <XCircle className="h-5 w-5 text-red-400" />}
-            <span className="text-sm font-medium text-gray-100">{syncState.message}</span>
+            <div className="flex items-center gap-3">
+              {syncState.status === 'loading' && <Loader2 className="h-5 w-5 text-blue-400 animate-spin flex-shrink-0" />}
+              {syncState.status === 'success' && <CheckCircle className="h-5 w-5 text-green-400 flex-shrink-0" />}
+              {syncState.status === 'error' && <XCircle className="h-5 w-5 text-red-400 flex-shrink-0" />}
+              <span className="text-sm font-medium text-gray-100">{syncState.message}</span>
+            </div>
+            {syncState.status === 'success' && (
+              <p className="text-xs text-gray-400 pl-8">
+                Clique no botão ↻ para verificar os novos dados.
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -207,25 +183,36 @@ function App() {
               <h1 className="text-xl font-bold">Dashboard de Comissões</h1>
               <p className="text-xs text-gray-500">Análise e gestão de comissões de vendas</p>
             </div>
-            <div className="flex items-center gap-3">
-              {/* Botão Único: Atualizar Dados */}
+            <div className="flex items-center gap-2">
+              {/* Botão Sincronizar - Executa ETL */}
               <Button 
                 onClick={handleSyncHubSpot} 
                 variant="primary" 
                 size="sm"
                 disabled={syncState.status === 'loading'}
+                title="Busca novos dados do HubSpot (pode levar alguns minutos)"
               >
                 {syncState.status === 'loading' ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Atualizando...
+                    <span className="hidden sm:inline">Iniciando...</span>
                   </>
                 ) : (
                   <>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Atualizar Dados
+                    <RefreshCw className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Sincronizar HubSpot</span>
                   </>
                 )}
+              </Button>
+
+              {/* Botão Recarregar - Busca dados do Supabase */}
+              <Button 
+                onClick={refetch} 
+                variant="ghost" 
+                size="sm"
+                title="Recarrega os dados já processados"
+              >
+                <RefreshCw className="h-4 w-4" />
               </Button>
 
               <div className="hidden md:flex items-center text-sm text-gray-400">
