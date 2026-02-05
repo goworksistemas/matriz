@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { LayoutDashboard, Users, UserCheck, Loader2, AlertCircle, RefreshCw, CheckCircle, XCircle, Download, Clock } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
@@ -26,6 +26,45 @@ interface SyncState {
 function App() {
   const [activeTab, setActiveTab] = useState('visao-geral');
   const [syncState, setSyncState] = useState<SyncState>({ status: 'idle', message: null });
+  const [syncProgress, setSyncProgress] = useState(0);
+  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Animação da barra de progresso durante sincronização
+  useEffect(() => {
+    if (syncState.status === 'loading') {
+      setSyncProgress(0);
+      const duration = 45000; // 45 segundos
+      const interval = 100; // Atualiza a cada 100ms
+      const increment = (100 / duration) * interval;
+      
+      progressIntervalRef.current = setInterval(() => {
+        setSyncProgress(prev => {
+          // Vai até 95% e depois desacelera
+          if (prev >= 95) return prev + (increment * 0.1);
+          if (prev >= 80) return prev + (increment * 0.3);
+          return Math.min(prev + increment, 99);
+        });
+      }, interval);
+    } else {
+      // Limpa o intervalo e reseta o progresso
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      if (syncState.status === 'success') {
+        setSyncProgress(100);
+        setTimeout(() => setSyncProgress(0), 500);
+      } else {
+        setSyncProgress(0);
+      }
+    }
+
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, [syncState.status]);
 
   // Carregar dados do Supabase
   const {
@@ -47,7 +86,7 @@ function App() {
 
   // Função para sincronizar dados do HubSpot via N8N
   const handleSyncHubSpot = useCallback(async () => {
-    setSyncState({ status: 'loading', message: 'Atualizando base de dados...' });
+    setSyncState({ status: 'loading', message: null });
     
     try {
       const response = await fetch(N8N_WEBHOOK_URL, {
@@ -207,15 +246,13 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
-      {/* Toast de Notificação */}
-      {syncState.status !== 'idle' && syncState.message && (
+      {/* Toast de Notificação - Apenas sucesso/erro */}
+      {(syncState.status === 'success' || syncState.status === 'error') && syncState.message && (
         <div className="fixed top-4 right-4 z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
           <div className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
-            syncState.status === 'loading' ? 'bg-blue-900/90 border border-blue-700' :
             syncState.status === 'success' ? 'bg-green-900/90 border border-green-700' :
             'bg-red-900/90 border border-red-700'
           }`}>
-            {syncState.status === 'loading' && <Loader2 className="h-5 w-5 text-blue-400 animate-spin" />}
             {syncState.status === 'success' && <CheckCircle className="h-5 w-5 text-green-400" />}
             {syncState.status === 'error' && <XCircle className="h-5 w-5 text-red-400" />}
             <span className="text-sm font-medium text-gray-100">{syncState.message}</span>
@@ -253,25 +290,33 @@ function App() {
                 <span className="sm:hidden">Excel</span>
               </Button>
 
-              {/* Botão Sincronizar */}
-              <Button 
-                onClick={handleSyncHubSpot} 
-                variant="primary" 
-                size="sm"
-                disabled={syncState.status === 'loading'}
-              >
-                {syncState.status === 'loading' ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    <span className="hidden sm:inline">Sincronizando...</span>
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Sincronizar</span>
-                  </>
-                )}
-              </Button>
+              {/* Botão Sincronizar com Barra de Progresso */}
+              {syncState.status === 'loading' ? (
+                <div className="relative min-w-[140px]">
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 rounded-md border border-gray-600">
+                    <RefreshCw className="h-4 w-4 text-primary-400 animate-spin" />
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs text-gray-300 hidden sm:inline">Sincronizando...</span>
+                      <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-100 ease-out"
+                          style={{ width: `${syncProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                    <span className="text-xs text-gray-400 font-mono w-8">{Math.round(syncProgress)}%</span>
+                  </div>
+                </div>
+              ) : (
+                <Button 
+                  onClick={handleSyncHubSpot} 
+                  variant="primary" 
+                  size="sm"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Sincronizar</span>
+                </Button>
+              )}
 
               <div className="hidden lg:flex items-center text-sm text-gray-400">
                 <span className="flex items-center gap-1.5">
