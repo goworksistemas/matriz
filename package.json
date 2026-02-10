@@ -3,22 +3,51 @@
   "version": "1.0.0",
   "description": "Central de Relatórios NetworkGO",
   "private": true,
-  "workspaces": [
-    "hub",
-    "relatorios/*"
-  ],
+  "type": "module",
   "scripts": {
-    "dev:hub": "npm run dev --workspace=hub",
-    "dev:comissoes": "npm run dev --workspace=relatorios/comissoes",
-    "build:hub": "npm run build --workspace=hub",
-    "build:comissoes": "npm run build --workspace=relatorios/comissoes",
-    "build:all": "npm run build --workspaces",
-    "build": "npm run build:comissoes && npm run build:hub && node scripts/combine-builds.js"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/goworksistemas/matriz.git"
   },
   "author": "GoWork Sistemas",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@supabase/supabase-js": "^2.39.0",
+    "@tanstack/react-table": "^8.11.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.2.0",
+    "lucide-react": "^0.309.0",
+    "react": "^18.2.0",
+    "react-day-picker": "^8.10.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.1.0",
+    "recharts": "^2.10.3",
+    "tailwind-merge": "^2.2.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/react": "^18.2.46",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^7.3.1"
+  }
 }

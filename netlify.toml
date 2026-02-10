@@ -1,26 +1,13 @@
 # Configuração do Netlify para Central de Relatórios
 
 [build]
-  # Comando de build que combina Hub + Comissões
   command = "npm install && npm run build"
-  
-  # Pasta de saída com o build combinado
   publish = "dist"
 
-# Variáveis de ambiente para o build
 [build.environment]
   NODE_VERSION = "20"
 
-# Redirecionamentos para SPA (Single Page Application)
-# IMPORTANTE: A ordem importa! Mais específico primeiro.
-
-# Comissões - redireciona rotas /comissoes/* para /comissoes/index.html
-[[redirects]]
-  from = "/comissoes/*"
-  to = "/comissoes/index.html"
-  status = 200
-
-# Hub - redireciona todas as outras rotas para index.html
+# SPA - Redireciona todas as rotas para index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
