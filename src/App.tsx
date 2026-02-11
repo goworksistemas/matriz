@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/Header'
 import { Home } from '@/pages/Home'
 import { Login } from '@/pages/Login'
 import { ComissoesPage } from '@/pages/comissoes/ComissoesPage'
+import { RankingPage } from '@/pages/ranking/RankingPage'
 import { AccessDenied } from '@/pages/AccessDenied'
 import { NotFound } from '@/pages/NotFound'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
@@ -81,6 +82,9 @@ function ProtectedLayout() {
             <Route path="/" element={<Home />} />
             <Route path="/comissoes" element={
               hasReportAccess('comissoes') ? <ComissoesPage /> : <AccessDenied />
+            } />
+            <Route path="/ranking" element={
+              hasReportAccess('ranking') ? <RankingPage /> : <AccessDenied />
             } />
             <Route path="/admin" element={
               isAdmin ? <AdminDashboard /> : <AccessDenied />

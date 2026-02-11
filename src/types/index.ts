@@ -178,3 +178,107 @@ export interface DadosDashboard {
   isLoading: boolean;
   error: string | null;
 }
+
+// ============================================
+// TIPOS DA APLICAÇÃO - RANKING (Vendas + Marketing)
+// ============================================
+
+// Deal processado para o dashboard de vendas
+export interface DealProcessado {
+  id: string;
+  hubspotId: string;
+  dealName: string;
+  amount: number;
+  closeDate: string | null;
+  createDate: string | null;
+  pipelineId: string | null;
+  pipelineNome: string;
+  ownerId: string | null;
+  ownerNome: string;
+  isClosedWon: boolean;
+  mes: number;
+  ano: number;
+}
+
+// Meta de vendas processada
+export interface MetaVendas {
+  id: string;
+  year: number;
+  month: number;
+  monthlyGoal: number;
+  annualGoal: number;
+}
+
+// Lead processado para o dashboard de marketing
+export interface LeadProcessado {
+  id: string;
+  hubspotId: string;
+  email: string | null;
+  nome: string;
+  lifecycleStage: string | null;
+  ownerId: string | null;
+  ownerNome: string;
+  createdAt: string | null;
+  isValido: boolean;
+  mes: number;
+  ano: number;
+}
+
+// KPIs de Vendas
+export interface KPIsVendas {
+  totalVendidoMes: number;
+  totalVendidoAno: number;
+  metaMensal: number;
+  metaAnual: number;
+  atingimentoMensal: number;
+  atingimentoAnual: number;
+  totalDealsGanhosMes: number;
+  totalDealsGanhosAno: number;
+}
+
+// KPIs de Marketing
+export interface KPIsMarketing {
+  leadsGerados: number;
+  leadsValidos: number;
+  taxaConversao: number;
+}
+
+// Dados do gráfico mensal de vendas (Meta vs Realizado)
+export interface DadoGraficoMensal {
+  mes: string;
+  mesNumero: number;
+  realizado: number;
+  meta: number;
+}
+
+// Evolução de leads por mês
+export interface EvolucaoLeads {
+  mes: string;
+  total: number;
+  validos: number;
+}
+
+// Filtros do Dashboard de Vendas
+export interface FiltrosVendas {
+  ano: number;
+  mes: number; // 0 = todos os meses
+  vendedor: string;
+  pipeline: string;
+}
+
+// Filtros do Dashboard de Marketing
+export interface FiltrosMarketing {
+  periodo: number; // meses para trás (12, 6, 3)
+  owner: string;
+}
+
+// Dados do Dashboard de Ranking
+export interface DadosRanking {
+  deals: DealProcessado[];
+  leads: LeadProcessado[];
+  metas: MetaVendas[];
+  proprietarios: Proprietario[];
+  pipelinesUnicos: string[];
+  vendedoresUnicos: string[];
+  ultimaAtualizacao: string | null;
+}

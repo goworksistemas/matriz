@@ -152,6 +152,17 @@ export interface HubspotCommission {
   _source_system: string;
 }
 
+// Tabela sales_goals (Metas de Vendas)
+export interface SalesGoal {
+  id: string; // uuid
+  year: number; // integer
+  month: number; // integer (1-12)
+  monthly_goal: number; // numeric
+  annual_goal: number; // numeric
+  created_at: string; // timestamp with time zone
+  updated_at: string; // timestamp with time zone
+}
+
 // ============================================
 // SCHEMA DO BANCO PARA SUPABASE CLIENT
 // ============================================
@@ -193,6 +204,11 @@ export interface Database {
         Row: HubspotCommission;
         Insert: Partial<HubspotCommission> & Pick<HubspotCommission, 'hubspot_id'>;
         Update: Partial<HubspotCommission>;
+      };
+      sales_goals: {
+        Row: SalesGoal;
+        Insert: Partial<SalesGoal> & Pick<SalesGoal, 'year' | 'month'>;
+        Update: Partial<SalesGoal>;
       };
     };
   };
