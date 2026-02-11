@@ -11,6 +11,7 @@ import { ComissoesSDR } from './pages/ComissoesSDR';
 import { useSupabaseData } from './hooks/useSupabaseData';
 import { useFilters } from './hooks/useFilters';
 import { useComissoesCalculations } from './hooks/useComissoesCalculations';
+import { useAuditLog } from '@/hooks/useAuditLog';
 
 // URL do Webhook N8N para sincronização
 const N8N_WEBHOOK_URL = 'https://flux.gowork.com.br/webhook/atualizar_comissoes';
@@ -23,6 +24,7 @@ interface SyncState {
 }
 
 export function ComissoesPage() {
+  const { log } = useAuditLog();
   const [activeTab, setActiveTab] = useState('visao-geral');
   const [syncState, setSyncState] = useState<SyncState>({ status: 'idle', message: null });
   const [syncProgress, setSyncProgress] = useState(0);
@@ -76,6 +78,9 @@ export function ComissoesPage() {
     refetch,
   } = useSupabaseData();
 
+  // Log de acesso ao relatório (apenas uma vez)
+  useEffect(() => { log('view_report', 'report', 'comissoes'); }, [log]);
+
   const dataAtualizacaoFormatada = ultimaAtualizacao 
     ? format(new Date(ultimaAtualizacao), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
     : null;
@@ -98,6 +103,7 @@ export function ComissoesPage() {
 
       if (response.ok && data.status === 'success') {
         setSyncState({ status: 'success', message: 'Dados atualizados com sucesso!' });
+        log('sync_data', 'report', 'comissoes');
         setTimeout(() => {
           refetch();
           setSyncState({ status: 'idle', message: null });
@@ -163,7 +169,8 @@ export function ComissoesPage() {
     ];
     XLSX.utils.book_append_sheet(wb, ws, 'Comissões');
     XLSX.writeFile(wb, `comissoes_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`);
-  }, [comissoesFiltradas]);
+    log('export_excel', 'report', 'comissoes', { records: comissoesFiltradas.length });
+  }, [comissoesFiltradas, log]);
 
   // Cálculos
   const { kpis, dadosGraficos } = useComissoesCalculations(comissoesFiltradas);
@@ -218,38 +225,38 @@ export function ComissoesPage() {
       <div className="sticky top-0 z-40 border-b border-gray-200 dark:border-white/[0.04] bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-12 flex items-center justify-between">
           <div className="flex items-center gap-3 text-[11px] text-gray-500 dark:text-gray-600">
-            {dataAtualizacaoFormatada && (
+                {dataAtualizacaoFormatada && (
               <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                Atualizado: {dataAtualizacaoFormatada}
-              </span>
-            )}
+                    <Clock className="h-3 w-3" />
+                    Atualizado: {dataAtualizacaoFormatada}
+                  </span>
+                )}
             <div className="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 ring-1 ring-emerald-200 dark:ring-emerald-500/20">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
               <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">{comissoes.length} comissões</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button 
-              onClick={handleExportExcel} 
-              variant="secondary" 
-              size="sm"
-              disabled={comissoesFiltradas.length === 0}
+            <div className="flex items-center gap-2">
+              <Button 
+                onClick={handleExportExcel} 
+                variant="secondary" 
+                size="sm"
+                disabled={comissoesFiltradas.length === 0}
               title="Exportar para Excel"
-            >
+              >
               <Download className="h-3.5 w-3.5 mr-1.5" />
               <span className="hidden sm:inline text-xs">Excel</span>
-            </Button>
+              </Button>
 
-            {syncState.status === 'loading' ? (
+              {syncState.status === 'loading' ? (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-white/[0.04] rounded-lg ring-1 ring-gray-200 dark:ring-white/[0.08]">
                 <RefreshCw className="h-3.5 w-3.5 text-primary-400 animate-spin" />
                 <div className="w-16 h-1 bg-gray-200 dark:bg-white/[0.06] rounded-full overflow-hidden">
-                  <div 
+                        <div 
                     className="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-100"
-                    style={{ width: `${syncProgress}%` }}
-                  />
+                          style={{ width: `${syncProgress}%` }}
+                        />
                 </div>
                 <span className="text-[11px] text-gray-500 font-mono">{Math.round(syncProgress)}%</span>
               </div>
@@ -319,7 +326,7 @@ export function ComissoesPage() {
             />
           </TabsContent>
         </Tabs>
-      </div>
+        </div>
     </div>
   );
 }

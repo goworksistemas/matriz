@@ -9,7 +9,7 @@ import {
   BarChart3,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { RELATORIOS } from '@/config/relatorios'
+import { useAuth } from '@/hooks/AuthContext'
 
 const iconMap: Record<string, React.ElementType> = {
   'coins': Coins,
@@ -17,6 +17,7 @@ const iconMap: Record<string, React.ElementType> = {
   'wallet': Wallet,
   'settings': Settings,
   'users': Users,
+  'bar-chart': TrendingUp,
 }
 
 const categoriaConfig: Record<string, { 
@@ -48,38 +49,39 @@ const categoriaConfig: Record<string, {
 
 export function Home() {
   const navigate = useNavigate()
-  const relatoriosAtivos = RELATORIOS.filter(r => r.ativo)
+  const { reports, profile } = useAuth()
 
   return (
     <div className="h-full overflow-auto">
       <div className="p-6 lg:p-8 max-w-4xl mx-auto">
 
-        {/* Header simples */}
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">
-            Relatórios
+            {profile ? `Olá, ${profile.full_name || profile.email.split('@')[0]}` : 'Relatórios'}
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            {relatoriosAtivos.length} {relatoriosAtivos.length === 1 ? 'disponível' : 'disponíveis'}
+            {reports.length} {reports.length === 1 ? 'relatório disponível' : 'relatórios disponíveis'}
           </p>
         </div>
 
-        {/* Grid de relatórios */}
-        {relatoriosAtivos.length === 0 ? (
+        {/* Grid */}
+        {reports.length === 0 ? (
           <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-12 text-center">
             <BarChart3 className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-sm text-gray-500">Nenhum relatório configurado.</p>
+            <p className="text-sm text-gray-500">Nenhum relatório disponível para sua conta.</p>
+            <p className="text-xs text-gray-400 mt-1">Solicite acesso ao administrador.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {relatoriosAtivos.map((relatorio) => {
-              const Icon = iconMap[relatorio.icone] || Coins
-              const config = categoriaConfig[relatorio.categoria] || categoriaConfig.operacional
+            {reports.map((report) => {
+              const Icon = iconMap[report.icon] || Coins
+              const config = categoriaConfig[report.category] || categoriaConfig.operacional
 
               return (
                 <button
-                  key={relatorio.id}
-                  onClick={() => navigate(`/${relatorio.id}`)}
+                  key={report.report_id}
+                  onClick={() => navigate(`/${report.slug}`)}
                   className={cn(
                     "group text-left rounded-xl p-4",
                     "border border-gray-200 dark:border-gray-800",
@@ -100,10 +102,10 @@ export function Home() {
 
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-medium text-gray-900 dark:text-white leading-tight">
-                        {relatorio.nome}
+                        {report.name}
                       </h3>
                       <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
-                        {relatorio.descricao}
+                        {report.description}
                       </p>
                     </div>
 

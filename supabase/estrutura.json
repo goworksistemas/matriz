@@ -1,0 +1,3142 @@
+{
+    "tables": [
+        {
+            "schema": "public",
+            "name": "theme_settings",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "company_name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'NetworkGo'::text",
+                    "max_length": null
+                },
+                {
+                    "name": "logo_url",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "primary_color",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'#0ea5e9'::text",
+                    "max_length": null
+                },
+                {
+                    "name": "sidebar_color",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "accent_color",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                },
+                {
+                    "name": "updated_by",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "hubspot_owners",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "hubspot_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "email",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "first_name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "last_name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "user_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "team_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "archived",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "YES",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "_extracted_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                },
+                {
+                    "name": "_source_system",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'HubSpot'::text",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "audit_logs",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "user_id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "action",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "resource_type",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "resource_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "details",
+                    "type": "jsonb",
+                    "udt_type": "jsonb",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "ip_address",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "hubspot_contacts",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "hubspot_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "email",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "first_name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "last_name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "phone",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "mobile_phone",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "job_title",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "company_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "lifecycle_stage",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "lead_status",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "owner_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "city",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "state",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "country",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "postal_code",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "archived",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "YES",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "_extracted_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                },
+                {
+                    "name": "_source_system",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'HubSpot'::text",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "hubspot_pipeline_stages",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "stage_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "pipeline_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "label",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "display_order",
+                    "type": "integer",
+                    "udt_type": "int4",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "probability",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "is_closed",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "YES",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "is_won",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "YES",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "archived",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "YES",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "_extracted_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                },
+                {
+                    "name": "_source_system",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'HubSpot'::text",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "hubspot_pipelines",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "hubspot_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "label",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "display_order",
+                    "type": "integer",
+                    "udt_type": "int4",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "object_type",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "archived",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "YES",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "_extracted_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                },
+                {
+                    "name": "_source_system",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'HubSpot'::text",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "hubspot_deals",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "hubspot_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "deal_name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "amount",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "currency",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": "'BRL'::text",
+                    "max_length": null
+                },
+                {
+                    "name": "close_date",
+                    "type": "date",
+                    "udt_type": "date",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "create_date",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "pipeline_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "pipeline_stage_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "deal_stage",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "deal_type",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "owner_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "contact_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "company_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "probability",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "forecast_category",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "next_step",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "description",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "archived",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "YES",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "raw_data",
+                    "type": "jsonb",
+                    "udt_type": "jsonb",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "_extracted_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                },
+                {
+                    "name": "_source_system",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'HubSpot'::text",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "hubspot_commissions_obj",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "hubspot_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "object_type_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": "'2-45314755'::text",
+                    "max_length": null
+                },
+                {
+                    "name": "name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "deal_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "owner_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "commission_amount",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "commission_percentage",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "commission_type",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "payment_status",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "payment_date",
+                    "type": "date",
+                    "udt_type": "date",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "associated_deal_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "associated_contact_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "archived",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "YES",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "raw_properties",
+                    "type": "jsonb",
+                    "udt_type": "jsonb",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "_extracted_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                },
+                {
+                    "name": "_source_system",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'HubSpot'::text",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "hubspot_line_items",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "hubspot_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "deal_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "product_id",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "sku",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "quantity",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "unit_price",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "amount",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "discount",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "discount_percentage",
+                    "type": "numeric",
+                    "udt_type": "numeric",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "currency",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": "'BRL'::text",
+                    "max_length": null
+                },
+                {
+                    "name": "description",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "archived",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "YES",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "_extracted_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                },
+                {
+                    "name": "_source_system",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'HubSpot'::text",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "user_report_access",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "user_id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "report_id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "granted_by",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "reports",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "slug",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "description",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "icon",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": "'bar-chart'::text",
+                    "max_length": null
+                },
+                {
+                    "name": "category",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'operacional'::text",
+                    "max_length": null
+                },
+                {
+                    "name": "active",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "NO",
+                    "default": "true",
+                    "max_length": null
+                },
+                {
+                    "name": "standalone_public",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "NO",
+                    "default": "false",
+                    "max_length": null
+                },
+                {
+                    "name": "share_token",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": "encode(gen_random_bytes(32), 'hex'::text)",
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "group_report_access",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "group_id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "report_id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "profiles",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "email",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "full_name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "avatar_url",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "role",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": "'viewer'::text",
+                    "max_length": null
+                },
+                {
+                    "name": "active",
+                    "type": "boolean",
+                    "udt_type": "bool",
+                    "nullable": "NO",
+                    "default": "true",
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "access_groups",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "name",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "description",
+                    "type": "text",
+                    "udt_type": "text",
+                    "nullable": "YES",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                }
+            ]
+        },
+        {
+            "schema": "public",
+            "name": "user_groups",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": "uuid_generate_v4()",
+                    "max_length": null
+                },
+                {
+                    "name": "user_id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "group_id",
+                    "type": "uuid",
+                    "udt_type": "uuid",
+                    "nullable": "NO",
+                    "default": null,
+                    "max_length": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp with time zone",
+                    "udt_type": "timestamptz",
+                    "nullable": "NO",
+                    "default": "now()",
+                    "max_length": null
+                }
+            ]
+        }
+    ],
+    "primary_keys": [
+        {
+            "table": "hubspot_owners",
+            "constraint": "hubspot_owners_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "hubspot_pipelines",
+            "constraint": "hubspot_pipelines_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "constraint": "hubspot_pipeline_stages_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "hubspot_contacts",
+            "constraint": "hubspot_contacts_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "hubspot_deals_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "hubspot_line_items",
+            "constraint": "hubspot_line_items_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "constraint": "hubspot_commissions_obj_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "profiles",
+            "constraint": "profiles_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "reports",
+            "constraint": "reports_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "access_groups",
+            "constraint": "access_groups_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "user_groups",
+            "constraint": "user_groups_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "user_report_access",
+            "constraint": "user_report_access_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "group_report_access",
+            "constraint": "group_report_access_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "theme_settings",
+            "constraint": "theme_settings_pkey",
+            "columns": [
+                "id"
+            ]
+        },
+        {
+            "table": "audit_logs",
+            "constraint": "audit_logs_pkey",
+            "columns": [
+                "id"
+            ]
+        }
+    ],
+    "foreign_keys": [
+        {
+            "table": "hubspot_contacts",
+            "constraint": "fk_contacts_owner",
+            "column": "owner_id",
+            "references_table": "hubspot_owners",
+            "references_column": "hubspot_id"
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "fk_deals_owner",
+            "column": "owner_id",
+            "references_table": "hubspot_owners",
+            "references_column": "hubspot_id"
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "fk_deals_contact",
+            "column": "contact_id",
+            "references_table": "hubspot_contacts",
+            "references_column": "hubspot_id"
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "fk_deals_pipeline",
+            "column": "pipeline_id",
+            "references_table": "hubspot_pipelines",
+            "references_column": "hubspot_id"
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "fk_deals_stage",
+            "column": "pipeline_stage_id",
+            "references_table": "hubspot_pipeline_stages",
+            "references_column": "stage_id"
+        },
+        {
+            "table": "hubspot_line_items",
+            "constraint": "fk_lineitems_deal",
+            "column": "deal_id",
+            "references_table": "hubspot_deals",
+            "references_column": "hubspot_id"
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "constraint": "fk_stages_pipeline",
+            "column": "pipeline_id",
+            "references_table": "hubspot_pipelines",
+            "references_column": "hubspot_id"
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "constraint": "fk_commissions_owner",
+            "column": "owner_id",
+            "references_table": "hubspot_owners",
+            "references_column": "hubspot_id"
+        },
+        {
+            "table": "user_groups",
+            "constraint": "user_groups_user_id_fkey",
+            "column": "user_id",
+            "references_table": "profiles",
+            "references_column": "id"
+        },
+        {
+            "table": "user_groups",
+            "constraint": "user_groups_group_id_fkey",
+            "column": "group_id",
+            "references_table": "access_groups",
+            "references_column": "id"
+        },
+        {
+            "table": "user_report_access",
+            "constraint": "user_report_access_user_id_fkey",
+            "column": "user_id",
+            "references_table": "profiles",
+            "references_column": "id"
+        },
+        {
+            "table": "user_report_access",
+            "constraint": "user_report_access_report_id_fkey",
+            "column": "report_id",
+            "references_table": "reports",
+            "references_column": "id"
+        },
+        {
+            "table": "user_report_access",
+            "constraint": "user_report_access_granted_by_fkey",
+            "column": "granted_by",
+            "references_table": "profiles",
+            "references_column": "id"
+        },
+        {
+            "table": "group_report_access",
+            "constraint": "group_report_access_group_id_fkey",
+            "column": "group_id",
+            "references_table": "access_groups",
+            "references_column": "id"
+        },
+        {
+            "table": "group_report_access",
+            "constraint": "group_report_access_report_id_fkey",
+            "column": "report_id",
+            "references_table": "reports",
+            "references_column": "id"
+        },
+        {
+            "table": "theme_settings",
+            "constraint": "theme_settings_updated_by_fkey",
+            "column": "updated_by",
+            "references_table": "profiles",
+            "references_column": "id"
+        },
+        {
+            "table": "audit_logs",
+            "constraint": "audit_logs_user_id_fkey",
+            "column": "user_id",
+            "references_table": "profiles",
+            "references_column": "id"
+        }
+    ],
+    "unique_constraints": [
+        {
+            "table": "hubspot_owners",
+            "constraint": "hubspot_owners_hubspot_id_key",
+            "columns": [
+                "hubspot_id"
+            ]
+        },
+        {
+            "table": "hubspot_pipelines",
+            "constraint": "hubspot_pipelines_hubspot_id_key",
+            "columns": [
+                "hubspot_id"
+            ]
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "constraint": "hubspot_pipeline_stages_stage_id_key",
+            "columns": [
+                "stage_id"
+            ]
+        },
+        {
+            "table": "hubspot_contacts",
+            "constraint": "hubspot_contacts_hubspot_id_key",
+            "columns": [
+                "hubspot_id"
+            ]
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "hubspot_deals_hubspot_id_key",
+            "columns": [
+                "hubspot_id"
+            ]
+        },
+        {
+            "table": "hubspot_line_items",
+            "constraint": "hubspot_line_items_hubspot_id_key",
+            "columns": [
+                "hubspot_id"
+            ]
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "constraint": "hubspot_commissions_obj_hubspot_id_key",
+            "columns": [
+                "hubspot_id"
+            ]
+        },
+        {
+            "table": "reports",
+            "constraint": "reports_slug_key",
+            "columns": [
+                "slug"
+            ]
+        },
+        {
+            "table": "reports",
+            "constraint": "reports_share_token_key",
+            "columns": [
+                "share_token"
+            ]
+        },
+        {
+            "table": "user_groups",
+            "constraint": "user_groups_user_id_group_id_key",
+            "columns": [
+                "user_id",
+                "group_id"
+            ]
+        },
+        {
+            "table": "user_report_access",
+            "constraint": "user_report_access_user_id_report_id_key",
+            "columns": [
+                "user_id",
+                "report_id"
+            ]
+        },
+        {
+            "table": "group_report_access",
+            "constraint": "group_report_access_group_id_report_id_key",
+            "columns": [
+                "group_id",
+                "report_id"
+            ]
+        }
+    ],
+    "check_constraints": [
+        {
+            "table": "profiles",
+            "constraint": "profiles_role_check",
+            "definition": "(role = ANY (ARRAY['admin'::text, 'manager'::text, 'viewer'::text]))"
+        },
+        {
+            "table": "reports",
+            "constraint": "reports_category_check",
+            "definition": "(category = ANY (ARRAY['vendas'::text, 'financeiro'::text, 'operacional'::text, 'rh'::text]))"
+        },
+        {
+            "table": "theme_settings",
+            "constraint": "2200_37745_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "theme_settings",
+            "constraint": "2200_37745_2_not_null",
+            "definition": "company_name IS NOT NULL"
+        },
+        {
+            "table": "theme_settings",
+            "constraint": "2200_37745_4_not_null",
+            "definition": "primary_color IS NOT NULL"
+        },
+        {
+            "table": "theme_settings",
+            "constraint": "2200_37745_7_not_null",
+            "definition": "updated_at IS NOT NULL"
+        },
+        {
+            "table": "hubspot_owners",
+            "constraint": "2200_21181_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_owners",
+            "constraint": "2200_21181_2_not_null",
+            "definition": "hubspot_id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_owners",
+            "constraint": "2200_21181_11_not_null",
+            "definition": "_extracted_at IS NOT NULL"
+        },
+        {
+            "table": "hubspot_owners",
+            "constraint": "2200_21181_12_not_null",
+            "definition": "_source_system IS NOT NULL"
+        },
+        {
+            "table": "audit_logs",
+            "constraint": "2200_37764_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "audit_logs",
+            "constraint": "2200_37764_3_not_null",
+            "definition": "action IS NOT NULL"
+        },
+        {
+            "table": "audit_logs",
+            "constraint": "2200_37764_8_not_null",
+            "definition": "created_at IS NOT NULL"
+        },
+        {
+            "table": "hubspot_contacts",
+            "constraint": "2200_21251_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_contacts",
+            "constraint": "2200_21251_2_not_null",
+            "definition": "hubspot_id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_contacts",
+            "constraint": "2200_21251_20_not_null",
+            "definition": "_extracted_at IS NOT NULL"
+        },
+        {
+            "table": "hubspot_contacts",
+            "constraint": "2200_21251_21_not_null",
+            "definition": "_source_system IS NOT NULL"
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "constraint": "2200_21213_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "constraint": "2200_21213_2_not_null",
+            "definition": "stage_id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "constraint": "2200_21213_12_not_null",
+            "definition": "_extracted_at IS NOT NULL"
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "constraint": "2200_21213_13_not_null",
+            "definition": "_source_system IS NOT NULL"
+        },
+        {
+            "table": "hubspot_pipelines",
+            "constraint": "2200_21197_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_pipelines",
+            "constraint": "2200_21197_2_not_null",
+            "definition": "hubspot_id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_pipelines",
+            "constraint": "2200_21197_9_not_null",
+            "definition": "_extracted_at IS NOT NULL"
+        },
+        {
+            "table": "hubspot_pipelines",
+            "constraint": "2200_21197_10_not_null",
+            "definition": "_source_system IS NOT NULL"
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "2200_21271_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "2200_21271_2_not_null",
+            "definition": "hubspot_id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "2200_21271_23_not_null",
+            "definition": "_extracted_at IS NOT NULL"
+        },
+        {
+            "table": "hubspot_deals",
+            "constraint": "2200_21271_24_not_null",
+            "definition": "_source_system IS NOT NULL"
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "constraint": "2200_21315_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "constraint": "2200_21315_2_not_null",
+            "definition": "hubspot_id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "constraint": "2200_21315_18_not_null",
+            "definition": "_extracted_at IS NOT NULL"
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "constraint": "2200_21315_19_not_null",
+            "definition": "_source_system IS NOT NULL"
+        },
+        {
+            "table": "hubspot_line_items",
+            "constraint": "2200_21296_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_line_items",
+            "constraint": "2200_21296_2_not_null",
+            "definition": "hubspot_id IS NOT NULL"
+        },
+        {
+            "table": "hubspot_line_items",
+            "constraint": "2200_21296_17_not_null",
+            "definition": "_extracted_at IS NOT NULL"
+        },
+        {
+            "table": "hubspot_line_items",
+            "constraint": "2200_21296_18_not_null",
+            "definition": "_source_system IS NOT NULL"
+        },
+        {
+            "table": "user_report_access",
+            "constraint": "2200_37656_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "user_report_access",
+            "constraint": "2200_37656_2_not_null",
+            "definition": "user_id IS NOT NULL"
+        },
+        {
+            "table": "user_report_access",
+            "constraint": "2200_37656_3_not_null",
+            "definition": "report_id IS NOT NULL"
+        },
+        {
+            "table": "user_report_access",
+            "constraint": "2200_37656_5_not_null",
+            "definition": "created_at IS NOT NULL"
+        },
+        {
+            "table": "reports",
+            "constraint": "2200_37605_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "reports",
+            "constraint": "2200_37605_2_not_null",
+            "definition": "slug IS NOT NULL"
+        },
+        {
+            "table": "reports",
+            "constraint": "2200_37605_3_not_null",
+            "definition": "name IS NOT NULL"
+        },
+        {
+            "table": "reports",
+            "constraint": "2200_37605_6_not_null",
+            "definition": "category IS NOT NULL"
+        },
+        {
+            "table": "reports",
+            "constraint": "2200_37605_7_not_null",
+            "definition": "active IS NOT NULL"
+        },
+        {
+            "table": "reports",
+            "constraint": "2200_37605_8_not_null",
+            "definition": "standalone_public IS NOT NULL"
+        },
+        {
+            "table": "reports",
+            "constraint": "2200_37605_10_not_null",
+            "definition": "created_at IS NOT NULL"
+        },
+        {
+            "table": "group_report_access",
+            "constraint": "2200_37682_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "group_report_access",
+            "constraint": "2200_37682_2_not_null",
+            "definition": "group_id IS NOT NULL"
+        },
+        {
+            "table": "group_report_access",
+            "constraint": "2200_37682_3_not_null",
+            "definition": "report_id IS NOT NULL"
+        },
+        {
+            "table": "group_report_access",
+            "constraint": "2200_37682_4_not_null",
+            "definition": "created_at IS NOT NULL"
+        },
+        {
+            "table": "profiles",
+            "constraint": "2200_37586_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "profiles",
+            "constraint": "2200_37586_2_not_null",
+            "definition": "email IS NOT NULL"
+        },
+        {
+            "table": "profiles",
+            "constraint": "2200_37586_5_not_null",
+            "definition": "role IS NOT NULL"
+        },
+        {
+            "table": "profiles",
+            "constraint": "2200_37586_6_not_null",
+            "definition": "active IS NOT NULL"
+        },
+        {
+            "table": "profiles",
+            "constraint": "2200_37586_7_not_null",
+            "definition": "created_at IS NOT NULL"
+        },
+        {
+            "table": "profiles",
+            "constraint": "2200_37586_8_not_null",
+            "definition": "updated_at IS NOT NULL"
+        },
+        {
+            "table": "access_groups",
+            "constraint": "2200_37626_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "access_groups",
+            "constraint": "2200_37626_2_not_null",
+            "definition": "name IS NOT NULL"
+        },
+        {
+            "table": "access_groups",
+            "constraint": "2200_37626_4_not_null",
+            "definition": "created_at IS NOT NULL"
+        },
+        {
+            "table": "user_groups",
+            "constraint": "2200_37635_1_not_null",
+            "definition": "id IS NOT NULL"
+        },
+        {
+            "table": "user_groups",
+            "constraint": "2200_37635_2_not_null",
+            "definition": "user_id IS NOT NULL"
+        },
+        {
+            "table": "user_groups",
+            "constraint": "2200_37635_3_not_null",
+            "definition": "group_id IS NOT NULL"
+        },
+        {
+            "table": "user_groups",
+            "constraint": "2200_37635_4_not_null",
+            "definition": "created_at IS NOT NULL"
+        }
+    ],
+    "indexes": [
+        {
+            "name": "theme_settings_pkey",
+            "table": "theme_settings",
+            "definition": "CREATE UNIQUE INDEX theme_settings_pkey ON public.theme_settings USING btree (id)"
+        },
+        {
+            "name": "hubspot_owners_pkey",
+            "table": "hubspot_owners",
+            "definition": "CREATE UNIQUE INDEX hubspot_owners_pkey ON public.hubspot_owners USING btree (id)"
+        },
+        {
+            "name": "hubspot_owners_hubspot_id_key",
+            "table": "hubspot_owners",
+            "definition": "CREATE UNIQUE INDEX hubspot_owners_hubspot_id_key ON public.hubspot_owners USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_owners_hubspot_id",
+            "table": "hubspot_owners",
+            "definition": "CREATE INDEX idx_hubspot_owners_hubspot_id ON public.hubspot_owners USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_owners_email",
+            "table": "hubspot_owners",
+            "definition": "CREATE INDEX idx_hubspot_owners_email ON public.hubspot_owners USING btree (email)"
+        },
+        {
+            "name": "idx_hubspot_owners_extracted_at",
+            "table": "hubspot_owners",
+            "definition": "CREATE INDEX idx_hubspot_owners_extracted_at ON public.hubspot_owners USING btree (_extracted_at)"
+        },
+        {
+            "name": "audit_logs_pkey",
+            "table": "audit_logs",
+            "definition": "CREATE UNIQUE INDEX audit_logs_pkey ON public.audit_logs USING btree (id)"
+        },
+        {
+            "name": "idx_audit_logs_user_id",
+            "table": "audit_logs",
+            "definition": "CREATE INDEX idx_audit_logs_user_id ON public.audit_logs USING btree (user_id)"
+        },
+        {
+            "name": "idx_audit_logs_action",
+            "table": "audit_logs",
+            "definition": "CREATE INDEX idx_audit_logs_action ON public.audit_logs USING btree (action)"
+        },
+        {
+            "name": "idx_audit_logs_created_at",
+            "table": "audit_logs",
+            "definition": "CREATE INDEX idx_audit_logs_created_at ON public.audit_logs USING btree (created_at DESC)"
+        },
+        {
+            "name": "idx_audit_logs_resource",
+            "table": "audit_logs",
+            "definition": "CREATE INDEX idx_audit_logs_resource ON public.audit_logs USING btree (resource_type, resource_id)"
+        },
+        {
+            "name": "hubspot_contacts_pkey",
+            "table": "hubspot_contacts",
+            "definition": "CREATE UNIQUE INDEX hubspot_contacts_pkey ON public.hubspot_contacts USING btree (id)"
+        },
+        {
+            "name": "hubspot_contacts_hubspot_id_key",
+            "table": "hubspot_contacts",
+            "definition": "CREATE UNIQUE INDEX hubspot_contacts_hubspot_id_key ON public.hubspot_contacts USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_contacts_hubspot_id",
+            "table": "hubspot_contacts",
+            "definition": "CREATE INDEX idx_hubspot_contacts_hubspot_id ON public.hubspot_contacts USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_contacts_email",
+            "table": "hubspot_contacts",
+            "definition": "CREATE INDEX idx_hubspot_contacts_email ON public.hubspot_contacts USING btree (email)"
+        },
+        {
+            "name": "idx_hubspot_contacts_company_id",
+            "table": "hubspot_contacts",
+            "definition": "CREATE INDEX idx_hubspot_contacts_company_id ON public.hubspot_contacts USING btree (company_id)"
+        },
+        {
+            "name": "idx_hubspot_contacts_owner_id",
+            "table": "hubspot_contacts",
+            "definition": "CREATE INDEX idx_hubspot_contacts_owner_id ON public.hubspot_contacts USING btree (owner_id)"
+        },
+        {
+            "name": "idx_hubspot_contacts_lifecycle_stage",
+            "table": "hubspot_contacts",
+            "definition": "CREATE INDEX idx_hubspot_contacts_lifecycle_stage ON public.hubspot_contacts USING btree (lifecycle_stage)"
+        },
+        {
+            "name": "idx_hubspot_contacts_lead_status",
+            "table": "hubspot_contacts",
+            "definition": "CREATE INDEX idx_hubspot_contacts_lead_status ON public.hubspot_contacts USING btree (lead_status)"
+        },
+        {
+            "name": "idx_hubspot_contacts_extracted_at",
+            "table": "hubspot_contacts",
+            "definition": "CREATE INDEX idx_hubspot_contacts_extracted_at ON public.hubspot_contacts USING btree (_extracted_at)"
+        },
+        {
+            "name": "hubspot_pipeline_stages_pkey",
+            "table": "hubspot_pipeline_stages",
+            "definition": "CREATE UNIQUE INDEX hubspot_pipeline_stages_pkey ON public.hubspot_pipeline_stages USING btree (id)"
+        },
+        {
+            "name": "hubspot_pipeline_stages_stage_id_key",
+            "table": "hubspot_pipeline_stages",
+            "definition": "CREATE UNIQUE INDEX hubspot_pipeline_stages_stage_id_key ON public.hubspot_pipeline_stages USING btree (stage_id)"
+        },
+        {
+            "name": "idx_hubspot_stages_stage_id",
+            "table": "hubspot_pipeline_stages",
+            "definition": "CREATE INDEX idx_hubspot_stages_stage_id ON public.hubspot_pipeline_stages USING btree (stage_id)"
+        },
+        {
+            "name": "idx_hubspot_stages_pipeline_id",
+            "table": "hubspot_pipeline_stages",
+            "definition": "CREATE INDEX idx_hubspot_stages_pipeline_id ON public.hubspot_pipeline_stages USING btree (pipeline_id)"
+        },
+        {
+            "name": "idx_hubspot_stages_is_closed",
+            "table": "hubspot_pipeline_stages",
+            "definition": "CREATE INDEX idx_hubspot_stages_is_closed ON public.hubspot_pipeline_stages USING btree (is_closed)"
+        },
+        {
+            "name": "idx_hubspot_stages_extracted_at",
+            "table": "hubspot_pipeline_stages",
+            "definition": "CREATE INDEX idx_hubspot_stages_extracted_at ON public.hubspot_pipeline_stages USING btree (_extracted_at)"
+        },
+        {
+            "name": "hubspot_pipelines_pkey",
+            "table": "hubspot_pipelines",
+            "definition": "CREATE UNIQUE INDEX hubspot_pipelines_pkey ON public.hubspot_pipelines USING btree (id)"
+        },
+        {
+            "name": "hubspot_pipelines_hubspot_id_key",
+            "table": "hubspot_pipelines",
+            "definition": "CREATE UNIQUE INDEX hubspot_pipelines_hubspot_id_key ON public.hubspot_pipelines USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_pipelines_hubspot_id",
+            "table": "hubspot_pipelines",
+            "definition": "CREATE INDEX idx_hubspot_pipelines_hubspot_id ON public.hubspot_pipelines USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_pipelines_object_type",
+            "table": "hubspot_pipelines",
+            "definition": "CREATE INDEX idx_hubspot_pipelines_object_type ON public.hubspot_pipelines USING btree (object_type)"
+        },
+        {
+            "name": "idx_hubspot_pipelines_extracted_at",
+            "table": "hubspot_pipelines",
+            "definition": "CREATE INDEX idx_hubspot_pipelines_extracted_at ON public.hubspot_pipelines USING btree (_extracted_at)"
+        },
+        {
+            "name": "hubspot_deals_pkey",
+            "table": "hubspot_deals",
+            "definition": "CREATE UNIQUE INDEX hubspot_deals_pkey ON public.hubspot_deals USING btree (id)"
+        },
+        {
+            "name": "hubspot_deals_hubspot_id_key",
+            "table": "hubspot_deals",
+            "definition": "CREATE UNIQUE INDEX hubspot_deals_hubspot_id_key ON public.hubspot_deals USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_deals_hubspot_id",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_hubspot_id ON public.hubspot_deals USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_deals_deal_stage",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_deal_stage ON public.hubspot_deals USING btree (deal_stage)"
+        },
+        {
+            "name": "idx_hubspot_deals_pipeline_stage_id",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_pipeline_stage_id ON public.hubspot_deals USING btree (pipeline_stage_id)"
+        },
+        {
+            "name": "idx_hubspot_deals_pipeline_id",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_pipeline_id ON public.hubspot_deals USING btree (pipeline_id)"
+        },
+        {
+            "name": "idx_hubspot_deals_owner_id",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_owner_id ON public.hubspot_deals USING btree (owner_id)"
+        },
+        {
+            "name": "idx_hubspot_deals_contact_id",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_contact_id ON public.hubspot_deals USING btree (contact_id)"
+        },
+        {
+            "name": "idx_hubspot_deals_company_id",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_company_id ON public.hubspot_deals USING btree (company_id)"
+        },
+        {
+            "name": "idx_hubspot_deals_close_date",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_close_date ON public.hubspot_deals USING btree (close_date)"
+        },
+        {
+            "name": "idx_hubspot_deals_amount",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_amount ON public.hubspot_deals USING btree (amount)"
+        },
+        {
+            "name": "idx_hubspot_deals_extracted_at",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_extracted_at ON public.hubspot_deals USING btree (_extracted_at)"
+        },
+        {
+            "name": "idx_hubspot_deals_raw_data",
+            "table": "hubspot_deals",
+            "definition": "CREATE INDEX idx_hubspot_deals_raw_data ON public.hubspot_deals USING gin (raw_data)"
+        },
+        {
+            "name": "hubspot_commissions_obj_pkey",
+            "table": "hubspot_commissions_obj",
+            "definition": "CREATE UNIQUE INDEX hubspot_commissions_obj_pkey ON public.hubspot_commissions_obj USING btree (id)"
+        },
+        {
+            "name": "hubspot_commissions_obj_hubspot_id_key",
+            "table": "hubspot_commissions_obj",
+            "definition": "CREATE UNIQUE INDEX hubspot_commissions_obj_hubspot_id_key ON public.hubspot_commissions_obj USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_commissions_hubspot_id",
+            "table": "hubspot_commissions_obj",
+            "definition": "CREATE INDEX idx_hubspot_commissions_hubspot_id ON public.hubspot_commissions_obj USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_commissions_deal_id",
+            "table": "hubspot_commissions_obj",
+            "definition": "CREATE INDEX idx_hubspot_commissions_deal_id ON public.hubspot_commissions_obj USING btree (associated_deal_id)"
+        },
+        {
+            "name": "idx_hubspot_commissions_owner_id",
+            "table": "hubspot_commissions_obj",
+            "definition": "CREATE INDEX idx_hubspot_commissions_owner_id ON public.hubspot_commissions_obj USING btree (owner_id)"
+        },
+        {
+            "name": "idx_hubspot_commissions_payment_status",
+            "table": "hubspot_commissions_obj",
+            "definition": "CREATE INDEX idx_hubspot_commissions_payment_status ON public.hubspot_commissions_obj USING btree (payment_status)"
+        },
+        {
+            "name": "idx_hubspot_commissions_payment_date",
+            "table": "hubspot_commissions_obj",
+            "definition": "CREATE INDEX idx_hubspot_commissions_payment_date ON public.hubspot_commissions_obj USING btree (payment_date)"
+        },
+        {
+            "name": "idx_hubspot_commissions_extracted_at",
+            "table": "hubspot_commissions_obj",
+            "definition": "CREATE INDEX idx_hubspot_commissions_extracted_at ON public.hubspot_commissions_obj USING btree (_extracted_at)"
+        },
+        {
+            "name": "idx_hubspot_commissions_raw_properties",
+            "table": "hubspot_commissions_obj",
+            "definition": "CREATE INDEX idx_hubspot_commissions_raw_properties ON public.hubspot_commissions_obj USING gin (raw_properties)"
+        },
+        {
+            "name": "hubspot_line_items_pkey",
+            "table": "hubspot_line_items",
+            "definition": "CREATE UNIQUE INDEX hubspot_line_items_pkey ON public.hubspot_line_items USING btree (id)"
+        },
+        {
+            "name": "hubspot_line_items_hubspot_id_key",
+            "table": "hubspot_line_items",
+            "definition": "CREATE UNIQUE INDEX hubspot_line_items_hubspot_id_key ON public.hubspot_line_items USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_line_items_hubspot_id",
+            "table": "hubspot_line_items",
+            "definition": "CREATE INDEX idx_hubspot_line_items_hubspot_id ON public.hubspot_line_items USING btree (hubspot_id)"
+        },
+        {
+            "name": "idx_hubspot_line_items_deal_id",
+            "table": "hubspot_line_items",
+            "definition": "CREATE INDEX idx_hubspot_line_items_deal_id ON public.hubspot_line_items USING btree (deal_id)"
+        },
+        {
+            "name": "idx_hubspot_line_items_product_id",
+            "table": "hubspot_line_items",
+            "definition": "CREATE INDEX idx_hubspot_line_items_product_id ON public.hubspot_line_items USING btree (product_id)"
+        },
+        {
+            "name": "idx_hubspot_line_items_sku",
+            "table": "hubspot_line_items",
+            "definition": "CREATE INDEX idx_hubspot_line_items_sku ON public.hubspot_line_items USING btree (sku)"
+        },
+        {
+            "name": "idx_hubspot_line_items_extracted_at",
+            "table": "hubspot_line_items",
+            "definition": "CREATE INDEX idx_hubspot_line_items_extracted_at ON public.hubspot_line_items USING btree (_extracted_at)"
+        },
+        {
+            "name": "profiles_pkey",
+            "table": "profiles",
+            "definition": "CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)"
+        },
+        {
+            "name": "idx_profiles_email",
+            "table": "profiles",
+            "definition": "CREATE INDEX idx_profiles_email ON public.profiles USING btree (email)"
+        },
+        {
+            "name": "idx_profiles_role",
+            "table": "profiles",
+            "definition": "CREATE INDEX idx_profiles_role ON public.profiles USING btree (role)"
+        },
+        {
+            "name": "reports_pkey",
+            "table": "reports",
+            "definition": "CREATE UNIQUE INDEX reports_pkey ON public.reports USING btree (id)"
+        },
+        {
+            "name": "reports_slug_key",
+            "table": "reports",
+            "definition": "CREATE UNIQUE INDEX reports_slug_key ON public.reports USING btree (slug)"
+        },
+        {
+            "name": "reports_share_token_key",
+            "table": "reports",
+            "definition": "CREATE UNIQUE INDEX reports_share_token_key ON public.reports USING btree (share_token)"
+        },
+        {
+            "name": "idx_reports_slug",
+            "table": "reports",
+            "definition": "CREATE INDEX idx_reports_slug ON public.reports USING btree (slug)"
+        },
+        {
+            "name": "idx_reports_share_token",
+            "table": "reports",
+            "definition": "CREATE INDEX idx_reports_share_token ON public.reports USING btree (share_token)"
+        },
+        {
+            "name": "access_groups_pkey",
+            "table": "access_groups",
+            "definition": "CREATE UNIQUE INDEX access_groups_pkey ON public.access_groups USING btree (id)"
+        },
+        {
+            "name": "user_groups_pkey",
+            "table": "user_groups",
+            "definition": "CREATE UNIQUE INDEX user_groups_pkey ON public.user_groups USING btree (id)"
+        },
+        {
+            "name": "user_groups_user_id_group_id_key",
+            "table": "user_groups",
+            "definition": "CREATE UNIQUE INDEX user_groups_user_id_group_id_key ON public.user_groups USING btree (user_id, group_id)"
+        },
+        {
+            "name": "idx_user_groups_user_id",
+            "table": "user_groups",
+            "definition": "CREATE INDEX idx_user_groups_user_id ON public.user_groups USING btree (user_id)"
+        },
+        {
+            "name": "idx_user_groups_group_id",
+            "table": "user_groups",
+            "definition": "CREATE INDEX idx_user_groups_group_id ON public.user_groups USING btree (group_id)"
+        },
+        {
+            "name": "user_report_access_pkey",
+            "table": "user_report_access",
+            "definition": "CREATE UNIQUE INDEX user_report_access_pkey ON public.user_report_access USING btree (id)"
+        },
+        {
+            "name": "user_report_access_user_id_report_id_key",
+            "table": "user_report_access",
+            "definition": "CREATE UNIQUE INDEX user_report_access_user_id_report_id_key ON public.user_report_access USING btree (user_id, report_id)"
+        },
+        {
+            "name": "idx_user_report_access_user_id",
+            "table": "user_report_access",
+            "definition": "CREATE INDEX idx_user_report_access_user_id ON public.user_report_access USING btree (user_id)"
+        },
+        {
+            "name": "idx_user_report_access_report_id",
+            "table": "user_report_access",
+            "definition": "CREATE INDEX idx_user_report_access_report_id ON public.user_report_access USING btree (report_id)"
+        },
+        {
+            "name": "group_report_access_pkey",
+            "table": "group_report_access",
+            "definition": "CREATE UNIQUE INDEX group_report_access_pkey ON public.group_report_access USING btree (id)"
+        },
+        {
+            "name": "group_report_access_group_id_report_id_key",
+            "table": "group_report_access",
+            "definition": "CREATE UNIQUE INDEX group_report_access_group_id_report_id_key ON public.group_report_access USING btree (group_id, report_id)"
+        },
+        {
+            "name": "idx_group_report_access_group_id",
+            "table": "group_report_access",
+            "definition": "CREATE INDEX idx_group_report_access_group_id ON public.group_report_access USING btree (group_id)"
+        },
+        {
+            "name": "idx_group_report_access_report_id",
+            "table": "group_report_access",
+            "definition": "CREATE INDEX idx_group_report_access_report_id ON public.group_report_access USING btree (report_id)"
+        }
+    ],
+    "rls_policies": [
+        {
+            "table": "theme_settings",
+            "policy": "theme_admin",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "authenticated"
+            ],
+            "command": "ALL",
+            "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))",
+            "with_check": null
+        },
+        {
+            "table": "theme_settings",
+            "policy": "theme_select",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "authenticated"
+            ],
+            "command": "SELECT",
+            "using": "true",
+            "with_check": null
+        },
+        {
+            "table": "theme_settings",
+            "policy": "theme_service",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "service_role"
+            ],
+            "command": "ALL",
+            "using": "true",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_owners",
+            "policy": "authenticated_read_owners",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_owners",
+            "policy": "service_role_all_owners",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "audit_logs",
+            "policy": "audit_logs_admin_select",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "authenticated"
+            ],
+            "command": "SELECT",
+            "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))",
+            "with_check": null
+        },
+        {
+            "table": "audit_logs",
+            "policy": "audit_logs_insert",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "authenticated"
+            ],
+            "command": "INSERT",
+            "using": null,
+            "with_check": "(auth.uid() = user_id)"
+        },
+        {
+            "table": "audit_logs",
+            "policy": "audit_logs_service",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "service_role"
+            ],
+            "command": "ALL",
+            "using": "true",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_contacts",
+            "policy": "authenticated_read_contacts",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_contacts",
+            "policy": "service_role_all_contacts",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "policy": "authenticated_read_stages",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "policy": "service_role_all_stages",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_pipelines",
+            "policy": "authenticated_read_pipelines",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_pipelines",
+            "policy": "service_role_all_pipelines",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_deals",
+            "policy": "authenticated_read_deals",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_deals",
+            "policy": "service_role_all_deals",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "policy": "authenticated_read_commissions",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "policy": "service_role_all_commissions",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_line_items",
+            "policy": "authenticated_read_lineitems",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "hubspot_line_items",
+            "policy": "service_role_all_lineitems",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "profiles",
+            "policy": "profiles_delete",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "authenticated"
+            ],
+            "command": "DELETE",
+            "using": "(EXISTS ( SELECT 1\n   FROM profiles profiles_1\n  WHERE ((profiles_1.id = auth.uid()) AND (profiles_1.role = 'admin'::text))))",
+            "with_check": null
+        },
+        {
+            "table": "profiles",
+            "policy": "profiles_insert",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "authenticated"
+            ],
+            "command": "INSERT",
+            "using": null,
+            "with_check": "(auth.uid() = id)"
+        },
+        {
+            "table": "profiles",
+            "policy": "profiles_select",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "authenticated"
+            ],
+            "command": "SELECT",
+            "using": "true",
+            "with_check": null
+        },
+        {
+            "table": "profiles",
+            "policy": "profiles_service",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "service_role"
+            ],
+            "command": "ALL",
+            "using": "true",
+            "with_check": null
+        },
+        {
+            "table": "profiles",
+            "policy": "profiles_update",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "authenticated"
+            ],
+            "command": "UPDATE",
+            "using": "((auth.uid() = id) OR (EXISTS ( SELECT 1\n   FROM profiles profiles_1\n  WHERE ((profiles_1.id = auth.uid()) AND (profiles_1.role = 'admin'::text)))))",
+            "with_check": null
+        },
+        {
+            "table": "reports",
+            "policy": "reports_admin_all",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))",
+            "with_check": null
+        },
+        {
+            "table": "reports",
+            "policy": "reports_select",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "reports",
+            "policy": "reports_service_role",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "access_groups",
+            "policy": "access_groups_admin_all",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))",
+            "with_check": null
+        },
+        {
+            "table": "access_groups",
+            "policy": "access_groups_select",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "access_groups",
+            "policy": "access_groups_service_role",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "user_groups",
+            "policy": "user_groups_admin_all",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))",
+            "with_check": null
+        },
+        {
+            "table": "user_groups",
+            "policy": "user_groups_select",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "((user_id = auth.uid()) OR (EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text)))))",
+            "with_check": null
+        },
+        {
+            "table": "user_groups",
+            "policy": "user_groups_service_role",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "user_report_access",
+            "policy": "user_report_access_admin_all",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))",
+            "with_check": null
+        },
+        {
+            "table": "user_report_access",
+            "policy": "user_report_access_select",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "((user_id = auth.uid()) OR (EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text)))))",
+            "with_check": null
+        },
+        {
+            "table": "user_report_access",
+            "policy": "user_report_access_service_role",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        },
+        {
+            "table": "group_report_access",
+            "policy": "group_report_access_admin_all",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))",
+            "with_check": null
+        },
+        {
+            "table": "group_report_access",
+            "policy": "group_report_access_select",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "SELECT",
+            "using": "(auth.role() = 'authenticated'::text)",
+            "with_check": null
+        },
+        {
+            "table": "group_report_access",
+            "policy": "group_report_access_service_role",
+            "permissive": "PERMISSIVE",
+            "roles": [
+                "public"
+            ],
+            "command": "ALL",
+            "using": "(auth.role() = 'service_role'::text)",
+            "with_check": null
+        }
+    ],
+    "rls_enabled": [
+        {
+            "table": "theme_settings",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "hubspot_owners",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "audit_logs",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "hubspot_contacts",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "hubspot_pipelines",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "hubspot_deals",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "hubspot_line_items",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "profiles",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "reports",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "access_groups",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "user_groups",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "user_report_access",
+            "rls_enabled": true,
+            "rls_forced": false
+        },
+        {
+            "table": "group_report_access",
+            "rls_enabled": true,
+            "rls_forced": false
+        }
+    ],
+    "views": null,
+    "functions": [
+        {
+            "name": "handle_new_user",
+            "return_type": "trigger",
+            "arguments": "",
+            "language": "plpgsql",
+            "security": "DEFINER",
+            "definition": "CREATE OR REPLACE FUNCTION public.handle_new_user()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nBEGIN\r\n    INSERT INTO public.profiles (id, email, full_name)\r\n    VALUES (\r\n        NEW.id,\r\n        NEW.email,\r\n        COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1))\r\n    );\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+        },
+        {
+            "name": "handle_updated_at",
+            "return_type": "trigger",
+            "arguments": "",
+            "language": "plpgsql",
+            "security": "INVOKER",
+            "definition": "CREATE OR REPLACE FUNCTION public.handle_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nBEGIN\r\n    NEW.updated_at = now();\r\n    RETURN NEW;\r\nEND;\r\n$function$\n"
+        },
+        {
+            "name": "user_has_report_access",
+            "return_type": "boolean",
+            "arguments": "p_user_id uuid, p_report_slug text",
+            "language": "plpgsql",
+            "security": "DEFINER",
+            "definition": "CREATE OR REPLACE FUNCTION public.user_has_report_access(p_user_id uuid, p_report_slug text)\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nDECLARE\r\n    v_role TEXT;\r\n    v_has_access BOOLEAN;\r\nBEGIN\r\n    -- Buscar role do usuário\r\n    SELECT role INTO v_role FROM public.profiles WHERE id = p_user_id AND active = true;\r\n    \r\n    -- Admin tem acesso total\r\n    IF v_role = 'admin' THEN\r\n        RETURN true;\r\n    END IF;\r\n    \r\n    -- Verificar acesso direto ou via grupo\r\n    SELECT EXISTS(\r\n        SELECT 1 FROM public.reports r\r\n        WHERE r.slug = p_report_slug AND r.active = true\r\n        AND (\r\n            -- Acesso direto\r\n            EXISTS (\r\n                SELECT 1 FROM public.user_report_access ura\r\n                WHERE ura.user_id = p_user_id AND ura.report_id = r.id\r\n            )\r\n            OR\r\n            -- Acesso via grupo\r\n            EXISTS (\r\n                SELECT 1 FROM public.user_groups ug\r\n                JOIN public.group_report_access gra ON gra.group_id = ug.group_id\r\n                WHERE ug.user_id = p_user_id AND gra.report_id = r.id\r\n            )\r\n        )\r\n    ) INTO v_has_access;\r\n    \r\n    RETURN COALESCE(v_has_access, false);\r\nEND;\r\n$function$\n"
+        },
+        {
+            "name": "get_my_accessible_reports",
+            "return_type": "TABLE(report_id uuid, slug text, name text, description text, icon text, category text, standalone_public boolean, share_token text, access_type text)",
+            "arguments": "",
+            "language": "plpgsql",
+            "security": "DEFINER",
+            "definition": "CREATE OR REPLACE FUNCTION public.get_my_accessible_reports()\n RETURNS TABLE(report_id uuid, slug text, name text, description text, icon text, category text, standalone_public boolean, share_token text, access_type text)\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nDECLARE\r\n    v_user_id UUID := auth.uid();\r\n    v_role TEXT;\r\nBEGIN\r\n    -- Buscar role do usuário\r\n    SELECT p.role INTO v_role FROM public.profiles p WHERE p.id = v_user_id AND p.active = true;\r\n    \r\n    -- Se não encontrou ou inativo, retorna vazio\r\n    IF v_role IS NULL THEN\r\n        RETURN;\r\n    END IF;\r\n    \r\n    -- Admin vê tudo\r\n    IF v_role = 'admin' THEN\r\n        RETURN QUERY\r\n        SELECT r.id, r.slug, r.name, r.description, r.icon, r.category, r.standalone_public, r.share_token, 'admin'::TEXT\r\n        FROM public.reports r\r\n        WHERE r.active = true\r\n        ORDER BY r.name;\r\n        RETURN;\r\n    END IF;\r\n    \r\n    -- Outros: acesso direto + via grupo\r\n    RETURN QUERY\r\n    SELECT DISTINCT r.id, r.slug, r.name, r.description, r.icon, r.category, r.standalone_public, r.share_token,\r\n        CASE\r\n            WHEN ura.id IS NOT NULL THEN 'direct'\r\n            ELSE 'group'\r\n        END::TEXT\r\n    FROM public.reports r\r\n    LEFT JOIN public.user_report_access ura ON ura.report_id = r.id AND ura.user_id = v_user_id\r\n    LEFT JOIN public.user_groups ug ON ug.user_id = v_user_id\r\n    LEFT JOIN public.group_report_access gra ON gra.group_id = ug.group_id AND gra.report_id = r.id\r\n    WHERE r.active = true\r\n      AND (ura.id IS NOT NULL OR gra.id IS NOT NULL)\r\n    ORDER BY r.name;\r\nEND;\r\n$function$\n"
+        },
+        {
+            "name": "log_action",
+            "return_type": "void",
+            "arguments": "p_action text, p_resource_type text DEFAULT NULL::text, p_resource_id text DEFAULT NULL::text, p_details jsonb DEFAULT NULL::jsonb",
+            "language": "plpgsql",
+            "security": "DEFINER",
+            "definition": "CREATE OR REPLACE FUNCTION public.log_action(p_action text, p_resource_type text DEFAULT NULL::text, p_resource_id text DEFAULT NULL::text, p_details jsonb DEFAULT NULL::jsonb)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\r\nBEGIN\r\n    INSERT INTO public.audit_logs (user_id, action, resource_type, resource_id, details)\r\n    VALUES (auth.uid(), p_action, p_resource_type, p_resource_id, p_details);\r\nEND;\r\n$function$\n"
+        }
+    ],
+    "triggers": [
+        {
+            "name": "on_auth_user_created",
+            "table": "users",
+            "event": "INSERT",
+            "timing": "AFTER",
+            "statement": "EXECUTE FUNCTION handle_new_user()"
+        },
+        {
+            "name": "profiles_updated_at",
+            "table": "profiles",
+            "event": "UPDATE",
+            "timing": "BEFORE",
+            "statement": "EXECUTE FUNCTION handle_updated_at()"
+        }
+    ],
+    "row_counts": [
+        {
+            "table": "theme_settings",
+            "estimated_rows": -1
+        },
+        {
+            "table": "hubspot_owners",
+            "estimated_rows": 44
+        },
+        {
+            "table": "audit_logs",
+            "estimated_rows": -1
+        },
+        {
+            "table": "hubspot_contacts",
+            "estimated_rows": 98614
+        },
+        {
+            "table": "hubspot_pipeline_stages",
+            "estimated_rows": 163
+        },
+        {
+            "table": "hubspot_pipelines",
+            "estimated_rows": 16
+        },
+        {
+            "table": "hubspot_deals",
+            "estimated_rows": 72264
+        },
+        {
+            "table": "hubspot_commissions_obj",
+            "estimated_rows": 732
+        },
+        {
+            "table": "hubspot_line_items",
+            "estimated_rows": 4175
+        },
+        {
+            "table": "profiles",
+            "estimated_rows": -1
+        },
+        {
+            "table": "reports",
+            "estimated_rows": -1
+        },
+        {
+            "table": "access_groups",
+            "estimated_rows": -1
+        },
+        {
+            "table": "user_groups",
+            "estimated_rows": -1
+        },
+        {
+            "table": "user_report_access",
+            "estimated_rows": -1
+        },
+        {
+            "table": "group_report_access",
+            "estimated_rows": -1
+        }
+    ],
+    "auth_users": [
+        {
+            "id": "02620135-f6cb-48d8-a098-dbd0a1c6a162",
+            "email": "bpm@gowork.com.br",
+            "email_confirmed": true,
+            "created_at": "2026-02-11T12:17:11.289052+00:00",
+            "last_sign_in": "2026-02-11T12:33:09.961489+00:00",
+            "role": "authenticated",
+            "metadata": {
+                "email_verified": true
+            }
+        }
+    ]
+}
