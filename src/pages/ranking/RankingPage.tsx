@@ -1,106 +1,108 @@
 import { useState, useCallback, useEffect } from 'react';
-import { BarChart3, Megaphone, Loader2, AlertCircle, RefreshCw, Download, Clock } from 'lucide-react';
+import { Target, Trophy, Loader2, AlertCircle, RefreshCw, Download, Clock } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
-import { DashboardVendas } from './pages/DashboardVendas';
-import { DashboardMarketing } from './pages/DashboardMarketing';
+import { DashboardMetaGlobal } from './pages/DashboardMetaGlobal';
+import { DashboardCompeticao } from './pages/DashboardCompeticao';
 import { useRankingData } from './hooks/useRankingData';
 import { useRankingFilters } from './hooks/useRankingFilters';
 import { useAuditLog } from '@/hooks/useAuditLog';
+import { formatCurrency, formatNumber } from '@/lib/utils';
 
 export function RankingPage() {
   const { log } = useAuditLog();
-  const [activeTab, setActiveTab] = useState('vendas');
+  const [activeTab, setActiveTab] = useState('meta-global');
 
   // Carregar dados do Supabase
   const {
     deals,
-    leads,
+    lineItems,
     metas,
     vendedoresUnicos,
-    pipelinesUnicos,
     ultimaAtualizacao,
     isLoading,
     error,
     refetch,
   } = useRankingData();
 
-  // Log de acesso ao relatório (apenas uma vez)
+  // Log de acesso ao relatório
   useEffect(() => { log('view_report', 'report', 'ranking'); }, [log]);
 
   const dataAtualizacaoFormatada = ultimaAtualizacao
     ? format(new Date(ultimaAtualizacao), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
     : null;
 
-  // Filtros
+  // Filtros e dados computados
   const {
+    filtrosGlobal,
+    updateFiltroGlobal,
+    resetFiltrosGlobal,
+    anosDisponiveis,
+    kpisMetaGlobal,
     dealsGanhosAno,
     dealsGanhosMes,
-    leadsFiltrados,
-    filtrosVendas,
-    filtrosMarketing,
-    updateFiltroVendas,
-    updateFiltroMarketing,
-    resetFiltrosVendas,
-    resetFiltrosMarketing,
-  } = useRankingFilters(deals, leads);
+    dadosGraficoMensalRevenue,
+    dadosGraficoMensalSeats,
+    campanhaAtiva,
+    setCampanhaAtiva,
+    campanha,
+    rankingCompeticao,
+  } = useRankingFilters(deals, lineItems, metas);
 
-  // Exportar Excel — Vendas
-  const handleExportExcelVendas = useCallback(() => {
+  // Exportar Excel — Meta Global
+  const handleExportExcelMeta = useCallback(() => {
     const dadosExport = dealsGanhosAno.map(d => ({
       'Nome do Deal': d.dealName,
       'Valor': d.amount,
       'Data Fechamento': d.closeDate || '',
       'Pipeline': d.pipelineNome,
       'Responsável': d.ownerNome,
-      'Ganho': d.isClosedWon ? 'Sim' : 'Não',
     }));
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(dadosExport);
     ws['!cols'] = [
       { wch: 40 }, { wch: 15 }, { wch: 15 },
-      { wch: 25 }, { wch: 20 }, { wch: 8 },
+      { wch: 25 }, { wch: 20 },
     ];
-    XLSX.utils.book_append_sheet(wb, ws, 'Vendas');
-    XLSX.writeFile(wb, `ranking_vendas_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`);
-    log('export_excel', 'report', 'ranking', { tab: 'vendas', records: dealsGanhosAno.length });
+    XLSX.utils.book_append_sheet(wb, ws, 'Meta Global');
+    XLSX.writeFile(wb, `meta_global_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`);
+    log('export_excel', 'report', 'ranking', { tab: 'meta-global', records: dealsGanhosAno.length });
   }, [dealsGanhosAno, log]);
 
-  // Exportar Excel — Marketing
-  const handleExportExcelMarketing = useCallback(() => {
-    const dadosExport = leadsFiltrados.map(l => ({
-      'Nome': l.nome,
-      'Email': l.email || '',
-      'Estágio': l.lifecycleStage || 'Não definido',
-      'Válido': l.isValido ? 'Sim' : 'Não',
-      'Responsável': l.ownerNome,
-      'Data Criação': l.createdAt || '',
+  // Exportar Excel — Competição
+  const handleExportExcelCompeticao = useCallback(() => {
+    const dadosExport = rankingCompeticao.map(v => ({
+      'Posição': v.ranking,
+      'Vendedor': v.ownerNome,
+      'Seats (c/ cap)': v.seatsCapped,
+      'Seats (bruto)': v.seatsRaw,
+      'Deals': v.dealsCount,
+      'Meta Mínima': v.metaMinima,
+      'Status': v.status,
     }));
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(dadosExport);
     ws['!cols'] = [
-      { wch: 30 }, { wch: 30 }, { wch: 20 },
-      { wch: 8 }, { wch: 20 }, { wch: 20 },
+      { wch: 8 }, { wch: 25 }, { wch: 15 },
+      { wch: 15 }, { wch: 8 }, { wch: 12 }, { wch: 30 },
     ];
-    XLSX.utils.book_append_sheet(wb, ws, 'Marketing');
-    XLSX.writeFile(wb, `ranking_marketing_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`);
-    log('export_excel', 'report', 'ranking', { tab: 'marketing', records: leadsFiltrados.length });
-  }, [leadsFiltrados, log]);
+    XLSX.utils.book_append_sheet(wb, ws, campanha.nome);
+    XLSX.writeFile(wb, `competicao_${campanhaAtiva}_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`);
+    log('export_excel', 'report', 'ranking', { tab: 'competicao', campanha: campanhaAtiva, records: rankingCompeticao.length });
+  }, [rankingCompeticao, campanha, campanhaAtiva, log]);
 
   const handleExportExcel = useCallback(() => {
-    if (activeTab === 'vendas') {
-      handleExportExcelVendas();
+    if (activeTab === 'meta-global') {
+      handleExportExcelMeta();
     } else {
-      handleExportExcelMarketing();
+      handleExportExcelCompeticao();
     }
-  }, [activeTab, handleExportExcelVendas, handleExportExcelMarketing]);
-
-  const totalRegistros = activeTab === 'vendas' ? deals.length : leads.length;
+  }, [activeTab, handleExportExcelMeta, handleExportExcelCompeticao]);
 
   if (isLoading) {
     return (
@@ -144,7 +146,7 @@ export function RankingPage() {
             <div className="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 ring-1 ring-emerald-200 dark:ring-emerald-500/20">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
               <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                {totalRegistros} {activeTab === 'vendas' ? 'deals' : 'leads'}
+                {deals.filter(d => d.isClosedWon).length} deals ganhos
               </span>
             </div>
           </div>
@@ -172,37 +174,36 @@ export function RankingPage() {
       <div className="max-w-7xl mx-auto px-6 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6">
-            <TabsTrigger value="vendas">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Dashboard Vendas
+            <TabsTrigger value="meta-global">
+              <Target className="h-4 w-4 mr-2" />
+              Cultura e Meta Global
             </TabsTrigger>
-            <TabsTrigger value="marketing">
-              <Megaphone className="h-4 w-4 mr-2" />
-              Dashboard Marketing
+            <TabsTrigger value="competicao">
+              <Trophy className="h-4 w-4 mr-2" />
+              Competição Comercial
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="vendas">
-            <DashboardVendas
-              dealsGanhosAno={dealsGanhosAno}
-              dealsGanhosMes={dealsGanhosMes}
+          <TabsContent value="meta-global">
+            <DashboardMetaGlobal
               metas={metas}
-              filtrosVendas={filtrosVendas}
-              updateFiltroVendas={updateFiltroVendas}
-              resetFiltrosVendas={resetFiltrosVendas}
-              vendedoresUnicos={vendedoresUnicos}
-              pipelinesUnicos={pipelinesUnicos}
+              filtrosGlobal={filtrosGlobal}
+              updateFiltroGlobal={updateFiltroGlobal}
+              resetFiltrosGlobal={resetFiltrosGlobal}
+              anosDisponiveis={anosDisponiveis}
+              kpisMetaGlobal={kpisMetaGlobal}
+              dadosGraficoMensalRevenue={dadosGraficoMensalRevenue}
+              dadosGraficoMensalSeats={dadosGraficoMensalSeats}
               onMetaSaved={refetch}
             />
           </TabsContent>
 
-          <TabsContent value="marketing">
-            <DashboardMarketing
-              leadsFiltrados={leadsFiltrados}
-              filtrosMarketing={filtrosMarketing}
-              updateFiltroMarketing={updateFiltroMarketing}
-              resetFiltrosMarketing={resetFiltrosMarketing}
-              vendedoresUnicos={vendedoresUnicos}
+          <TabsContent value="competicao">
+            <DashboardCompeticao
+              campanhaAtiva={campanhaAtiva}
+              setCampanhaAtiva={setCampanhaAtiva}
+              campanha={campanha}
+              rankingCompeticao={rankingCompeticao}
             />
           </TabsContent>
         </Tabs>

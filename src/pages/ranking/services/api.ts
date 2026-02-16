@@ -1,5 +1,5 @@
 // ============================================
-// SERVIÇO DE API - RANKING (Vendas + Marketing)
+// SERVIÇO DE API - RANKING (Meta Global + Competição)
 // ============================================
 
 import { supabase } from './supabase';
@@ -7,14 +7,13 @@ import type {
   HubspotOwner,
   HubspotDeal,
   HubspotLineItem,
-  HubspotContact,
   HubspotPipeline,
   SalesGoal,
 } from '@/types/database';
 import type {
   Proprietario,
   DealProcessado,
-  LeadProcessado,
+  LineItemEnriquecido,
   MetaVendas,
   DadosRanking,
 } from '@/types';
@@ -73,7 +72,7 @@ function createPipelinesMap(pipelines: HubspotPipeline[]): Map<string, string> {
 const DATA_MINIMA = '2025-01-01';
 
 // ============================================
-// DEALS (VENDAS) — paginação por cursor + filtro de data
+// DEALS — paginação por cursor + filtro de data
 // ============================================
 
 const DEALS_COLUMNS = 'id, hubspot_id, deal_name, amount, close_date, create_date, pipeline_id, owner_id, raw_data';
@@ -112,10 +111,10 @@ async function fetchDeals(): Promise<HubspotDeal[]> {
 }
 
 // ============================================
-// LINE ITEMS — paginação por cursor + filtro de data
+// LINE ITEMS — paginação por cursor
 // ============================================
 
-const LINE_ITEMS_COLUMNS = 'id, deal_id, amount';
+const LINE_ITEMS_COLUMNS = 'id, hubspot_id, deal_id, quantity, amount, name';
 
 async function fetchLineItems(): Promise<HubspotLineItem[]> {
   const allRows: HubspotLineItem[] = [];
@@ -151,45 +150,6 @@ async function fetchLineItems(): Promise<HubspotLineItem[]> {
 }
 
 // ============================================
-// CONTACTS (LEADS) — paginação por cursor + filtro de data
-// ============================================
-
-const CONTACTS_COLUMNS = 'id, hubspot_id, email, first_name, last_name, lifecycle_stage, owner_id, created_at';
-
-async function fetchContacts(): Promise<HubspotContact[]> {
-  const allRows: HubspotContact[] = [];
-  const pageSize = 1000;
-  let lastId: string | null = null;
-
-  while (true) {
-    let query = supabase
-      .from('hubspot_contacts')
-      .select(CONTACTS_COLUMNS)
-      .eq('archived', false)
-      .gte('created_at', `${DATA_MINIMA}T00:00:00Z`)
-      .order('id', { ascending: true })
-      .limit(pageSize);
-
-    if (lastId) {
-      query = query.gt('id', lastId);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Erro ao buscar contacts:', error);
-      throw error;
-    }
-    if (!data || data.length === 0) break;
-    allRows.push(...(data as HubspotContact[]));
-    lastId = data[data.length - 1].id;
-    if (data.length < pageSize) break;
-  }
-
-  return allRows;
-}
-
-// ============================================
 // METAS DE VENDAS
 // ============================================
 
@@ -213,30 +173,19 @@ async function fetchSalesGoals(): Promise<SalesGoal[]> {
 
 /**
  * Verifica se um deal é "ganho" usando raw_data.hs_is_closed_won
- * CRÍTICO: NÃO confiar em pipeline_stages.is_won (sempre false)
- * 
- * raw_data é JSONB double-stringified. O Supabase client pode retornar:
- * - string: '{"hs_is_closed_won": "true"}' (precisa JSON.parse)
- * - object: já parseado pelo client { hs_is_closed_won: "true" }
  */
 function isDealWon(rawData: unknown): boolean {
   try {
-    // Se é null/undefined
     if (!rawData) return false;
 
-    // Se já é um objeto (Supabase client pode parsear o JSONB automaticamente)
     if (typeof rawData === 'object' && rawData !== null) {
       const obj = rawData as Record<string, unknown>;
-      // Pode estar no primeiro nível
       if (obj.hs_is_closed_won === 'true') return true;
-      // Ou pode ser double-stringified: o objeto contém uma chave com a string JSON
       return false;
     }
 
-    // Se é uma string (double-stringified)
     if (typeof rawData === 'string') {
       let parsed: unknown = rawData;
-      // Parsear até 3 vezes para lidar com múltiplos escapes
       for (let i = 0; i < 3; i++) {
         if (typeof parsed !== 'string') break;
         try {
@@ -257,31 +206,12 @@ function isDealWon(rawData: unknown): boolean {
 }
 
 /**
- * Resolve o valor real de um deal:
- * 1. Se deal.amount não é null e > 0, usa esse valor
- * 2. Senão, soma os line_items.amount do deal
- */
-function resolveDealAmount(
-  dealAmount: number | null,
-  dealHubspotId: string,
-  lineItemsByDeal: Map<string, HubspotLineItem[]>,
-): number {
-  if (dealAmount !== null && dealAmount > 0) {
-    return Number(dealAmount);
-  }
-
-  const items = lineItemsByDeal.get(dealHubspotId) || [];
-  return items.reduce((acc, item) => acc + (Number(item.amount) || 0), 0);
-}
-
-/**
  * Processa deals brutos para o formato da aplicação
  */
 function processDeals(
   deals: HubspotDeal[],
   ownersMap: Map<string, Proprietario>,
   pipelinesMap: Map<string, string>,
-  lineItemsByDeal: Map<string, HubspotLineItem[]>,
 ): DealProcessado[] {
   return deals.map(d => {
     const closeDate = d.close_date || null;
@@ -291,7 +221,7 @@ function processDeals(
       id: d.id,
       hubspotId: d.hubspot_id,
       dealName: d.deal_name || 'Sem nome',
-      amount: resolveDealAmount(d.amount, d.hubspot_id, lineItemsByDeal),
+      amount: Number(d.amount) || 0,
       closeDate,
       createDate: d.create_date || null,
       pipelineId: d.pipeline_id || null,
@@ -305,46 +235,43 @@ function processDeals(
   });
 }
 
-// Lifecycle stages considerados "válidos" (leads qualificados)
-const LIFECYCLE_STAGES_VALIDOS = [
-  'opportunity',
-  'customer',
-  '165518199',
-  'salesqualifiedlead',
-  'marketingqualifiedlead',
-];
-
 /**
- * Processa contatos brutos para o formato de leads
+ * Enriquece line items com dados do deal (owner, close_date).
+ * Retorna apenas line items de deals ganhos.
  */
-function processContacts(
-  contacts: HubspotContact[],
-  ownersMap: Map<string, Proprietario>,
-): LeadProcessado[] {
-  return contacts.map(c => {
-    const createdAt = c.created_at || null;
-    const createdAtObj = createdAt ? new Date(createdAt) : null;
-    const firstName = c.first_name || '';
-    const lastName = c.last_name || '';
+function processLineItems(
+  lineItems: HubspotLineItem[],
+  wonDealsMap: Map<string, DealProcessado>,
+): LineItemEnriquecido[] {
+  const enriched: LineItemEnriquecido[] = [];
 
-    return {
-      id: c.id,
-      hubspotId: c.hubspot_id,
-      email: c.email || null,
-      nome: `${firstName} ${lastName}`.trim() || 'Sem nome',
-      lifecycleStage: c.lifecycle_stage || null,
-      ownerId: c.owner_id || null,
-      ownerNome: c.owner_id ? (ownersMap.get(c.owner_id)?.nome || 'Desconhecido') : 'Sem responsável',
-      createdAt,
-      isValido: c.lifecycle_stage !== null && LIFECYCLE_STAGES_VALIDOS.includes(c.lifecycle_stage),
-      mes: createdAtObj ? createdAtObj.getMonth() + 1 : 0,
-      ano: createdAtObj ? createdAtObj.getFullYear() : 0,
-    };
-  });
+  for (const li of lineItems) {
+    if (!li.deal_id) continue;
+
+    const deal = wonDealsMap.get(li.deal_id);
+    if (!deal) continue; // pula line items de deals não-ganhos
+
+    const quantity = Number(li.quantity) || 0;
+
+    enriched.push({
+      id: li.id,
+      dealHubspotId: li.deal_id,
+      ownerId: deal.ownerId || '',
+      ownerNome: deal.ownerNome,
+      quantity,
+      quantityCapped: Math.min(quantity, 30),
+      amount: Number(li.amount) || 0,
+      closeDate: deal.closeDate,
+      mes: deal.mes,
+      ano: deal.ano,
+    });
+  }
+
+  return enriched;
 }
 
 /**
- * Processa metas de vendas
+ * Processa metas de vendas (com 3 tipos de métrica)
  */
 function processSalesGoals(goals: SalesGoal[]): MetaVendas[] {
   return goals.map(g => ({
@@ -353,6 +280,10 @@ function processSalesGoals(goals: SalesGoal[]): MetaVendas[] {
     month: g.month,
     monthlyGoal: Number(g.monthly_goal) || 0,
     annualGoal: Number(g.annual_goal) || 0,
+    monthlyGoalSeats: Number(g.monthly_goal_seats) || 0,
+    annualGoalSeats: Number(g.annual_goal_seats) || 0,
+    monthlyGoalDeals: Number(g.monthly_goal_deals) || 0,
+    annualGoalDeals: Number(g.annual_goal_deals) || 0,
   }));
 }
 
@@ -363,7 +294,6 @@ function processSalesGoals(goals: SalesGoal[]): MetaVendas[] {
 async function fetchUltimaAtualizacao(): Promise<string | null> {
   const tabelas = [
     'hubspot_deals',
-    'hubspot_contacts',
     'hubspot_owners',
     'hubspot_line_items',
   ];
@@ -405,8 +335,14 @@ async function fetchUltimaAtualizacao(): Promise<string | null> {
 export async function upsertSalesGoal(
   year: number,
   month: number,
-  monthlyGoal: number,
-  annualGoal: number,
+  goals: {
+    monthlyGoal: number;
+    annualGoal: number;
+    monthlyGoalSeats: number;
+    annualGoalSeats: number;
+    monthlyGoalDeals: number;
+    annualGoalDeals: number;
+  },
 ): Promise<void> {
   const { error } = await supabase
     .from('sales_goals')
@@ -414,8 +350,12 @@ export async function upsertSalesGoal(
       {
         year,
         month,
-        monthly_goal: monthlyGoal,
-        annual_goal: annualGoal,
+        monthly_goal: goals.monthlyGoal,
+        annual_goal: goals.annualGoal,
+        monthly_goal_seats: goals.monthlyGoalSeats,
+        annual_goal_seats: goals.annualGoalSeats,
+        monthly_goal_deals: goals.monthlyGoalDeals,
+        annual_goal_deals: goals.annualGoalDeals,
       },
       { onConflict: 'year,month' },
     );
@@ -433,13 +373,11 @@ export async function upsertSalesGoal(
 export interface DadosRankingResult extends DadosRanking {}
 
 export async function fetchDadosRanking(): Promise<DadosRankingResult> {
-  // Buscar tudo em paralelo
   const [
     ownersRaw,
     pipelinesRaw,
     dealsRaw,
     lineItemsRaw,
-    contactsRaw,
     salesGoalsRaw,
     ultimaAtualizacao,
   ] = await Promise.all([
@@ -447,7 +385,6 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
     fetchPipelines(),
     fetchDeals(),
     fetchLineItems(),
-    fetchContacts(),
     fetchSalesGoals(),
     fetchUltimaAtualizacao(),
   ]);
@@ -459,38 +396,36 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
   // Processar pipelines
   const pipelinesMap = createPipelinesMap(pipelinesRaw);
 
-  // Agrupar line items por deal_id para resolver valor
-  const lineItemsByDeal = new Map<string, HubspotLineItem[]>();
-  lineItemsRaw.forEach(item => {
-    if (item.deal_id) {
-      const lista = lineItemsByDeal.get(item.deal_id) || [];
-      lista.push(item);
-      lineItemsByDeal.set(item.deal_id, lista);
+  // Processar deals
+  const deals = processDeals(dealsRaw, ownersMap, pipelinesMap);
+
+  // Criar mapa de deals ganhos por hubspot_id (para enriquecer line items)
+  const wonDealsMap = new Map<string, DealProcessado>();
+  deals.forEach(d => {
+    if (d.isClosedWon) {
+      wonDealsMap.set(d.hubspotId, d);
     }
   });
 
-  // Processar deals
-  const deals = processDeals(dealsRaw, ownersMap, pipelinesMap, lineItemsByDeal);
-
-  // Processar leads
-  const leads = processContacts(contactsRaw, ownersMap);
+  // Enriquecer line items (apenas de deals ganhos)
+  const lineItems = processLineItems(lineItemsRaw, wonDealsMap);
 
   // Processar metas
   const metas = processSalesGoals(salesGoalsRaw);
 
-  // Extrair listas únicas para filtros
-  const pipelinesUnicos = [...new Set(deals.map(d => d.pipelineNome).filter(Boolean))].sort();
-  const vendedoresUnicos = [...new Set([
-    ...deals.map(d => d.ownerNome),
-    ...leads.map(l => l.ownerNome),
-  ].filter(n => n !== 'Sem responsável' && n !== 'Desconhecido'))].sort();
+  // Vendedores únicos (dos deals ganhos)
+  const vendedoresUnicos = [...new Set(
+    deals
+      .filter(d => d.isClosedWon)
+      .map(d => d.ownerNome)
+      .filter(n => n !== 'Sem responsável' && n !== 'Desconhecido')
+  )].sort();
 
   return {
     deals,
-    leads,
+    lineItems,
     metas,
     proprietarios,
-    pipelinesUnicos,
     vendedoresUnicos,
     ultimaAtualizacao,
   };

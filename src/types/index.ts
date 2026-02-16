@@ -180,10 +180,10 @@ export interface DadosDashboard {
 }
 
 // ============================================
-// TIPOS DA APLICAÇÃO - RANKING (Vendas + Marketing)
+// TIPOS DA APLICAÇÃO - RANKING (Meta Global + Competição)
 // ============================================
 
-// Deal processado para o dashboard de vendas
+// Deal processado (negócio ganho)
 export interface DealProcessado {
   id: string;
   hubspotId: string;
@@ -200,50 +200,53 @@ export interface DealProcessado {
   ano: number;
 }
 
-// Meta de vendas processada
-export interface MetaVendas {
+// Line item enriquecido com dados do deal (para cálculos de seats)
+export interface LineItemEnriquecido {
   id: string;
-  year: number;
-  month: number;
-  monthlyGoal: number;
-  annualGoal: number;
-}
-
-// Lead processado para o dashboard de marketing
-export interface LeadProcessado {
-  id: string;
-  hubspotId: string;
-  email: string | null;
-  nome: string;
-  lifecycleStage: string | null;
-  ownerId: string | null;
+  dealHubspotId: string;
+  ownerId: string;
   ownerNome: string;
-  createdAt: string | null;
-  isValido: boolean;
+  quantity: number;
+  quantityCapped: number; // min(quantity, 30) — para competição
+  amount: number;
+  closeDate: string | null;
   mes: number;
   ano: number;
 }
 
-// KPIs de Vendas
-export interface KPIsVendas {
-  totalVendidoMes: number;
-  totalVendidoAno: number;
-  metaMensal: number;
-  metaAnual: number;
-  atingimentoMensal: number;
-  atingimentoAnual: number;
-  totalDealsGanhosMes: number;
-  totalDealsGanhosAno: number;
+// Meta de vendas processada (com 3 tipos de meta)
+export interface MetaVendas {
+  id: string;
+  year: number;
+  month: number;
+  monthlyGoal: number;       // receita R$
+  annualGoal: number;        // receita R$
+  monthlyGoalSeats: number;  // seats mensal
+  annualGoalSeats: number;   // seats anual
+  monthlyGoalDeals: number;  // deals mensal
+  annualGoalDeals: number;   // deals anual
 }
 
-// KPIs de Marketing
-export interface KPIsMarketing {
-  leadsGerados: number;
-  leadsValidos: number;
-  taxaConversao: number;
+// KPIs do Dashboard Meta Global
+export interface KPIsMetaGlobal {
+  // Atingido no ano
+  revenueAno: number;
+  seatsAno: number;
+  dealsAno: number;
+  // Atingido no mês
+  revenueMes: number;
+  seatsMes: number;
+  dealsMes: number;
+  // Metas
+  metaAnualRevenue: number;
+  metaAnualSeats: number;
+  metaAnualDeals: number;
+  metaMensalRevenue: number;
+  metaMensalSeats: number;
+  metaMensalDeals: number;
 }
 
-// Dados do gráfico mensal de vendas (Meta vs Realizado)
+// Dados do gráfico mensal (Meta vs Realizado)
 export interface DadoGraficoMensal {
   mes: string;
   mesNumero: number;
@@ -251,34 +254,51 @@ export interface DadoGraficoMensal {
   meta: number;
 }
 
-// Evolução de leads por mês
-export interface EvolucaoLeads {
+// Dados para gráfico mensal de seats
+export interface DadoGraficoMensalSeats {
   mes: string;
-  total: number;
-  validos: number;
+  mesNumero: number;
+  seats: number;
+  meta: number;
 }
 
-// Filtros do Dashboard de Vendas
-export interface FiltrosVendas {
+// Vendedor no ranking da competição
+export interface VendedorCompeticao {
+  ownerId: string;
+  ownerNome: string;
+  seatsCapped: number;      // soma de min(quantity, 30) por line item
+  seatsRaw: number;          // soma bruta de quantity
+  dealsCount: number;
+  ranking: number;
+  metaMinima: number;
+  status: string;            // "Dentro da Competição" ou "Faltam X seats"
+}
+
+// Configuração de campanha (fixa)
+export interface CampanhaConfig {
+  id: 'salinhas' | 'mackbook';
+  nome: string;
+  dataInicio: string;
+  dataFim: string;
+  premios: { lugar: string; premio: string; categoria: string }[];
+  metaMinimaVendas: number;
+  metaMinimaPV: string;
+  condicao: string;
+  regras: string[];
+}
+
+// Filtros do Dashboard Meta Global
+export interface FiltrosMetaGlobal {
   ano: number;
   mes: number; // 0 = todos os meses
-  vendedor: string;
-  pipeline: string;
-}
-
-// Filtros do Dashboard de Marketing
-export interface FiltrosMarketing {
-  periodo: number; // meses para trás (12, 6, 3)
-  owner: string;
 }
 
 // Dados do Dashboard de Ranking
 export interface DadosRanking {
   deals: DealProcessado[];
-  leads: LeadProcessado[];
+  lineItems: LineItemEnriquecido[];
   metas: MetaVendas[];
   proprietarios: Proprietario[];
-  pipelinesUnicos: string[];
   vendedoresUnicos: string[];
   ultimaAtualizacao: string | null;
 }

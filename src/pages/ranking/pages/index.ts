@@ -1,2 +1,2 @@
-export * from './DashboardVendas';
-export * from './DashboardMarketing';
+export * from './DashboardMetaGlobal';
+export * from './DashboardCompeticao';

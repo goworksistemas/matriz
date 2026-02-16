@@ -152,13 +152,17 @@ export interface HubspotCommission {
   _source_system: string;
 }
 
-// Tabela sales_goals (Metas de Vendas)
+// Tabela sales_goals (Metas de Vendas — receita, seats e deals)
 export interface SalesGoal {
   id: string; // uuid
   year: number; // integer
   month: number; // integer (1-12)
-  monthly_goal: number; // numeric
-  annual_goal: number; // numeric
+  monthly_goal: number; // numeric — receita mensal (R$)
+  annual_goal: number; // numeric — receita anual (R$)
+  monthly_goal_seats: number; // numeric — seats mensal
+  annual_goal_seats: number; // numeric — seats anual
+  monthly_goal_deals: number; // integer — deals mensal
+  annual_goal_deals: number; // integer — deals anual
   created_at: string; // timestamp with time zone
   updated_at: string; // timestamp with time zone
 }
@@ -210,6 +214,8 @@ export interface Database {
         Insert: Partial<SalesGoal> & Pick<SalesGoal, 'year' | 'month'>;
         Update: Partial<SalesGoal>;
       };
+      // Nota: sales_goals agora possui colunas extras:
+      // monthly_goal_seats, annual_goal_seats, monthly_goal_deals, annual_goal_deals
     };
   };
 }
