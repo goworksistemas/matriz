@@ -241,13 +241,13 @@ CREATE POLICY "commissions_by_owner" ON hubspot_commissions_obj
 ```
 src/
 ├── hooks/
-│   └── AuthContext.tsx          # Provider de autenticação
+│   ├── AuthContext.tsx           # Context + Provider + useAuth
+│   └── useAuthState.ts          # Lógica de auth (separado para HMR)
 ├── pages/
-│   ├── Login.tsx                # Tela de login
-│   └── AccessDenied.tsx         # Tela de acesso negado
-├── components/
-│   └── layout/
-│       └── ProtectedRoute.tsx   # Wrapper que verifica auth + permissão
+│   ├── Login.tsx                # Tela de login (login, cadastro, esqueci a senha)
+│   ├── AccessDenied.tsx         # Tela de acesso negado
+│   └── admin/                   # Painel administrativo (gestão de usuários, grupos, relatórios)
+├── App.tsx                      # Rotas protegidas (verificação de auth + permissão inline)
 ```
 
 ### Fluxo de navegação
@@ -294,23 +294,27 @@ const { relatoriosAcessiveis } = useAuth()
 
 ## 👤 Gestão de Usuários (Admin)
 
-### Funcionalidades do painel admin (futuro)
+### Funcionalidades do painel admin (implementado)
 
-| Funcionalidade | Descrição |
-|----------------|-----------|
-| Listar usuários | Ver todos os profiles com role e status |
-| Editar role | Mudar role de um usuário (admin/manager/viewer) |
-| Ativar/desativar | Toggle de `active` no profile |
-| Acesso individual | Vincular/desvincular relatórios a um usuário |
-| Gerenciar grupos | CRUD de grupos de acesso |
-| Membros do grupo | Adicionar/remover usuários de um grupo |
-| Relatórios do grupo | Vincular/desvincular relatórios a um grupo |
+| Funcionalidade | Rota | Status |
+|----------------|------|--------|
+| Listar usuários | `/admin/usuarios` | ✅ Implementado |
+| Editar role | `/admin/usuarios` | ✅ Implementado |
+| Ativar/desativar | `/admin/usuarios` | ✅ Implementado |
+| Acesso individual | `/admin/usuarios` | ✅ Implementado |
+| Gerenciar grupos | `/admin/grupos` | ✅ Implementado |
+| Membros do grupo | `/admin/grupos` | ✅ Implementado |
+| Relatórios do grupo | `/admin/relatorios` | ✅ Implementado |
+| Dashboard admin | `/admin` | ✅ Implementado |
+| Logs de auditoria | `/admin/logs` | ✅ Implementado |
+| Tema da empresa | `/admin/tema` | ✅ Implementado |
 
 ### Criação de usuários
 
 Os usuários são criados pelo **admin** via:
 1. **Supabase Dashboard** → Authentication → Invite User (envia email com link)
-2. **Painel admin futuro** → Formulário de convite
+2. **Painel admin** → Gestão de usuários (`/admin/usuarios`)
+3. **Página de cadastro** → `/login` (formulário de criar conta)
 
 O trigger `on_auth_user_created` cria automaticamente o profile com role `viewer` (padrão).
 
@@ -357,36 +361,35 @@ Luis Cuba (admin)
 
 ---
 
-## 🚀 Ordem de Implementação
+## 🚀 Implementação (concluída)
 
-### Fase 1 — Auth básico (imediato)
-1. Criar tabelas `profiles` e `reports` no Supabase
-2. Criar trigger de auto-criação de profile
-3. Implementar `AuthContext` no frontend
-4. Criar página de login
-5. Proteger rotas (redirecionar para login)
-6. Migrar `config/relatorios.ts` para tabela `reports`
+### Fase 1 — Auth básico ✅
+1. ✅ Tabelas `profiles` e `reports` criadas no Supabase
+2. ✅ Trigger de auto-criação de profile
+3. ✅ `AuthContext` + `useAuthState` implementados
+4. ✅ Página de login (login, cadastro, esqueci a senha)
+5. ✅ Rotas protegidas (redirecionamento para login)
+6. ✅ Relatórios gerenciados via tabela `reports` (database-driven)
 
-### Fase 2 — Permissões granulares
-7. Criar tabelas `access_groups`, `user_groups`, `user_report_access`, `group_report_access`
-8. Criar view `vw_user_accessible_reports`
-9. Sidebar dinâmica (mostra só relatórios permitidos)
-10. Proteção de rota por relatório
+### Fase 2 — Permissões granulares ✅
+7. ✅ Tabelas `access_groups`, `user_groups`, `user_report_access`, `group_report_access`
+8. ✅ Function RPC `get_my_accessible_reports()` (substitui a view que não funciona com RLS)
+9. ✅ Sidebar dinâmica (mostra só relatórios permitidos)
+10. ✅ Proteção de rota por relatório
 
-### Fase 3 — Painel admin
-11. Tela de gestão de usuários
-12. Tela de gestão de grupos
-13. Tela de vinculação de acessos
+### Fase 3 — Painel admin ✅
+11. ✅ Gestão de usuários (`/admin/usuarios`)
+12. ✅ Gestão de grupos (`/admin/grupos`)
+13. ✅ Gestão de relatórios (`/admin/relatorios`)
+14. ✅ Dashboard admin (`/admin`)
+15. ✅ Logs de auditoria (`/admin/logs`)
+16. ✅ Tema da empresa (`/admin/tema`)
 
----
+### Decisões Tomadas
 
-## ⚠️ Decisões Pendentes
-
-Antes de implementar, confirme:
-
-1. **Login:** email/senha? Ou quer Google/Microsoft também?
-2. **Standalone:** relatórios standalone exigem login, ou podem ser públicos (campo `standalone_public`)?
-3. **Primeiro admin:** você cria o primeiro usuário manualmente no Supabase Dashboard?
+1. **Login:** email/senha (Supabase Auth)
+2. **Standalone:** suporta acesso público via `share_token` (campo `standalone_public` na tabela `reports`)
+3. **Primeiro admin:** criado via Supabase Dashboard + `seed_admin.sql`
 
 ---
 

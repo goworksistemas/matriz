@@ -69,21 +69,29 @@ src/
 ├── hooks/
 │   ├── AuthContext.tsx              # Context + Provider + useAuth
 │   ├── useAuthState.ts             # Lógica de auth (separado para HMR)
-│   └── ThemeContext.tsx             # Dark/light mode
+│   ├── ThemeContext.tsx             # Dark/light mode
+│   ├── ToastContext.tsx             # Notificações toast globais
+│   ├── useCompanyTheme.ts          # Tema personalizado por empresa
+│   └── useAuditLog.ts              # Registro de ações nos logs
 ├── lib/
 │   ├── supabase.ts                 # Cliente Supabase compartilhado
 │   └── utils.ts                    # Formatação, cn(), cores
 ├── config/
-│   └── env.ts                      # VITE_SUPABASE_URL, KEY
+│   ├── env.ts                      # VITE_SUPABASE_URL, KEY
+│   └── relatorios.ts               # Tipos/categorias de relatórios
 ├── components/
-│   ├── layout/ (Header, Sidebar)
+│   ├── layout/ (Header, Sidebar, Breadcrumb)
 │   ├── ui/ (Button, Card, Select, Input, Tabs, Badge, DatePicker, Checkbox)
 │   ├── charts/ (BarChart, PieChart, StatusChart)
 │   └── KPICard.tsx
 ├── pages/
 │   ├── Login.tsx
 │   ├── Home.tsx
+│   ├── Profile.tsx
 │   ├── AccessDenied.tsx
-│   └── comissoes/ (ComissoesPage, pages/, hooks/, services/)
+│   ├── NotFound.tsx
+│   ├── admin/ (Dashboard, Users, Groups, Reports, AuditLogs, Theme)
+│   ├── comissoes/ (ComissoesPage, pages/, hooks/, services/)
+│   └── ranking/ (RankingPage, pages/, hooks/, services/)
 └── types/ (index.ts, database.ts)
 ```

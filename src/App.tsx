@@ -211,7 +211,12 @@ export default function App() {
             <div className="text-center">
               <p className="text-sm text-gray-500 mb-2">Perfil não encontrado.</p>
               <p className="text-xs text-gray-400 mb-4">Contate o administrador.</p>
-              <button onClick={() => supabase.auth.signOut().then(() => window.location.href = '/login')}
+              <button onClick={() => {
+                supabase.auth.signOut().catch(() => {})
+                localStorage.clear()
+                sessionStorage.clear()
+                window.location.href = '/login'
+              }}
                 className="text-sm text-primary-500 hover:text-primary-600 font-medium">
                 Fazer logout
               </button>

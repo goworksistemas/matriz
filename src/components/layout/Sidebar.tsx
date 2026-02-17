@@ -46,8 +46,7 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
 
   const handleSignOut = async () => {
     await signOut()
-    // O App.tsx redireciona para /login automaticamente quando user fica null
-    // Não usar navigate('/login') aqui para evitar race condition
+    window.location.href = '/login'
   }
 
   const handleNav = (path: string) => {

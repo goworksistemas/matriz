@@ -1,8 +1,8 @@
 # ✅ Checklist — Auth + Permissões funcionando
 
-## Status atual: 🔴 Não funciona
+## Status atual: 🟢 Configurado e funcionando
 
-O sistema de auth foi implementado no frontend mas depende de configurações no Supabase que precisam ser feitas na ordem correta.
+O sistema de auth está implementado no frontend e todas as configurações do Supabase foram aplicadas. Este checklist serve como referência caso seja necessário reconfigurar o ambiente.
 
 ---
 
@@ -10,14 +10,14 @@ O sistema de auth foi implementado no frontend mas depende de configurações no
 
 ### 1. Supabase Dashboard — Configurar Auth
 
-- [ ] Ir em **Authentication → Providers → Email** e verificar:
+- [x] Ir em **Authentication → Providers → Email** e verificar:
   - `Enable Email Signup` = **ON**
   - `Confirm Email` = **OFF** (desligar por enquanto, senão o signup não funciona sem servidor de email configurado)
   - `Enable Email Login` = **ON**
 
 ### 2. SQL — Criar tabelas de permissões
 
-- [ ] Executar `database/sql/auth_permissions.sql` no **SQL Editor do Supabase**
+- [x] Executar `database/sql/auth_permissions.sql` no **SQL Editor do Supabase**
   - Cria: `profiles`, `reports`, `access_groups`, `user_groups`, `user_report_access`, `group_report_access`
   - Cria: trigger `on_auth_user_created` (auto-cria profile no signup)
   - Cria: RLS em todas as tabelas
@@ -25,27 +25,27 @@ O sistema de auth foi implementado no frontend mas depende de configurações no
 
 ### 3. SQL — Criar function RPC
 
-- [ ] Executar `database/sql/fix_reports_access.sql` no **SQL Editor do Supabase**
+- [x] Executar `database/sql/fix_reports_access.sql` no **SQL Editor do Supabase**
   - Cria: function `get_my_accessible_reports()` que retorna relatórios do usuário logado
   - Remove a view `vw_user_accessible_reports` (não funciona com RLS)
 
 ### 4. Supabase Dashboard — Criar usuário admin
 
-- [ ] Ir em **Authentication → Users → Add User**
+- [x] Ir em **Authentication → Users → Add User**
   - Email: `bpm@gowork.com.br`
   - Password: `123123123`
   - Marcar **Auto Confirm User** = ON (ou desligar Confirm Email no passo 1)
 
 ### 5. SQL — Configurar admin
 
-- [ ] Executar `database/sql/seed_admin.sql` no **SQL Editor do Supabase**
+- [x] Executar `database/sql/seed_admin.sql` no **SQL Editor do Supabase**
   - Altera senha para `123123123`
   - Seta role = `admin`
   - Vincula acesso ao relatório de comissões
 
 ### 6. Verificação — Confirmar que tudo existe
 
-- [ ] Executar no SQL Editor:
+- [x] Executar no SQL Editor:
 ```sql
 -- Deve retornar 1 relatório
 SELECT * FROM public.reports;
@@ -60,7 +60,7 @@ SELECT id, email, role, active FROM public.profiles;
 
 ### 7. Variáveis de ambiente (.env)
 
-- [ ] Verificar que o arquivo `.env` na raiz do projeto tem:
+- [x] Verificar que o arquivo `.env` na raiz do projeto tem:
 ```
 VITE_SUPABASE_URL=https://xggqzueehfvautkmaojy.supabase.co
 VITE_SUPABASE_KEY=eyJ... (chave anon/public)
@@ -68,13 +68,13 @@ VITE_SUPABASE_KEY=eyJ... (chave anon/public)
 
 ### 8. Frontend — Testar
 
-- [ ] `npm run dev`
-- [ ] Acessar `http://localhost:5173`
-- [ ] Deve redirecionar para `/login`
-- [ ] Logar com `bpm@gowork.com.br` / `123123123`
-- [ ] Deve redirecionar para `/` (Home)
-- [ ] Deve aparecer o relatório "Dashboard de Comissões"
-- [ ] Clicar no relatório → deve abrir `/comissoes`
+- [x] `npm run dev`
+- [x] Acessar `http://localhost:5173`
+- [x] Deve redirecionar para `/login`
+- [x] Logar com `bpm@gowork.com.br` / `123123123`
+- [x] Deve redirecionar para `/` (Home)
+- [x] Deve aparecer o relatório "Dashboard de Comissões"
+- [x] Clicar no relatório → deve abrir `/comissoes`
 
 ---
 
