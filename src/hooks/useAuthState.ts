@@ -71,6 +71,18 @@ export function useAuthState(): AuthContextType {
     }
   }, []);
 
+  const applySignedInState = useCallback(async (signedSession: Session) => {
+    // Evita tela "presa" no login enquanto o callback de auth do Supabase não propaga
+    setIsLoading(true);
+    setSession(signedSession);
+    setUser(signedSession.user);
+    try {
+      await loadUserData(signedSession.user);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [loadUserData]);
+
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
@@ -78,23 +90,19 @@ export function useAuthState(): AuthContextType {
     // Init: buscar sessão existente
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       if (s?.user) {
-        setSession(s);
-        setUser(s.user);
-        await loadUserData(s.user);
+        await applySignedInState(s);
+        return;
       }
       setIsLoading(false);
     });
 
     // Listener: mudanças de auth (login, logout)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, s) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
       if (event === 'SIGNED_IN' && s?.user) {
-        // CRITICAL: setar loading ANTES de setar user
-        // Evita que o App veja user!=null e profile=null ao mesmo tempo
-        setIsLoading(true);
-        setSession(s);
-        setUser(s.user);
-        await loadUserData(s.user);
-        setIsLoading(false);
+        // Não usar callback async direto aqui para evitar inconsistências no browser
+        window.setTimeout(() => {
+          void applySignedInState(s);
+        }, 0);
       } else if (event === 'SIGNED_OUT') {
         setSession(null);
         setUser(null);
@@ -107,7 +115,7 @@ export function useAuthState(): AuthContextType {
     });
 
     return () => subscription.unsubscribe();
-  }, [loadUserData]);
+  }, [applySignedInState]);
 
   // Safety: nunca ficar em loading mais de 10s
   useEffect(() => {
@@ -120,9 +128,15 @@ export function useAuthState(): AuthContextType {
   }, [isLoading]);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error?.message ?? null };
-  }, []);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { error: error.message };
+
+    if (data.session?.user) {
+      await applySignedInState(data.session);
+    }
+
+    return { error: null };
+  }, [applySignedInState]);
 
   const signUp = useCallback(async (email: string, password: string, fullName: string) => {
     const { error } = await supabase.auth.signUp({
