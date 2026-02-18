@@ -3,4 +3,4 @@
 // ============================================
 
 export { useRankingData } from './useRankingData';
-export { useRankingFilters, CAMPANHAS } from './useRankingFilters';
+export { useRankingFilters } from './useRankingFilters';

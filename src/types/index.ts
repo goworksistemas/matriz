@@ -206,6 +206,7 @@ export interface LineItemEnriquecido {
   dealHubspotId: string;
   ownerId: string;
   ownerNome: string;
+  name: string;
   quantity: number;
   quantityCapped: number; // min(quantity, 30) — para competição
   amount: number;
@@ -272,19 +273,6 @@ export interface VendedorCompeticao {
   ranking: number;
   metaMinima: number;
   status: string;            // "Dentro da Competição" ou "Faltam X seats"
-}
-
-// Configuração de campanha (fixa)
-export interface CampanhaConfig {
-  id: 'salinhas' | 'mackbook';
-  nome: string;
-  dataInicio: string;
-  dataFim: string;
-  premios: { lugar: string; premio: string; categoria: string }[];
-  metaMinimaVendas: number;
-  metaMinimaPV: string;
-  condicao: string;
-  regras: string[];
 }
 
 // Filtros do Dashboard Meta Global

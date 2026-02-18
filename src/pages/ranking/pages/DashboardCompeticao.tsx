@@ -3,29 +3,21 @@ import {
   Trophy,
   Medal,
   Users,
-  AlertTriangle,
   Info,
   CheckCircle,
   XCircle,
   Flame,
-  Target,
-  Gift,
-  Calendar,
   Layers,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { formatNumber } from '@/lib/utils';
-import type { VendedorCompeticao, CampanhaConfig } from '@/types';
-import { CAMPANHAS } from '../hooks/useRankingFilters';
+import type { VendedorCompeticao } from '@/types';
 
 // ============================================
 // PROPS
 // ============================================
 
 interface DashboardCompeticaoProps {
-  campanhaAtiva: 'salinhas' | 'mackbook';
-  setCampanhaAtiva: (id: 'salinhas' | 'mackbook') => void;
-  campanha: CampanhaConfig;
   rankingCompeticao: VendedorCompeticao[];
 }
 
@@ -53,7 +45,7 @@ function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
       ring: 'ring-amber-400/50',
       bg: 'bg-gradient-to-b from-amber-50 to-amber-100 dark:from-amber-500/10 dark:to-amber-600/5',
       border: 'border-amber-200 dark:border-amber-500/30',
-      icon: '🥇',
+      icon: '1',
       height: 'h-28',
       size: 'text-2xl',
     },
@@ -62,7 +54,7 @@ function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
       ring: 'ring-gray-400/50',
       bg: 'bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-500/10 dark:to-gray-600/5',
       border: 'border-gray-200 dark:border-gray-500/30',
-      icon: '🥈',
+      icon: '2',
       height: 'h-20',
       size: 'text-xl',
     },
@@ -71,13 +63,12 @@ function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
       ring: 'ring-orange-400/50',
       bg: 'bg-gradient-to-b from-orange-50 to-orange-100 dark:from-orange-500/10 dark:to-orange-600/5',
       border: 'border-orange-200 dark:border-orange-500/30',
-      icon: '🥉',
+      icon: '3',
       height: 'h-16',
       size: 'text-lg',
     },
   ];
 
-  // Ordem visual: 2°, 1°, 3°
   const displayOrder = top3.length >= 3
     ? [{ data: top3[1], config: podiumConfig[1] }, { data: top3[0], config: podiumConfig[0] }, { data: top3[2], config: podiumConfig[2] }]
     : top3.length === 2
@@ -88,21 +79,19 @@ function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
     <div className="flex items-end justify-center gap-4 py-6">
       {displayOrder.map(({ data: v, config }) => (
         <div key={v.ownerId} className="flex flex-col items-center">
-          {/* Ícone do lugar */}
-          <span className={`${config.size} mb-2`}>{config.icon}</span>
+          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${config.gradient} flex items-center justify-center mb-2`}>
+            <span className="text-xs font-bold text-white">{config.icon}</span>
+          </div>
 
-          {/* Nome */}
           <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 text-center max-w-[120px] truncate">
             {v.ownerNome}
           </span>
 
-          {/* Seats */}
           <span className="text-lg font-bold text-primary-600 dark:text-primary-400 mt-1">
             {formatNumber(v.seatsCapped, 1)}
           </span>
           <span className="text-[10px] text-gray-400 mb-2">seats</span>
 
-          {/* Barra do pódio */}
           <div className={`w-24 ${config.height} rounded-t-lg border ${config.border} ${config.bg} flex items-center justify-center`}>
             <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
               {v.dealsCount} deals
@@ -118,13 +107,7 @@ function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
 // COMPONENTE PRINCIPAL
 // ============================================
 
-export function DashboardCompeticao({
-  campanhaAtiva,
-  setCampanhaAtiva,
-  campanha,
-  rankingCompeticao,
-}: DashboardCompeticaoProps) {
-  // KPIs da competição
+export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoProps) {
   const kpis = useMemo(() => {
     const totalSeats = rankingCompeticao.reduce((acc, v) => acc + v.seatsCapped, 0);
     const vendedoresCompetindo = rankingCompeticao.filter(v => v.seatsCapped >= v.metaMinima).length;
@@ -134,102 +117,9 @@ export function DashboardCompeticao({
     return { totalSeats, vendedoresCompetindo, totalVendedores, mediaSeats };
   }, [rankingCompeticao]);
 
-  // Formatar datas da campanha
-  const dataInicioFormatada = formatDate(campanha.dataInicio);
-  const dataFimFormatada = formatDate(campanha.dataFim);
-
   return (
     <div className="space-y-6">
-      {/* Seletor de Campanha */}
-      <div className="flex gap-2">
-        {CAMPANHAS.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => setCampanhaAtiva(c.id)}
-            className={`flex-1 py-3 px-4 rounded-xl border text-sm font-medium transition-all ${
-              campanhaAtiva === c.id
-                ? 'border-primary-300 dark:border-primary-500/40 bg-primary-50 dark:bg-primary-500/10 text-primary-700 dark:text-primary-400 shadow-sm'
-                : 'border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-white/[0.12]'
-            }`}
-          >
-            <div className="flex items-center justify-center gap-2">
-              <Trophy className={`h-4 w-4 ${campanhaAtiva === c.id ? 'text-primary-500' : 'text-gray-400'}`} />
-              {c.nome}
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* Info da Campanha */}
-      <Card className="!p-0 overflow-hidden">
-        <div className="bg-gradient-to-r from-primary-500/5 via-transparent to-primary-500/5 dark:from-primary-500/10 dark:to-primary-500/10 p-5">
-          <div className="flex flex-wrap gap-6">
-            {/* Período */}
-            <div className="flex items-start gap-2">
-              <Calendar className="h-4 w-4 text-primary-500 mt-0.5 flex-shrink-0" />
-              <div>
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 block">Período</span>
-                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                  {dataInicioFormatada} a {dataFimFormatada}
-                </span>
-              </div>
-            </div>
-
-            {/* Meta mínima */}
-            <div className="flex items-start gap-2">
-              <Target className="h-4 w-4 text-primary-500 mt-0.5 flex-shrink-0" />
-              <div>
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 block">Meta Mínima (Vendas)</span>
-                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                  {campanha.metaMinimaVendas} seats
-                </span>
-              </div>
-            </div>
-
-            {/* Condição */}
-            <div className="flex items-start gap-2">
-              <Info className="h-4 w-4 text-primary-500 mt-0.5 flex-shrink-0" />
-              <div>
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 block">Condição</span>
-                <span className="text-xs text-gray-600 dark:text-gray-300">
-                  {campanha.condicao}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Prêmios */}
-          <div className="mt-4 flex flex-wrap gap-3">
-            {campanha.premios.map((p, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/60 dark:bg-gray-900/40 border border-gray-200/50 dark:border-white/[0.06]"
-              >
-                <Gift className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
-                <div>
-                  <span className="text-[11px] text-gray-500 block">{p.lugar} ({p.categoria})</span>
-                  <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">{p.premio}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Card>
-
-      {/* Alerta: Reuniões pendentes */}
-      <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20">
-        <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
-        <div>
-          <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 block mb-0.5">
-            Informação pendente de confirmação
-          </span>
-          <span className="text-xs text-amber-600 dark:text-amber-400/80">
-            Pré-Vendas e Virtual: {campanha.metaMinimaPV}. Dado de reuniões realizadas não está disponível neste dashboard — confirmar fonte de dados.
-          </span>
-        </div>
-      </div>
-
-      {/* KPIs da competição */}
+      {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
           <div className="flex items-center gap-2 mb-1">
@@ -244,7 +134,7 @@ export function DashboardCompeticao({
         <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
           <div className="flex items-center gap-2 mb-1">
             <Flame className="h-4 w-4 text-orange-500" />
-            <span className="text-xs font-medium text-gray-500">Média/Vendedor</span>
+            <span className="text-xs font-medium text-gray-500">Media/Vendedor</span>
           </div>
           <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
             {formatNumber(kpis.mediaSeats, 1)}
@@ -275,12 +165,12 @@ export function DashboardCompeticao({
         </div>
       </div>
 
-      {/* Pódio */}
+      {/* Podio */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-amber-500" />
-            Pódio
+            Podio
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -296,7 +186,7 @@ export function DashboardCompeticao({
         <CardContent>
           {rankingCompeticao.length === 0 ? (
             <div className="flex items-center justify-center h-32 text-gray-400">
-              Nenhum dado no período da campanha
+              Nenhum dado no periodo selecionado
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -321,7 +211,6 @@ export function DashboardCompeticao({
                         key={v.ownerId}
                         className="border-b border-gray-100 dark:border-white/[0.03] hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
                       >
-                        {/* Posição */}
                         <td className="py-3 px-3">
                           <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
                             v.ranking === 1
@@ -336,34 +225,28 @@ export function DashboardCompeticao({
                           </span>
                         </td>
 
-                        {/* Nome */}
                         <td className="py-3 px-3">
                           <span className="font-medium text-gray-800 dark:text-gray-200">{v.ownerNome}</span>
                         </td>
 
-                        {/* Seats com cap */}
                         <td className="py-3 px-3 text-right">
                           <span className="font-semibold text-gray-900 dark:text-gray-100">
                             {formatNumber(v.seatsCapped, 1)}
                           </span>
                         </td>
 
-                        {/* Seats bruto */}
                         <td className="py-3 px-3 text-right text-gray-400 dark:text-gray-500">
                           {formatNumber(v.seatsRaw, 1)}
                         </td>
 
-                        {/* Deals */}
                         <td className="py-3 px-3 text-right text-gray-600 dark:text-gray-300">
                           {v.dealsCount}
                         </td>
 
-                        {/* Meta */}
                         <td className="py-3 px-3 text-center text-gray-400 dark:text-gray-500">
                           {v.metaMinima}
                         </td>
 
-                        {/* Status */}
                         <td className="py-3 px-3">
                           {dentroCompeticao ? (
                             <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
@@ -385,13 +268,19 @@ export function DashboardCompeticao({
             </div>
           )}
 
-          {/* Critérios da competição */}
+          {/* Criterios */}
           <div className="mt-6 p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-white/[0.04]">
-            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 block mb-2">
-              Critérios da Competição
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5 mb-2">
+              <Info className="h-3.5 w-3.5" />
+              Criterios
             </span>
             <ul className="space-y-1">
-              {campanha.regras.map((r, i) => (
+              {[
+                'Seats contados de deals ganhos no periodo',
+                'Limite de 30 posicoes por contrato (line item)',
+                'Meta minima: 105 seats para competir',
+                'Ranking ordenado por total de seats (com cap)',
+              ].map((r, i) => (
                 <li key={i} className="text-xs text-gray-500 dark:text-gray-400 flex items-start gap-1.5">
                   <span className="text-primary-500 mt-0.5">•</span>
                   {r}
@@ -403,13 +292,4 @@ export function DashboardCompeticao({
       </Card>
     </div>
   );
-}
-
-// ============================================
-// HELPERS
-// ============================================
-
-function formatDate(dateStr: string): string {
-  const [year, month, day] = dateStr.split('-');
-  return `${day}/${month}/${year}`;
 }

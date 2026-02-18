@@ -10,7 +10,7 @@ import { DashboardCompeticao } from './pages/DashboardCompeticao';
 import { useRankingData } from './hooks/useRankingData';
 import { useRankingFilters } from './hooks/useRankingFilters';
 import { useAuditLog } from '@/hooks/useAuditLog';
-import { formatCurrency, formatNumber } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 
 export function RankingPage() {
   const { log } = useAuditLog();
@@ -35,7 +35,6 @@ export function RankingPage() {
     ? format(new Date(ultimaAtualizacao), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
     : null;
 
-  // Filtros e dados computados
   const {
     filtrosGlobal,
     updateFiltroGlobal,
@@ -46,9 +45,6 @@ export function RankingPage() {
     dealsGanhosMes,
     dadosGraficoMensalRevenue,
     dadosGraficoMensalSeats,
-    campanhaAtiva,
-    setCampanhaAtiva,
-    campanha,
     rankingCompeticao,
   } = useRankingFilters(deals, lineItems, metas);
 
@@ -73,15 +69,14 @@ export function RankingPage() {
     log('export_excel', 'report', 'ranking', { tab: 'meta-global', records: dealsGanhosAno.length });
   }, [dealsGanhosAno, log]);
 
-  // Exportar Excel — Competição
   const handleExportExcelCompeticao = useCallback(() => {
     const dadosExport = rankingCompeticao.map(v => ({
-      'Posição': v.ranking,
+      'Posicao': v.ranking,
       'Vendedor': v.ownerNome,
       'Seats (c/ cap)': v.seatsCapped,
       'Seats (bruto)': v.seatsRaw,
       'Deals': v.dealsCount,
-      'Meta Mínima': v.metaMinima,
+      'Meta Minima': v.metaMinima,
       'Status': v.status,
     }));
 
@@ -91,10 +86,10 @@ export function RankingPage() {
       { wch: 8 }, { wch: 25 }, { wch: 15 },
       { wch: 15 }, { wch: 8 }, { wch: 12 }, { wch: 30 },
     ];
-    XLSX.utils.book_append_sheet(wb, ws, campanha.nome);
-    XLSX.writeFile(wb, `competicao_${campanhaAtiva}_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`);
-    log('export_excel', 'report', 'ranking', { tab: 'competicao', campanha: campanhaAtiva, records: rankingCompeticao.length });
-  }, [rankingCompeticao, campanha, campanhaAtiva, log]);
+    XLSX.utils.book_append_sheet(wb, ws, 'Competicao');
+    XLSX.writeFile(wb, `competicao_${filtrosGlobal.ano}_${filtrosGlobal.mes}_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`);
+    log('export_excel', 'report', 'ranking', { tab: 'competicao', ano: filtrosGlobal.ano, mes: filtrosGlobal.mes, records: rankingCompeticao.length });
+  }, [rankingCompeticao, filtrosGlobal, log]);
 
   const handleExportExcel = useCallback(() => {
     if (activeTab === 'meta-global') {
@@ -200,9 +195,6 @@ export function RankingPage() {
 
           <TabsContent value="competicao">
             <DashboardCompeticao
-              campanhaAtiva={campanhaAtiva}
-              setCampanhaAtiva={setCampanhaAtiva}
-              campanha={campanha}
               rankingCompeticao={rankingCompeticao}
             />
           </TabsContent>

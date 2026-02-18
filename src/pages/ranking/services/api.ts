@@ -8,6 +8,7 @@ import type {
   HubspotDeal,
   HubspotLineItem,
   HubspotPipeline,
+  HubspotPipelineStage,
   SalesGoal,
 } from '@/types/database';
 import type {
@@ -66,6 +67,20 @@ function createPipelinesMap(pipelines: HubspotPipeline[]): Map<string, string> {
   return new Map(pipelines.map(p => [p.hubspot_id, p.label || 'Sem nome']));
 }
 
+async function fetchWonStageIds(): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from('hubspot_pipeline_stages')
+    .select('stage_id')
+    .eq('is_won', true);
+
+  if (error) {
+    console.error('Erro ao buscar stages ganhos:', error);
+    return new Set();
+  }
+
+  return new Set((data || []).map((s: HubspotPipelineStage) => s.stage_id));
+}
+
 // ============================================
 // DATA MÍNIMA — só busca dados de 2025 em diante
 // ============================================
@@ -75,7 +90,7 @@ const DATA_MINIMA = '2025-01-01';
 // DEALS — paginação por cursor + filtro de data
 // ============================================
 
-const DEALS_COLUMNS = 'id, hubspot_id, deal_name, amount, close_date, create_date, pipeline_id, owner_id, raw_data';
+const DEALS_COLUMNS = 'id, hubspot_id, deal_name, amount, close_date, create_date, pipeline_id, pipeline_stage_id, deal_stage, owner_id';
 
 async function fetchDeals(): Promise<HubspotDeal[]> {
   const allRows: HubspotDeal[] = [];
@@ -116,29 +131,33 @@ async function fetchDeals(): Promise<HubspotDeal[]> {
 
 const LINE_ITEMS_COLUMNS = 'id, hubspot_id, deal_id, quantity, amount, name';
 
-async function fetchLineItemsByDealIds(dealIds: string[]): Promise<HubspotLineItem[]> {
-  if (dealIds.length === 0) return [];
-
+async function fetchLineItems(): Promise<HubspotLineItem[]> {
   const allRows: HubspotLineItem[] = [];
-  const chunkSize = 200;
+  const pageSize = 1000;
+  let lastId: string | null = null;
 
-  // Faz a consulta em lotes para evitar URL/querystring gigantes no PostgREST
-  for (let i = 0; i < dealIds.length; i += chunkSize) {
-    const chunk = dealIds.slice(i, i + chunkSize);
-    const { data, error } = await supabase
+  while (true) {
+    let query = supabase
       .from('hubspot_line_items')
       .select(LINE_ITEMS_COLUMNS)
       .eq('archived', false)
-      .in('deal_id', chunk);
+      .order('id', { ascending: true })
+      .limit(pageSize);
+
+    if (lastId) {
+      query = query.gt('id', lastId);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
-      console.error('Erro ao buscar line items por deals:', error);
+      console.error('Erro ao buscar line items:', error);
       throw error;
     }
-
-    if (data && data.length > 0) {
-      allRows.push(...(data as HubspotLineItem[]));
-    }
+    if (!data || data.length === 0) break;
+    allRows.push(...(data as HubspotLineItem[]));
+    lastId = data[data.length - 1].id;
+    if (data.length < pageSize) break;
   }
 
   return allRows;
@@ -166,51 +185,23 @@ async function fetchSalesGoals(): Promise<SalesGoal[]> {
 // FUNÇÕES DE PROCESSAMENTO
 // ============================================
 
-/**
- * Verifica se um deal é "ganho" usando raw_data.hs_is_closed_won
- */
-function isDealWon(rawData: unknown): boolean {
-  try {
-    if (!rawData) return false;
-
-    if (typeof rawData === 'object' && rawData !== null) {
-      const obj = rawData as Record<string, unknown>;
-      if (obj.hs_is_closed_won === 'true') return true;
-      return false;
-    }
-
-    if (typeof rawData === 'string') {
-      let parsed: unknown = rawData;
-      for (let i = 0; i < 3; i++) {
-        if (typeof parsed !== 'string') break;
-        try {
-          parsed = JSON.parse(parsed);
-        } catch {
-          break;
-        }
-      }
-      if (typeof parsed === 'object' && parsed !== null) {
-        return (parsed as Record<string, unknown>).hs_is_closed_won === 'true';
-      }
-    }
-
-    return false;
-  } catch {
-    return false;
-  }
+function parseDateParts(dateStr: string | null): { mes: number; ano: number } {
+  if (!dateStr || dateStr.length < 10) return { mes: 0, ano: 0 };
+  const ano = parseInt(dateStr.substring(0, 4), 10);
+  const mes = parseInt(dateStr.substring(5, 7), 10);
+  return { mes: isNaN(mes) ? 0 : mes, ano: isNaN(ano) ? 0 : ano };
 }
 
-/**
- * Processa deals brutos para o formato da aplicação
- */
 function processDeals(
   deals: HubspotDeal[],
   ownersMap: Map<string, Proprietario>,
   pipelinesMap: Map<string, string>,
+  wonStageIds: Set<string>,
 ): DealProcessado[] {
   return deals.map(d => {
     const closeDate = d.close_date || null;
-    const closeDateObj = closeDate ? new Date(closeDate) : null;
+    const { mes, ano } = parseDateParts(closeDate);
+    const stageId = d.pipeline_stage_id || d.deal_stage || '';
 
     return {
       id: d.id,
@@ -223,9 +214,9 @@ function processDeals(
       pipelineNome: d.pipeline_id ? (pipelinesMap.get(d.pipeline_id) || 'Desconhecido') : 'Sem pipeline',
       ownerId: d.owner_id || null,
       ownerNome: d.owner_id ? (ownersMap.get(d.owner_id)?.nome || 'Desconhecido') : 'Sem responsável',
-      isClosedWon: isDealWon(d.raw_data),
-      mes: closeDateObj ? closeDateObj.getMonth() + 1 : 0,
-      ano: closeDateObj ? closeDateObj.getFullYear() : 0,
+      isClosedWon: wonStageIds.has(stageId),
+      mes,
+      ano,
     };
   });
 }
@@ -253,6 +244,7 @@ function processLineItems(
       dealHubspotId: li.deal_id,
       ownerId: deal.ownerId || '',
       ownerNome: deal.ownerNome,
+      name: li.name || '',
       quantity,
       quantityCapped: Math.min(quantity, 30),
       amount: Number(li.amount) || 0,
@@ -371,13 +363,17 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
   const [
     ownersRaw,
     pipelinesRaw,
+    wonStageIds,
     dealsRaw,
+    lineItemsRaw,
     salesGoalsRaw,
     ultimaAtualizacao,
   ] = await Promise.all([
     fetchOwners(),
     fetchPipelines(),
+    fetchWonStageIds(),
     fetchDeals(),
+    fetchLineItems(),
     fetchSalesGoals(),
     fetchUltimaAtualizacao(),
   ]);
@@ -389,8 +385,8 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
   // Processar pipelines
   const pipelinesMap = createPipelinesMap(pipelinesRaw);
 
-  // Processar deals
-  const deals = processDeals(dealsRaw, ownersMap, pipelinesMap);
+  // Processar deals (usa wonStageIds do banco para determinar deal ganho)
+  const deals = processDeals(dealsRaw, ownersMap, pipelinesMap, wonStageIds);
 
   // Criar mapa de deals ganhos por hubspot_id (para enriquecer line items)
   const wonDealsMap = new Map<string, DealProcessado>();
@@ -399,10 +395,6 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
       wonDealsMap.set(d.hubspotId, d);
     }
   });
-
-  // Otimização: buscar line items apenas dos deals ganhos
-  const wonDealIds = [...wonDealsMap.keys()];
-  const lineItemsRaw = await fetchLineItemsByDealIds(wonDealIds);
 
   // Enriquecer line items (apenas de deals ganhos)
   const lineItems = processLineItems(lineItemsRaw, wonDealsMap);

@@ -1,7 +1,3 @@
-// ============================================
-// HOOK DE FILTROS - RANKING (Meta Global + Competição)
-// ============================================
-
 import { useState, useMemo, useCallback } from 'react';
 import type {
   DealProcessado,
@@ -12,91 +8,41 @@ import type {
   DadoGraficoMensal,
   DadoGraficoMensalSeats,
   VendedorCompeticao,
-  CampanhaConfig,
 } from '@/types';
-
-// ============================================
-// NOMES DOS MESES
-// ============================================
 
 const MESES = [
   'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
   'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
 ];
 
-// ============================================
-// CONFIGURAÇÃO DAS CAMPANHAS (FIXAS)
-// ============================================
+const META_MINIMA_SEATS = 105;
 
-export const CAMPANHAS: CampanhaConfig[] = [
-  {
-    id: 'salinhas',
-    nome: 'Campanha Salinhas Varejo',
-    dataInicio: '2026-02-17',
-    dataFim: '2026-05-15',
-    premios: [
-      { lugar: '1° Colocado', premio: 'R$ 1.500,00 (presente, não dinheiro)', categoria: 'Vendas' },
-      { lugar: '2° Colocado', premio: 'R$ 750,00 (presente, não dinheiro)', categoria: 'Vendas' },
-      { lugar: 'Pré-Vendas e Virtual', premio: 'R$ 500,00 (presente, não dinheiro)', categoria: 'Pré-Vendas' },
-    ],
-    metaMinimaVendas: 105,
-    metaMinimaPV: 'Mínimo 180 Reuniões Realizadas (1 Virtual = 2 Reuniões)',
-    condicao: 'Ter batido a meta mínima da campanha. Limite de 30 posições por contrato (ex: contrato de 70, conta como 30).',
-    regras: [
-      'Seats contados de deals ganhos no período',
-      'Limite de 30 posições por contrato',
-      'Meta mínima: 105 seats para competir (Vendas)',
-      'Pré-Vendas: reuniões realizadas (info pendente de confirmação)',
-    ],
-  },
-  {
-    id: 'mackbook',
-    nome: 'Campanha Mackbook',
-    dataInicio: '2026-02-17',
-    dataFim: '2026-12-15',
-    premios: [
-      { lugar: '1° Colocado', premio: 'Mackbook', categoria: 'Vendas' },
-      { lugar: '2° Colocado', premio: 'Apple Watch', categoria: 'Vendas' },
-      { lugar: 'Pré-Vendas e Virtual', premio: 'Apple Watch', categoria: 'Pré-Vendas' },
-    ],
-    metaMinimaVendas: 250,
-    metaMinimaPV: 'Mínimo 400 Reuniões Realizadas e 250 Virtuais (1 Virtual = 2 Reuniões)',
-    condicao: 'Ter batido a meta mínima da campanha. Limite de 30 posições por contrato.',
-    regras: [
-      'Seats contados de deals ganhos no período',
-      'Limite de 30 posições por contrato',
-      'Meta mínima: 250 seats para competir (Vendas)',
-      'Pré-Vendas: reuniões realizadas (info pendente de confirmação)',
-    ],
-  },
+const PRODUTOS_COMPETICAO = [
+  'btg',
+  'homeflex',
+  'hotdesk',
+  'open space',
+  'openspace',
+  'sala privativa',
 ];
-
-// ============================================
-// ESTADOS INICIAIS
-// ============================================
 
 const anoAtual = new Date().getFullYear();
 const mesAtual = new Date().getMonth() + 1;
 
-const FILTROS_META_GLOBAL_INICIAL: FiltrosMetaGlobal = {
+const FILTROS_INICIAL: FiltrosMetaGlobal = {
   ano: anoAtual,
   mes: mesAtual,
 };
-
-// ============================================
-// HOOK PRINCIPAL
-// ============================================
 
 export function useRankingFilters(
   deals: DealProcessado[],
   lineItems: LineItemEnriquecido[],
   metas: MetaVendas[],
 ) {
-  const [filtrosGlobal, setFiltrosGlobal] = useState<FiltrosMetaGlobal>(FILTROS_META_GLOBAL_INICIAL);
-  const [campanhaAtiva, setCampanhaAtiva] = useState<'salinhas' | 'mackbook'>('salinhas');
+  const [filtrosGlobal, setFiltrosGlobal] = useState<FiltrosMetaGlobal>(FILTROS_INICIAL);
 
   // ============================================
-  // META GLOBAL - Deals ganhos filtrados
+  // DEALS GANHOS FILTRADOS
   // ============================================
 
   const dealsGanhosAno = useMemo(() => {
@@ -108,7 +54,10 @@ export function useRankingFilters(
     return dealsGanhosAno.filter(d => d.mes === filtrosGlobal.mes);
   }, [dealsGanhosAno, filtrosGlobal.mes]);
 
-  // Line items do ano (sem cap, para Meta Global)
+  // ============================================
+  // LINE ITEMS FILTRADOS
+  // ============================================
+
   const lineItemsAno = useMemo(() => {
     return lineItems.filter(li => li.ano === filtrosGlobal.ano);
   }, [lineItems, filtrosGlobal.ano]);
@@ -130,7 +79,6 @@ export function useRankingFilters(
     const dealsAno = dealsGanhosAno.length;
     const dealsMes = dealsGanhosMes.length;
 
-    // Buscar metas
     const metaDoMes = metas.find(
       m => m.year === filtrosGlobal.ano && m.month === filtrosGlobal.mes
     );
@@ -153,7 +101,7 @@ export function useRankingFilters(
   }, [dealsGanhosAno, dealsGanhosMes, lineItemsAno, lineItemsMes, metas, filtrosGlobal]);
 
   // ============================================
-  // META GLOBAL - Dados do gráfico mensal (Receita)
+  // GRÁFICO MENSAL (Receita)
   // ============================================
 
   const dadosGraficoMensalRevenue = useMemo<DadoGraficoMensal[]>(() => {
@@ -172,7 +120,7 @@ export function useRankingFilters(
   }, [dealsGanhosAno, metas, filtrosGlobal.ano]);
 
   // ============================================
-  // META GLOBAL - Dados do gráfico mensal (Seats)
+  // GRÁFICO MENSAL (Seats)
   // ============================================
 
   const dadosGraficoMensalSeats = useMemo<DadoGraficoMensalSeats[]>(() => {
@@ -191,29 +139,13 @@ export function useRankingFilters(
   }, [lineItemsAno, metas, filtrosGlobal.ano]);
 
   // ============================================
-  // COMPETIÇÃO - Configuração da campanha ativa
-  // ============================================
-
-  const campanha = useMemo(() => {
-    return CAMPANHAS.find(c => c.id === campanhaAtiva)!;
-  }, [campanhaAtiva]);
-
-  // ============================================
   // COMPETIÇÃO - Ranking de vendedores
+  // Usa os line items já filtrados por ano/mês
   // ============================================
+
+  const lineItemsFiltrados = filtrosGlobal.mes === 0 ? lineItemsAno : lineItemsMes;
 
   const rankingCompeticao = useMemo<VendedorCompeticao[]>(() => {
-    const inicio = new Date(campanha.dataInicio);
-    const fim = new Date(campanha.dataFim);
-
-    // Filtrar line items dentro do período da campanha (via close_date do deal)
-    const lineItemsCampanha = lineItems.filter(li => {
-      if (!li.closeDate) return false;
-      const closeDate = new Date(li.closeDate);
-      return closeDate >= inicio && closeDate <= fim;
-    });
-
-    // Agrupar por vendedor
     const porVendedor = new Map<string, {
       ownerNome: string;
       seatsCapped: number;
@@ -221,8 +153,11 @@ export function useRankingFilters(
       dealsSet: Set<string>;
     }>();
 
-    lineItemsCampanha.forEach(li => {
+    lineItemsFiltrados.forEach(li => {
       if (!li.ownerId) return;
+
+      const nomeLower = li.name.toLowerCase().trim();
+      if (!nomeLower || !PRODUTOS_COMPETICAO.some(p => nomeLower.includes(p))) return;
 
       const existing = porVendedor.get(li.ownerId) || {
         ownerNome: li.ownerNome,
@@ -238,10 +173,9 @@ export function useRankingFilters(
       porVendedor.set(li.ownerId, existing);
     });
 
-    // Converter para array e rankear
     const vendedores: VendedorCompeticao[] = Array.from(porVendedor.entries())
       .map(([ownerId, data]) => {
-        const faltam = campanha.metaMinimaVendas - data.seatsCapped;
+        const faltam = META_MINIMA_SEATS - data.seatsCapped;
         return {
           ownerId,
           ownerNome: data.ownerNome,
@@ -249,7 +183,7 @@ export function useRankingFilters(
           seatsRaw: Math.round(data.seatsRaw * 100) / 100,
           dealsCount: data.dealsSet.size,
           ranking: 0,
-          metaMinima: campanha.metaMinimaVendas,
+          metaMinima: META_MINIMA_SEATS,
           status: faltam <= 0
             ? 'Dentro da Competição'
             : `Faltam ${Math.ceil(faltam)} seats`,
@@ -257,13 +191,12 @@ export function useRankingFilters(
       })
       .sort((a, b) => b.seatsCapped - a.seatsCapped);
 
-    // Atribuir ranking
     vendedores.forEach((v, i) => {
       v.ranking = i + 1;
     });
 
     return vendedores;
-  }, [lineItems, campanha]);
+  }, [lineItemsFiltrados]);
 
   // ============================================
   // ANOS DISPONÍVEIS
@@ -288,11 +221,10 @@ export function useRankingFilters(
   }, []);
 
   const resetFiltrosGlobal = useCallback(() => {
-    setFiltrosGlobal(FILTROS_META_GLOBAL_INICIAL);
+    setFiltrosGlobal(FILTROS_INICIAL);
   }, []);
 
   return {
-    // Meta Global
     filtrosGlobal,
     updateFiltroGlobal,
     resetFiltrosGlobal,
@@ -302,11 +234,6 @@ export function useRankingFilters(
     dealsGanhosMes,
     dadosGraficoMensalRevenue,
     dadosGraficoMensalSeats,
-
-    // Competição
-    campanhaAtiva,
-    setCampanhaAtiva,
-    campanha,
     rankingCompeticao,
   };
 }
