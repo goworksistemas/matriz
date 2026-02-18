@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
-  "buildDate": "2026-02-17T00:00:00Z",
-  "commitMessage": "Versão estável com auth, permissões, comissões, ranking e painel admin"
+  "version": "1.9.0",
+  "buildDate": "2026-02-18T18:00:00Z",
+  "commitMessage": "feat: adiciona badge de versão ao aplicativo e diversas melhorias incluindo ranking, exportação Excel, sincronização N8N e correção de login"
 }

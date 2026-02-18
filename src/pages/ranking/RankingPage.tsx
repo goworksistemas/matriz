@@ -10,7 +10,6 @@ import { DashboardCompeticao } from './pages/DashboardCompeticao';
 import { useRankingData } from './hooks/useRankingData';
 import { useRankingFilters } from './hooks/useRankingFilters';
 import { useAuditLog } from '@/hooks/useAuditLog';
-import { formatCurrency } from '@/lib/utils';
 
 export function RankingPage() {
   const { log } = useAuditLog();
@@ -21,7 +20,6 @@ export function RankingPage() {
     deals,
     lineItems,
     metas,
-    vendedoresUnicos,
     ultimaAtualizacao,
     isLoading,
     error,
@@ -42,7 +40,6 @@ export function RankingPage() {
     anosDisponiveis,
     kpisMetaGlobal,
     dealsGanhosAno,
-    dealsGanhosMes,
     dadosGraficoMensalRevenue,
     dadosGraficoMensalSeats,
     rankingCompeticao,

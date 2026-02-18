@@ -8,7 +8,6 @@ import type {
   HubspotDeal,
   HubspotLineItem,
   HubspotPipeline,
-  HubspotPipelineStage,
   SalesGoal,
 } from '@/types/database';
 import type {
@@ -78,7 +77,7 @@ async function fetchWonStageIds(): Promise<Set<string>> {
     return new Set();
   }
 
-  return new Set((data || []).map((s: HubspotPipelineStage) => s.stage_id));
+  return new Set((data || []).map(s => s.stage_id));
 }
 
 // ============================================

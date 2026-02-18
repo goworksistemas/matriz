@@ -12,7 +12,6 @@ async function fetchProfile(userId: string): Promise<Profile | null> {
 
   if (!error && data) return data as Profile;
 
-  // Profile não existe — criar automaticamente
   const { data: authData } = await supabase.auth.getUser();
   if (!authData?.user) return null;
 
@@ -35,7 +34,6 @@ async function fetchReports(role: string): Promise<AccessibleReport[]> {
   const { data, error } = await supabase.rpc('get_my_accessible_reports');
   if (!error && data) return data as AccessibleReport[];
 
-  // Fallback: admin vê tudo
   if (role === 'admin') {
     const { data: all } = await supabase
       .from('reports')
@@ -59,6 +57,8 @@ export function useAuthState(): AuthContextType {
   const [reports, setReports] = useState<AccessibleReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const initialized = useRef(false);
+  const loadingRef = useRef(false);
+  const signInManualRef = useRef(false);
 
   const loadUserData = useCallback(async (authUser: User) => {
     const p = await fetchProfile(authUser.id);
@@ -71,15 +71,17 @@ export function useAuthState(): AuthContextType {
     }
   }, []);
 
-  const applySignedInState = useCallback(async (signedSession: Session) => {
-    // Evita tela "presa" no login enquanto o callback de auth do Supabase não propaga
+  const applySession = useCallback(async (s: Session) => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     setIsLoading(true);
-    setSession(signedSession);
-    setUser(signedSession.user);
+    setSession(s);
+    setUser(s.user);
     try {
-      await loadUserData(signedSession.user);
+      await loadUserData(s.user);
     } finally {
       setIsLoading(false);
+      loadingRef.current = false;
     }
   }, [loadUserData]);
 
@@ -87,56 +89,58 @@ export function useAuthState(): AuthContextType {
     if (initialized.current) return;
     initialized.current = true;
 
-    // Init: buscar sessão existente
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       if (s?.user) {
-        await applySignedInState(s);
+        await applySession(s);
         return;
       }
       setIsLoading(false);
     });
 
-    // Listener: mudanças de auth (login, logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
       if (event === 'SIGNED_IN' && s?.user) {
-        // Não usar callback async direto aqui para evitar inconsistências no browser
-        window.setTimeout(() => {
-          void applySignedInState(s);
-        }, 0);
+        if (signInManualRef.current) return;
+        void applySession(s);
       } else if (event === 'SIGNED_OUT') {
         setSession(null);
         setUser(null);
         setProfile(null);
         setReports([]);
         setIsLoading(false);
+        loadingRef.current = false;
       } else if (event === 'TOKEN_REFRESHED' && s) {
         setSession(s);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [applySignedInState]);
+  }, [applySession]);
 
-  // Safety: nunca ficar em loading mais de 10s
   useEffect(() => {
     if (!isLoading) return;
     const t = setTimeout(() => {
       console.warn('Auth loading timeout — forçando fim');
       setIsLoading(false);
-    }, 10000);
+      loadingRef.current = false;
+    }, 10_000);
     return () => clearTimeout(t);
   }, [isLoading]);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { error: error.message };
+    signInManualRef.current = true;
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return { error: error.message };
 
-    if (data.session?.user) {
-      await applySignedInState(data.session);
+      if (data.session) {
+        await applySession(data.session);
+      }
+
+      return { error: null };
+    } finally {
+      setTimeout(() => { signInManualRef.current = false; }, 500);
     }
-
-    return { error: null };
-  }, [applySignedInState]);
+  }, [applySession]);
 
   const signUp = useCallback(async (email: string, password: string, fullName: string) => {
     const { error } = await supabase.auth.signUp({
@@ -154,7 +158,6 @@ export function useAuthState(): AuthContextType {
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
-    // O onAuthStateChange SIGNED_OUT vai limpar o estado
   }, []);
 
   const hasReportAccess = useCallback((slug: string) => {
