@@ -191,17 +191,17 @@ function StandaloneComissoes() {
 // ============================================
 
 export default function App() {
-  const { user, isLoading, profile } = useAuth()
+  const { user, isLoading, profile, isRecovery } = useAuth()
 
-  // Carregando auth
   if (isLoading) return <FullPageLoader />
 
   return (
     <>
       <VersionBadge />
       <Routes>
-        {/* Login — acessível sempre */}
-        <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+        <Route path="/login" element={
+          user && !isRecovery ? <Navigate to="/" replace /> : <Login />
+        } />
 
       {/* Standalone — lógica própria de auth */}
       <Route path="/standalone/comissoes" element={<StandaloneComissoes />} />

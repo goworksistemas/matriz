@@ -35,10 +35,13 @@ export interface AuthContextType {
   isLoading: boolean;
   isAdmin: boolean;
   isManager: boolean;
+  isRecovery: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
   resetPassword: (email: string) => Promise<{ error: string | null }>;
+  updatePassword: (newPassword: string) => Promise<{ error: string | null }>;
+  clearRecovery: () => void;
   hasReportAccess: (slug: string) => boolean;
   refreshData: () => Promise<void>;
 }

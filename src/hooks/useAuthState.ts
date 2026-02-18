@@ -56,6 +56,7 @@ export function useAuthState(): AuthContextType {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [reports, setReports] = useState<AccessibleReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRecovery, setIsRecovery] = useState(false);
   const initialized = useRef(false);
   const loadingRef = useRef(false);
   const signInManualRef = useRef(false);
@@ -98,8 +99,18 @@ export function useAuthState(): AuthContextType {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+      if (event === 'PASSWORD_RECOVERY' && s) {
+        setIsRecovery(true);
+        setSession(s);
+        setUser(s.user);
+        setIsLoading(false);
+        loadingRef.current = false;
+        return;
+      }
+
       if (event === 'SIGNED_IN' && s?.user) {
         if (signInManualRef.current) return;
+        if (isRecovery) return;
         void applySession(s);
       } else if (event === 'SIGNED_OUT') {
         setSession(null);
@@ -107,6 +118,7 @@ export function useAuthState(): AuthContextType {
         setProfile(null);
         setReports([]);
         setIsLoading(false);
+        setIsRecovery(false);
         loadingRef.current = false;
       } else if (event === 'TOKEN_REFRESHED' && s) {
         setSession(s);
@@ -114,7 +126,7 @@ export function useAuthState(): AuthContextType {
     });
 
     return () => subscription.unsubscribe();
-  }, [applySession]);
+  }, [applySession, isRecovery]);
 
   useEffect(() => {
     if (!isLoading) return;
@@ -156,6 +168,23 @@ export function useAuthState(): AuthContextType {
     return { error: error?.message ?? null };
   }, []);
 
+  const updatePassword = useCallback(async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) return { error: error.message };
+
+    setIsRecovery(false);
+
+    if (user) {
+      await loadUserData(user);
+    }
+
+    return { error: null };
+  }, [user, loadUserData]);
+
+  const clearRecovery = useCallback(() => {
+    setIsRecovery(false);
+  }, []);
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
   }, []);
@@ -171,9 +200,10 @@ export function useAuthState(): AuthContextType {
   }, [user, loadUserData]);
 
   return {
-    user, session, profile, reports, isLoading,
+    user, session, profile, reports, isLoading, isRecovery,
     isAdmin: profile?.role === 'admin',
     isManager: profile?.role === 'manager',
-    signIn, signOut, signUp, resetPassword, hasReportAccess, refreshData,
+    signIn, signOut, signUp, resetPassword, updatePassword, clearRecovery,
+    hasReportAccess, refreshData,
   };
 }

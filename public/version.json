@@ -1,5 +1,5 @@
 {
-  "version": "1.9.0",
-  "buildDate": "2026-02-18T18:00:00Z",
-  "commitMessage": "feat: adiciona badge de versão ao aplicativo e diversas melhorias incluindo ranking, exportação Excel, sincronização N8N e correção de login"
+  "version": "2.1.0",
+  "buildDate": "2026-02-18T22:00:00Z",
+  "commitMessage": "fix(auth): corrige race condition no login e implementa fluxo de redefinição de senha"
 }
