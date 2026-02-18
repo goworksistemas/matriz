@@ -10,6 +10,7 @@ import { RankingPage } from '@/pages/ranking/RankingPage'
 import { AccessDenied } from '@/pages/AccessDenied'
 import { NotFound } from '@/pages/NotFound'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
+import { VersionBadge } from '@/components/layout/VersionBadge'
 import { AdminUsers } from '@/pages/admin/Users'
 import { AdminGroups } from '@/pages/admin/Groups'
 import { AdminReports } from '@/pages/admin/Reports'
@@ -196,9 +197,11 @@ export default function App() {
   if (isLoading) return <FullPageLoader />
 
   return (
-    <Routes>
-      {/* Login — acessível sempre */}
-      <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+    <>
+      <VersionBadge />
+      <Routes>
+        {/* Login — acessível sempre */}
+        <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
 
       {/* Standalone — lógica própria de auth */}
       <Route path="/standalone/comissoes" element={<StandaloneComissoes />} />
@@ -230,6 +233,7 @@ export default function App() {
         ) :
         <ProtectedLayout />
       } />
-    </Routes>
+      </Routes>
+    </>
   )
 }
