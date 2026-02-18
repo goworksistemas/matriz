@@ -64,7 +64,7 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
           </div>
           {!collapsed && (
             <div>
-              <h1 className="text-[13px] font-semibold text-gray-900 dark:text-white tracking-tight leading-tight">NetworkGo</h1>
+              <h1 className="text-[13px] font-semibold text-gray-900 dark:text-white tracking-tight leading-tight">ConectGo</h1>
               <p className="text-[10px] text-gray-500 dark:text-gray-600 leading-tight">Central de Relatórios</p>
             </div>
           )}
@@ -115,13 +115,13 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
                   key={report.report_id}
                   onClick={() => handleNav(`/${report.slug}`)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-[13px]",
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-[13px] min-w-0",
                     isActive ? "bg-primary-500/10 text-primary-600 dark:text-primary-400" : "text-gray-500 hover:bg-gray-100 dark:hover:bg-white/[0.03] hover:text-gray-900 dark:hover:text-gray-300"
                   )}
                   title={collapsed ? report.name : undefined}
                 >
                   <Icon className="w-[18px] h-[18px] flex-shrink-0" />
-                  {!collapsed && <span className="font-medium">{report.name}</span>}
+                  {!collapsed && <span className="font-medium truncate whitespace-nowrap">{report.name}</span>}
                 </button>
               )
             })}

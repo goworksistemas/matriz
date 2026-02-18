@@ -116,34 +116,29 @@ async function fetchDeals(): Promise<HubspotDeal[]> {
 
 const LINE_ITEMS_COLUMNS = 'id, hubspot_id, deal_id, quantity, amount, name';
 
-async function fetchLineItems(): Promise<HubspotLineItem[]> {
-  const allRows: HubspotLineItem[] = [];
-  const pageSize = 1000;
-  let lastId: string | null = null;
+async function fetchLineItemsByDealIds(dealIds: string[]): Promise<HubspotLineItem[]> {
+  if (dealIds.length === 0) return [];
 
-  while (true) {
-    let query = supabase
+  const allRows: HubspotLineItem[] = [];
+  const chunkSize = 200;
+
+  // Faz a consulta em lotes para evitar URL/querystring gigantes no PostgREST
+  for (let i = 0; i < dealIds.length; i += chunkSize) {
+    const chunk = dealIds.slice(i, i + chunkSize);
+    const { data, error } = await supabase
       .from('hubspot_line_items')
       .select(LINE_ITEMS_COLUMNS)
       .eq('archived', false)
-      .gte('created_at', `${DATA_MINIMA}T00:00:00Z`)
-      .order('id', { ascending: true })
-      .limit(pageSize);
-
-    if (lastId) {
-      query = query.gt('id', lastId);
-    }
-
-    const { data, error } = await query;
+      .in('deal_id', chunk);
 
     if (error) {
-      console.error('Erro ao buscar line items:', error);
+      console.error('Erro ao buscar line items por deals:', error);
       throw error;
     }
-    if (!data || data.length === 0) break;
-    allRows.push(...(data as HubspotLineItem[]));
-    lastId = data[data.length - 1].id;
-    if (data.length < pageSize) break;
+
+    if (data && data.length > 0) {
+      allRows.push(...(data as HubspotLineItem[]));
+    }
   }
 
   return allRows;
@@ -377,14 +372,12 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
     ownersRaw,
     pipelinesRaw,
     dealsRaw,
-    lineItemsRaw,
     salesGoalsRaw,
     ultimaAtualizacao,
   ] = await Promise.all([
     fetchOwners(),
     fetchPipelines(),
     fetchDeals(),
-    fetchLineItems(),
     fetchSalesGoals(),
     fetchUltimaAtualizacao(),
   ]);
@@ -406,6 +399,10 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
       wonDealsMap.set(d.hubspotId, d);
     }
   });
+
+  // Otimização: buscar line items apenas dos deals ganhos
+  const wonDealIds = [...wonDealsMap.keys()];
+  const lineItemsRaw = await fetchLineItemsByDealIds(wonDealIds);
 
   // Enriquecer line items (apenas de deals ganhos)
   const lineItems = processLineItems(lineItemsRaw, wonDealsMap);
