@@ -29,6 +29,10 @@ O sistema de auth está implementado no frontend e todas as configurações do S
   - Cria: function `get_my_accessible_reports()` que retorna relatórios do usuário logado
   - Remove a view `vw_user_accessible_reports` (não funciona com RLS)
 
+- [ ] Executar `database/sql/fix_standalone_token.sql` no **SQL Editor do Supabase**
+  - Cria: function `validate_standalone_token()` para links públicos funcionarem sem login
+  - **Obrigatório** para links standalone públicos (RLS bloqueia leitura anônima em `reports`)
+
 ### 4. Supabase Dashboard — Criar usuário admin
 
 - [x] Ir em **Authentication → Users → Add User**

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, Navigate, useLocation, useSearchParams } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation, useSearchParams, useParams } from 'react-router-dom'
 import { Sun, Moon, Loader2 } from 'lucide-react'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { Home } from '@/pages/Home'
 import { Login } from '@/pages/Login'
+import { EsqueciSenha } from '@/pages/EsqueciSenha'
+import { RedefinirSenha } from '@/pages/RedefinirSenha'
 import { ComissoesPage } from '@/pages/comissoes/ComissoesPage'
 import { RankingPage } from '@/pages/ranking/RankingPage'
 import { NotionPage } from '@/pages/notion/NotionPage'
@@ -119,10 +121,17 @@ function ProtectedLayout() {
 }
 
 // ============================================
-// STANDALONE
+// STANDALONE (links públicos com token)
 // ============================================
 
-function StandaloneComissoes() {
+const STANDALONE_TITLES: Record<string, string> = {
+  comissoes: 'Dashboard de Comissões',
+  ranking: 'Ranking e Competição',
+  notion: 'Tarefas Notion',
+}
+
+function StandaloneReport() {
+  const { slug } = useParams<{ slug: string }>()
   const { isDark, toggleTheme } = useTheme()
   const { user, isLoading } = useAuth()
   const [searchParams] = useSearchParams()
@@ -131,16 +140,20 @@ function StandaloneComissoes() {
   const token = searchParams.get('token')
 
   useEffect(() => {
-    if (!token) { setTokenOk(null); return }
+    if (!token || !slug) { setTokenOk(null); return }
     supabase
-      .from('reports')
-      .select('id')
-      .eq('share_token', token)
-      .eq('slug', 'comissoes')
-      .eq('standalone_public', true)
+      .rpc('validate_standalone_token', { p_slug: slug, p_token: token })
       .single()
-      .then(({ data, error }) => setTokenOk(!error && !!data))
-  }, [token])
+      .then(({ data, error }) => {
+        if (error?.code === '42883') {
+          // RPC não existe — fallback: query direta (só funciona se logado, RLS bloqueia anon)
+          supabase.from('reports').select('id').eq('share_token', token).eq('slug', slug).eq('standalone_public', true).single()
+            .then(({ data: d, error: e }) => setTokenOk(!e && !!d))
+          return
+        }
+        setTokenOk(!error && data === true)
+      })
+  }, [token, slug])
 
   // Com token: validando
   if (token && tokenOk === null) return <FullPageLoader />
@@ -167,6 +180,17 @@ function StandaloneComissoes() {
     )
   }
 
+  const title = (slug && STANDALONE_TITLES[slug]) || 'Relatório'
+  const PageComponent = slug === 'comissoes' ? ComissoesPage : slug === 'ranking' ? RankingPage : slug === 'notion' ? NotionPage : null
+
+  if (!PageComponent || !slug) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center">
+        <p className="text-sm text-gray-500">Relatório não encontrado.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col">
       <header className="h-14 border-b border-gray-200 dark:border-white/[0.06] bg-white/80 dark:bg-[#0c0c0e]/80 backdrop-blur-xl flex items-center justify-between px-6 flex-shrink-0">
@@ -175,7 +199,7 @@ function StandaloneComissoes() {
             <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </div>
           <div>
-            <h1 className="text-sm font-semibold tracking-tight">Dashboard de Comissões</h1>
+            <h1 className="text-sm font-semibold tracking-tight">{title}</h1>
             <p className="text-[10px] text-gray-500">NetworkGo</p>
           </div>
         </div>
@@ -184,7 +208,7 @@ function StandaloneComissoes() {
         </button>
       </header>
       <div className="flex-1 overflow-hidden">
-        <ComissoesPage />
+        <PageComponent />
       </div>
     </div>
   )
@@ -206,9 +230,11 @@ export default function App() {
         <Route path="/login" element={
           user && !isRecovery ? <Navigate to="/" replace /> : <Login />
         } />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
 
-      {/* Standalone — lógica própria de auth */}
-      <Route path="/standalone/comissoes" element={<StandaloneComissoes />} />
+      {/* Standalone — links públicos (com token) ou login */}
+      <Route path="/standalone/:slug" element={<StandaloneReport />} />
 
       {/* Tudo mais — precisa estar logado */}
       <Route path="/*" element={

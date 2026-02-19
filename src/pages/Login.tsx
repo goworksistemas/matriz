@@ -1,16 +1,15 @@
 import { useState, type FormEvent } from 'react';
-import { Navigate } from 'react-router-dom';
-import { Zap, Loader2, AlertCircle, CheckCircle, ArrowLeft, KeyRound } from 'lucide-react';
+import { Navigate, Link } from 'react-router-dom';
+import { Zap, Loader2, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/AuthContext';
 
-type View = 'login' | 'signup' | 'forgot';
+type View = 'login' | 'signup';
 
 export function Login() {
-  const { user, isLoading: authLoading, isRecovery, signIn, signUp, resetPassword, updatePassword, clearRecovery } = useAuth();
+  const { user, isLoading: authLoading, isRecovery, signIn, signUp } = useAuth();
   const [view, setView] = useState<View>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -26,6 +25,11 @@ export function Login() {
 
   if (user && !isRecovery) {
     return <Navigate to="/" replace />;
+  }
+
+  // Usuário em fluxo de recuperação → redireciona para página dedicada
+  if (isRecovery) {
+    return <Navigate to="/redefinir-senha" replace />;
   }
 
   const resetForm = () => {
@@ -71,49 +75,6 @@ export function Login() {
     setIsSubmitting(false);
   };
 
-  // REDEFINIR SENHA (RECOVERY)
-  const handleUpdatePassword = async (e: FormEvent) => {
-    e.preventDefault();
-    resetForm();
-
-    if (password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres.');
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError('As senhas não coincidem.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    const { error: err } = await updatePassword(password);
-    if (err) {
-      setError(err);
-    } else {
-      setSuccess('Senha alterada com sucesso! Redirecionando...');
-      setTimeout(() => {
-        clearRecovery();
-        window.location.href = '/';
-      }, 1500);
-    }
-    setIsSubmitting(false);
-  };
-
-  // ESQUECI A SENHA
-  const handleForgotPassword = async (e: FormEvent) => {
-    e.preventDefault();
-    resetForm();
-    setIsSubmitting(true);
-
-    const { error: err } = await resetPassword(email);
-    if (err) {
-      setError(err);
-    } else {
-      setSuccess('Email enviado! Verifique sua caixa de entrada para redefinir a senha.');
-    }
-    setIsSubmitting(false);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
@@ -145,9 +106,9 @@ export function Login() {
               <SubmitBtn loading={isSubmitting} label="Entrar" />
 
               <div className="flex items-center justify-between text-xs">
-                <button type="button" onClick={() => switchView('forgot')} className="text-primary-500 hover:text-primary-600 font-medium">
+                <Link to="/esqueci-senha" className="text-primary-500 hover:text-primary-600 font-medium">
                   Esqueci a senha
-                </button>
+                </Link>
                 <button type="button" onClick={() => switchView('signup')} className="text-primary-500 hover:text-primary-600 font-medium">
                   Criar conta
                 </button>
@@ -181,53 +142,6 @@ export function Login() {
             </form>
           )}
 
-          {/* ============ ESQUECI A SENHA ============ */}
-          {view === 'forgot' && !isRecovery && (
-            <form onSubmit={handleForgotPassword} className="space-y-4">
-              <button type="button" onClick={() => switchView('login')} className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 mb-2">
-                <ArrowLeft className="w-3 h-3" /> Voltar
-              </button>
-
-              <div className="text-center mb-2">
-                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Recuperar senha</h2>
-                <p className="text-xs text-gray-500 mt-1">Enviaremos um link para redefinir</p>
-              </div>
-
-              {error && <AlertMsg message={error} />}
-              {success && <SuccessMsg message={success} />}
-
-              {!success && (
-                <>
-                  <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="seu@email.com" autoFocus />
-                  <SubmitBtn loading={isSubmitting} label="Enviar link" />
-                </>
-              )}
-            </form>
-          )}
-
-          {/* ============ REDEFINIR SENHA (RECOVERY) ============ */}
-          {isRecovery && (
-            <form onSubmit={handleUpdatePassword} className="space-y-4">
-              <div className="flex flex-col items-center mb-2">
-                <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center mb-3">
-                  <KeyRound className="w-5 h-5 text-primary-500" />
-                </div>
-                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Nova senha</h2>
-                <p className="text-xs text-gray-500 mt-1">Defina sua nova senha de acesso</p>
-              </div>
-
-              {error && <AlertMsg message={error} />}
-              {success && <SuccessMsg message={success} />}
-
-              {!success && (
-                <>
-                  <Field label="Nova senha" type="password" value={password} onChange={setPassword} placeholder="Mínimo 6 caracteres" autoFocus />
-                  <Field label="Confirmar senha" type="password" value={confirmPassword} onChange={setConfirmPassword} placeholder="Repita a senha" />
-                  <SubmitBtn loading={isSubmitting} label="Salvar nova senha" />
-                </>
-              )}
-            </form>
-          )}
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">© 2026 GoWork Sistemas</p>
