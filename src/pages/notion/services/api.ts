@@ -71,7 +71,16 @@ async function fetchTasks(): Promise<NotionTask[]> {
   return allRows;
 }
 
-function calcularStatusPrazo(dateEnd: string | null): { diasAtraso: number; statusPrazo: TarefaProcessada['statusPrazo'] } {
+function calcularStatusPrazo(
+  dateEnd: string | null,
+  status: string,
+): { diasAtraso: number; statusPrazo: TarefaProcessada['statusPrazo'] } {
+  // Regra de negocio: concluida ou cancelada nunca deve ser tratada como atrasada.
+  const s = status.toLowerCase();
+  if (s.includes('conclu') || s.includes('cancel')) {
+    return { diasAtraso: 0, statusPrazo: 'no_prazo' };
+  }
+
   if (!dateEnd) return { diasAtraso: 0, statusPrazo: 'sem_data' };
 
   const hoje = new Date();
@@ -90,7 +99,7 @@ function calcularStatusPrazo(dateEnd: string | null): { diasAtraso: number; stat
 
 function processTasks(tasks: NotionTask[]): TarefaProcessada[] {
   return tasks.map(t => {
-    const { diasAtraso, statusPrazo } = calcularStatusPrazo(t.date_end);
+    const { diasAtraso, statusPrazo } = calcularStatusPrazo(t.date_end, t.status || '');
     const executores = t.executor
       ? t.executor.split(',').map(e => e.trim()).filter(Boolean)
       : [];

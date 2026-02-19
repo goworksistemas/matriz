@@ -1,21 +1,18 @@
-import { useState, useCallback, useEffect } from 'react';
-import { LayoutDashboard, Users, Clock, Loader2, AlertCircle, RefreshCw, Download, RotateCcw } from 'lucide-react';
+import { useCallback, useEffect } from 'react';
+import { Clock, Loader2, AlertCircle, RefreshCw, Download, RotateCcw } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
 import { Select, SelectItem } from '@/components/ui/Select';
-import { VisaoGeral } from './pages/VisaoGeral';
-import { PorResponsavel } from './pages/PorResponsavel';
-import { Timeline } from './pages/Timeline';
+import { ListagemTarefas } from './pages/ListagemTarefas';
+import { PainelExecutivo } from './pages/PainelExecutivo';
 import { useNotionData } from './hooks/useNotionData';
 import { useNotionFilters } from './hooks/useNotionFilters';
 import { useAuditLog } from '@/hooks/useAuditLog';
 
 export function NotionPage() {
   const { log } = useAuditLog();
-  const [activeTab, setActiveTab] = useState('visao-geral');
 
   const {
     tarefas,
@@ -44,9 +41,11 @@ export function NotionPage() {
     kpis,
     dadosGraficoStatus,
     dadosGraficoPrioridade,
-    dadosGraficoDepartamento,
-    resumoPorExecutor,
-    tarefasTimeline,
+    dadosGraficoPrazo,
+    dadosGraficoExecutores,
+    dadosGraficoDepartamentosCriticos,
+    topTarefasCriticas,
+    insights,
   } = useNotionFilters(tarefas);
 
   const handleExportExcel = useCallback(() => {
@@ -180,40 +179,19 @@ export function NotionPage() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="visao-geral">
-              <LayoutDashboard className="h-4 w-4 mr-2" />
-              Visao Geral
-            </TabsTrigger>
-            <TabsTrigger value="responsaveis">
-              <Users className="h-4 w-4 mr-2" />
-              Por Responsavel
-            </TabsTrigger>
-            <TabsTrigger value="timeline">
-              <Clock className="h-4 w-4 mr-2" />
-              Timeline
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="visao-geral">
-            <VisaoGeral
-              kpis={kpis}
-              dadosGraficoStatus={dadosGraficoStatus}
-              dadosGraficoPrioridade={dadosGraficoPrioridade}
-              dadosGraficoDepartamento={dadosGraficoDepartamento}
-            />
-          </TabsContent>
-
-          <TabsContent value="responsaveis">
-            <PorResponsavel resumoPorExecutor={resumoPorExecutor} />
-          </TabsContent>
-
-          <TabsContent value="timeline">
-            <Timeline tarefas={tarefasTimeline} />
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-6">
+          <PainelExecutivo
+            kpis={kpis}
+            insights={insights}
+            dadosGraficoStatus={dadosGraficoStatus}
+            dadosGraficoPrioridade={dadosGraficoPrioridade}
+            dadosGraficoPrazo={dadosGraficoPrazo}
+            dadosGraficoExecutores={dadosGraficoExecutores}
+            dadosGraficoDepartamentosCriticos={dadosGraficoDepartamentosCriticos}
+            topTarefasCriticas={topTarefasCriticas}
+          />
+          <ListagemTarefas tarefas={tarefasFiltradas} />
+        </div>
       </div>
     </div>
   );
