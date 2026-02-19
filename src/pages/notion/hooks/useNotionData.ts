@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/AuthContext';
 import { fetchDadosNotion, type DadosNotionResult } from '../services/api';
 import type { TarefaProcessada } from '../services/api';
+import { supabase } from '../services/supabase';
 
 interface UseNotionDataReturn {
   tarefas: TarefaProcessada[];
@@ -21,19 +22,27 @@ export function useNotionData(): UseNotionDataReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const hasLoaded = useRef(false);
+  const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (options?: { silent?: boolean }) => {
+    const silent = options?.silent === true;
     try {
-      setIsLoading(true);
-      setError(null);
+      if (!silent) {
+        setIsLoading(true);
+        setError(null);
+      }
       const result = await fetchDadosNotion();
       setData(result);
       hasLoaded.current = true;
     } catch (err) {
       console.error('Erro ao carregar tarefas do Notion:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+      if (!silent) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+      }
     } finally {
-      setIsLoading(false);
+      if (!silent) {
+        setIsLoading(false);
+      }
     }
   }, []);
 
@@ -47,6 +56,39 @@ export function useNotionData(): UseNotionDataReturn {
       return () => clearTimeout(timer);
     }
   }, [user, error, loadData]);
+
+  const scheduleRealtimeRefresh = useCallback(() => {
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
+    }
+
+    // Debounce para evitar múltiplos refetches durante upsert em lote.
+    refreshTimeoutRef.current = setTimeout(() => {
+      void loadData({ silent: true });
+    }, 600);
+  }, [loadData]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`notion_tasks_realtime_${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'notion_tasks' },
+        () => {
+          scheduleRealtimeRefresh();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+      void supabase.removeChannel(channel);
+    };
+  }, [user, scheduleRealtimeRefresh]);
 
   return {
     tarefas: data?.tarefas || [],
