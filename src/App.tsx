@@ -7,6 +7,7 @@ import { Home } from '@/pages/Home'
 import { Login } from '@/pages/Login'
 import { ComissoesPage } from '@/pages/comissoes/ComissoesPage'
 import { RankingPage } from '@/pages/ranking/RankingPage'
+import { NotionPage } from '@/pages/notion/NotionPage'
 import { AccessDenied } from '@/pages/AccessDenied'
 import { NotFound } from '@/pages/NotFound'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
@@ -86,6 +87,9 @@ function ProtectedLayout() {
             } />
             <Route path="/ranking" element={
               hasReportAccess('ranking') ? <RankingPage /> : <AccessDenied />
+            } />
+            <Route path="/notion" element={
+              hasReportAccess('notion') ? <NotionPage /> : <AccessDenied />
             } />
             <Route path="/admin" element={
               isAdmin ? <AdminDashboard /> : <AccessDenied />
