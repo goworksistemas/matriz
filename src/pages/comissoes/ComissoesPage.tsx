@@ -40,8 +40,8 @@ export function ComissoesPage() {
       
       progressIntervalRef.current = setInterval(() => {
         setSyncProgress(prev => {
-          if (prev >= 95) return prev + (increment * 0.1);
-          if (prev >= 80) return prev + (increment * 0.3);
+          if (prev >= 95) return Math.min(prev + (increment * 0.1), 99);
+          if (prev >= 80) return Math.min(prev + (increment * 0.3), 99);
           return Math.min(prev + increment, 99);
         });
       }, interval);
