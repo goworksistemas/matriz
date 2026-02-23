@@ -44,6 +44,14 @@ export interface InsightNotion {
   tarefasSemResponsavel: number;
   taxaStandBy: number;
   taxaFechamento: number;
+  leadTimeMedioDias: number;
+  tarefasConcluidasComData: number;
+  leadTimePorPrioridade: Array<{
+    prioridade: string;
+    mediaDias: number;
+    concluidasComData: number;
+    totalTarefas: number;
+  }>;
 }
 
 export interface SerieDemandaCapacidade {
@@ -119,8 +127,16 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
 
   const tarefasFiltradas = useMemo(() => {
     return tarefas.filter(t => {
-      if (filtros.status && t.status !== filtros.status) return false;
-      if (filtros.prioridade && t.prioridade !== filtros.prioridade) return false;
+      if (
+        filtros.status &&
+        t.status !== filtros.status &&
+        normalizarStatus(t.status) !== filtros.status
+      ) return false;
+      if (
+        filtros.prioridade &&
+        t.prioridade !== filtros.prioridade &&
+        normalizarPrioridade(t.prioridade) !== filtros.prioridade
+      ) return false;
       if (filtros.departamento && t.departamento !== filtros.departamento) return false;
       if (filtros.executor && !t.executores.includes(filtros.executor)) return false;
       return true;
@@ -297,6 +313,68 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
     const tarefasSemResponsavel = ativas.filter(t =>
       t.executores.length === 0 || t.executor.toLowerCase() === 'nao atribuido'
     ).length;
+    const concluidasComData = tarefasFiltradas.filter((tarefa) => {
+      if (!isConcluida(tarefa.status) || !tarefa.criadoEm) return false;
+      const dataCriacao = parseDataEntrada(tarefa.criadoEm);
+      const dataConclusao = parseDataEntrada(tarefa.dataFim ?? tarefa.dataInicio);
+      return !!dataCriacao && !!dataConclusao;
+    });
+    const somaLeadTimeDias = concluidasComData.reduce((acc, tarefa) => {
+      const dataCriacao = parseDataEntrada(tarefa.criadoEm);
+      const dataConclusao = parseDataEntrada(tarefa.dataFim ?? tarefa.dataInicio);
+      if (!dataCriacao || !dataConclusao) return acc;
+      const diffMs = dataConclusao.getTime() - dataCriacao.getTime();
+      const diffDias = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+      return acc + diffDias;
+    }, 0);
+    const totaisPorPrioridade = new Map<string, number>();
+    tarefasFiltradas.forEach((tarefa) => {
+      const prioridade = normalizarPrioridade(tarefa.prioridade);
+      totaisPorPrioridade.set(prioridade, (totaisPorPrioridade.get(prioridade) || 0) + 1);
+    });
+
+    const leadTimePorPrioridadeMap = new Map<string, { somaDias: number; concluidasComData: number }>();
+    concluidasComData.forEach((tarefa) => {
+      const prioridade = normalizarPrioridade(tarefa.prioridade);
+      const dataCriacao = parseDataEntrada(tarefa.criadoEm);
+      const dataConclusao = parseDataEntrada(tarefa.dataFim ?? tarefa.dataInicio);
+      if (!dataCriacao || !dataConclusao) return;
+      const diffMs = dataConclusao.getTime() - dataCriacao.getTime();
+      const diffDias = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+      const atual = leadTimePorPrioridadeMap.get(prioridade) || { somaDias: 0, concluidasComData: 0 };
+      atual.somaDias += diffDias;
+      atual.concluidasComData += 1;
+      leadTimePorPrioridadeMap.set(prioridade, atual);
+    });
+
+    const ordemPrioridade: Record<string, number> = {
+      Urgente: 0,
+      Importante: 1,
+      Media: 2,
+      Baixa: 3,
+      'Sem prioridade': 4,
+    };
+
+    const leadTimePorPrioridade = Array.from(totaisPorPrioridade.entries())
+      .map(([prioridade, totalTarefas]) => {
+        const lead = leadTimePorPrioridadeMap.get(prioridade);
+        const concluidasComData = lead?.concluidasComData || 0;
+        const mediaDias = concluidasComData > 0
+          ? Math.round(((lead?.somaDias || 0) / concluidasComData) * 10) / 10
+          : 0;
+        return {
+          prioridade,
+          mediaDias,
+          concluidasComData,
+          totalTarefas,
+        };
+      })
+      .sort((a, b) => {
+        const ordemA = ordemPrioridade[a.prioridade] ?? 99;
+        const ordemB = ordemPrioridade[b.prioridade] ?? 99;
+        if (ordemA !== ordemB) return ordemA - ordemB;
+        return b.totalTarefas - a.totalTarefas;
+      });
 
     return {
       riscoGeral: ativas.length > 0 ? Math.round((atrasadas.length / ativas.length) * 100) : 0,
@@ -305,6 +383,9 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
       tarefasSemResponsavel,
       taxaStandBy: total > 0 ? Math.round((emStandBy / total) * 100) : 0,
       taxaFechamento: total > 0 ? Math.round(((concluidas + canceladas) / total) * 100) : 0,
+      leadTimeMedioDias: concluidasComData.length > 0 ? Math.round((somaLeadTimeDias / concluidasComData.length) * 10) / 10 : 0,
+      tarefasConcluidasComData: concluidasComData.length,
+      leadTimePorPrioridade,
     };
   }, [tarefasFiltradas]);
 
@@ -345,7 +426,10 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
     const mapa = new Map<string, number>();
 
     tarefasFiltradas.forEach((tarefa) => {
-      const solicitante = tarefa.solicitante?.trim() || 'Nao informado';
+      const solicitante =
+        tarefa.solicitante?.trim() ||
+        tarefa.criadoPor?.trim() ||
+        'Nao informado';
       mapa.set(solicitante, (mapa.get(solicitante) || 0) + 1);
     });
 

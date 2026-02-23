@@ -20,6 +20,10 @@ interface BarChartComponentProps {
   showLegend?: boolean;
   height?: number;
   colorByIndex?: boolean;
+  categoryLabelMaxChars?: number;
+  categoryAxisWidth?: number;
+  onItemClick?: (name: string) => void;
+  activeItem?: string;
 }
 
 export function BarChartComponent({
@@ -28,6 +32,10 @@ export function BarChartComponent({
   layout = 'vertical',
   height = 300,
   colorByIndex = true,
+  categoryLabelMaxChars = 15,
+  categoryAxisWidth = 120,
+  onItemClick,
+  activeItem,
 }: BarChartComponentProps) {
   if (!data || data.length === 0) {
     return (
@@ -41,12 +49,15 @@ export function BarChartComponent({
     ? { top: 10, right: 40, left: 20, bottom: 5 }
     : { top: 24, right: 16, left: 12, bottom: 5 };
 
+  const isClickable = !!onItemClick;
+
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart
         data={data}
         layout={layout}
         margin={margin}
+        style={isClickable ? { cursor: 'pointer' } : undefined}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
         {layout === 'vertical' ? (
@@ -57,9 +68,9 @@ export function BarChartComponent({
               dataKey="name"
               stroke="var(--chart-axis)"
               fontSize={11}
-              width={120}
+              width={categoryAxisWidth}
               tickFormatter={(value: string) => 
-                value.length > 15 ? value.slice(0, 15) + '...' : value
+                value.length > categoryLabelMaxChars ? value.slice(0, categoryLabelMaxChars) + '...' : value
               }
             />
           </>
@@ -89,7 +100,11 @@ export function BarChartComponent({
           itemStyle={{ color: 'var(--chart-tooltip-text)' }}
           cursor={{ fill: 'var(--chart-cursor)' }}
         />
-        <Bar dataKey={dataKey} radius={[4, 4, 4, 4]}>
+        <Bar
+          dataKey={dataKey}
+          radius={[4, 4, 4, 4]}
+          onClick={onItemClick ? (entry) => onItemClick(entry.name) : undefined}
+        >
           <LabelList
             dataKey={dataKey}
             position={layout === 'vertical' ? 'right' : 'top'}
@@ -98,12 +113,17 @@ export function BarChartComponent({
             fontSize={11}
           />
           {colorByIndex &&
-            data.map((_, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={CHART_COLORS[index % CHART_COLORS.length]}
-              />
-            ))}
+            data.map((item, index) => {
+              const baseColor = CHART_COLORS[index % CHART_COLORS.length];
+              const dimmed = activeItem && item.name !== activeItem;
+              return (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={baseColor}
+                  fillOpacity={dimmed ? 0.25 : 1}
+                />
+              );
+            })}
         </Bar>
       </BarChart>
     </ResponsiveContainer>

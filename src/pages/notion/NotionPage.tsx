@@ -186,6 +186,8 @@ export function NotionPage() {
           <PainelExecutivo
             kpis={kpis}
             insights={insights}
+            filtros={filtros}
+            onFiltroChange={updateFiltro}
             dadosGraficoStatus={dadosGraficoStatus}
             dadosGraficoPrioridade={dadosGraficoPrioridade}
             dadosGraficoPrazo={dadosGraficoPrazo}
