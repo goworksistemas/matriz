@@ -46,6 +46,9 @@ export function NotionPage() {
     dadosGraficoDepartamentosCriticos,
     topTarefasCriticas,
     insights,
+    serieDemandaCapacidade,
+    topSolicitantes,
+    gargalosCriticos,
   } = useNotionFilters(tarefas);
 
   const handleExportExcel = useCallback(() => {
@@ -189,6 +192,9 @@ export function NotionPage() {
             dadosGraficoExecutores={dadosGraficoExecutores}
             dadosGraficoDepartamentosCriticos={dadosGraficoDepartamentosCriticos}
             topTarefasCriticas={topTarefasCriticas}
+            serieDemandaCapacidade={serieDemandaCapacidade}
+            topSolicitantes={topSolicitantes}
+            gargalosCriticos={gargalosCriticos}
           />
           <ListagemTarefas tarefas={tarefasFiltradas} />
         </div>

@@ -7,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  LabelList,
 } from 'recharts';
 import { CHART_COLORS } from '@/lib/utils';
 import type { DadosGrafico } from '@/types';
@@ -36,12 +37,16 @@ export function BarChartComponent({
     );
   }
 
+  const margin = layout === 'vertical'
+    ? { top: 10, right: 40, left: 20, bottom: 5 }
+    : { top: 24, right: 16, left: 12, bottom: 5 };
+
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart
         data={data}
         layout={layout}
-        margin={{ top: 10, right: 30, left: 20, bottom: 5 }}
+        margin={margin}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
         {layout === 'vertical' ? (
@@ -85,6 +90,13 @@ export function BarChartComponent({
           cursor={{ fill: 'var(--chart-cursor)' }}
         />
         <Bar dataKey={dataKey} radius={[4, 4, 4, 4]}>
+          <LabelList
+            dataKey={dataKey}
+            position={layout === 'vertical' ? 'right' : 'top'}
+            offset={8}
+            fill="var(--chart-axis)"
+            fontSize={11}
+          />
           {colorByIndex &&
             data.map((_, index) => (
               <Cell

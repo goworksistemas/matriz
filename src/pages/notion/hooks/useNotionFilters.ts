@@ -23,6 +23,9 @@ export interface KPIsNotion {
   venceHoje: number;
   semData: number;
   concluidas: number;
+  canceladas: number;
+  emStandBy: number;
+  tarefasFechadas: number;
   percentConcluidas: number;
 }
 
@@ -39,11 +42,52 @@ export interface InsightNotion {
   atrasoMedioDias: number;
   taxaSemPrazo: number;
   tarefasSemResponsavel: number;
+  taxaStandBy: number;
+  taxaFechamento: number;
 }
 
-function isFechadaOuCancelada(status: string): boolean {
+export interface SerieDemandaCapacidade {
+  mes: string;
+  criadas: number;
+  concluidas: number;
+}
+
+function parseDataEntrada(data: string | null): Date | null {
+  if (!data) return null;
+  const dt = new Date(data);
+  return Number.isNaN(dt.getTime()) ? null : dt;
+}
+
+function chaveMes(data: Date): string {
+  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function labelMes(chave: string): string {
+  const [ano, mes] = chave.split('-').map(Number);
+  const dt = new Date(ano, (mes || 1) - 1, 1);
+  return dt.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+}
+
+function isConcluida(status: string): boolean {
   const normalizado = status.toLowerCase();
-  return normalizado.includes('conclu') || normalizado.includes('cancel');
+  return normalizado.includes('conclu');
+}
+
+function isCancelada(status: string): boolean {
+  const normalizado = status.toLowerCase();
+  return normalizado.includes('cancel');
+}
+
+function isStandBy(status: string): boolean {
+  return status.toLowerCase().includes('stand');
+}
+
+function isStatusGlobal(status: string): boolean {
+  return isConcluida(status) || isCancelada(status) || isStandBy(status);
+}
+
+function isOperacionalAtiva(status: string): boolean {
+  return !isStatusGlobal(status);
 }
 
 function normalizarStatus(status: string): string {
@@ -85,13 +129,15 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
 
   const kpis = useMemo<KPIsNotion>(() => {
     const total = tarefasFiltradas.length;
-    const concluidas = tarefasFiltradas.filter(t => t.status.toLowerCase().includes('conclu')).length;
-    const canceladas = tarefasFiltradas.filter(t => t.status.toLowerCase().includes('cancel')).length;
-    const ativas = total - concluidas - canceladas;
-    const vencidas = tarefasFiltradas.filter(t => t.statusPrazo === 'vencida' && !isFechadaOuCancelada(t.status)).length;
-    const noPrazo = tarefasFiltradas.filter(t => t.statusPrazo === 'no_prazo' && !isFechadaOuCancelada(t.status)).length;
-    const venceHoje = tarefasFiltradas.filter(t => t.statusPrazo === 'hoje' && !isFechadaOuCancelada(t.status)).length;
-    const semData = tarefasFiltradas.filter(t => t.statusPrazo === 'sem_data' && !isFechadaOuCancelada(t.status)).length;
+    const concluidas = tarefasFiltradas.filter(t => isConcluida(t.status)).length;
+    const canceladas = tarefasFiltradas.filter(t => isCancelada(t.status)).length;
+    const emStandBy = tarefasFiltradas.filter(t => isStandBy(t.status)).length;
+    const ativas = total - concluidas - canceladas - emStandBy;
+    const tarefasFechadas = concluidas + canceladas;
+    const vencidas = tarefasFiltradas.filter(t => t.statusPrazo === 'vencida' && isOperacionalAtiva(t.status)).length;
+    const noPrazo = tarefasFiltradas.filter(t => t.statusPrazo === 'no_prazo' && isOperacionalAtiva(t.status)).length;
+    const venceHoje = tarefasFiltradas.filter(t => t.statusPrazo === 'hoje' && isOperacionalAtiva(t.status)).length;
+    const semData = tarefasFiltradas.filter(t => t.statusPrazo === 'sem_data' && isOperacionalAtiva(t.status)).length;
 
     return {
       totalTarefas: total,
@@ -101,6 +147,9 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
       venceHoje,
       semData,
       concluidas,
+      canceladas,
+      emStandBy,
+      tarefasFechadas,
       percentConcluidas: total > 0 ? Math.round((concluidas / total) * 100) : 0,
     };
   }, [tarefasFiltradas]);
@@ -108,6 +157,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
   const dadosGraficoStatus = useMemo(() => {
     const mapa = new Map<string, number>();
     tarefasFiltradas.forEach(t => {
+      if (isStatusGlobal(t.status)) return;
       const statusNormalizado = normalizarStatus(t.status);
       mapa.set(statusNormalizado, (mapa.get(statusNormalizado) || 0) + 1);
     });
@@ -158,7 +208,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
   }, [tarefasFiltradas]);
 
   const dadosGraficoPrazo = useMemo(() => {
-    const ativas = tarefasFiltradas.filter(t => !isFechadaOuCancelada(t.status));
+    const ativas = tarefasFiltradas.filter(t => isOperacionalAtiva(t.status));
     const mapa = new Map<string, number>([
       ['Vencidas', 0],
       ['Vence hoje', 0],
@@ -177,7 +227,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
   }, [tarefasFiltradas]);
 
   const resumoPorExecutor = useMemo<ResumoExecutor[]>(() => {
-    const ativas = tarefasFiltradas.filter(t => !isFechadaOuCancelada(t.status));
+    const ativas = tarefasFiltradas.filter(t => isOperacionalAtiva(t.status));
 
     const mapa = new Map<string, ResumoExecutor>();
 
@@ -215,7 +265,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
   const dadosGraficoDepartamentosCriticos = useMemo(() => {
     const mapa = new Map<string, number>();
     tarefasFiltradas
-      .filter(t => t.statusPrazo === 'vencida' && !isFechadaOuCancelada(t.status))
+      .filter(t => t.statusPrazo === 'vencida' && isOperacionalAtiva(t.status))
       .forEach(t => {
         mapa.set(t.departamento, (mapa.get(t.departamento) || 0) + 1);
       });
@@ -228,13 +278,17 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
 
   const topTarefasCriticas = useMemo(() => {
     return tarefasFiltradas
-      .filter(t => t.statusPrazo === 'vencida' && !isFechadaOuCancelada(t.status))
+      .filter(t => t.statusPrazo === 'vencida' && isOperacionalAtiva(t.status))
       .sort((a, b) => b.diasAtraso - a.diasAtraso)
       .slice(0, 8);
   }, [tarefasFiltradas]);
 
   const insights = useMemo<InsightNotion>(() => {
-    const ativas = tarefasFiltradas.filter(t => !isFechadaOuCancelada(t.status));
+    const ativas = tarefasFiltradas.filter(t => isOperacionalAtiva(t.status));
+    const total = tarefasFiltradas.length;
+    const concluidas = tarefasFiltradas.filter(t => isConcluida(t.status)).length;
+    const canceladas = tarefasFiltradas.filter(t => isCancelada(t.status)).length;
+    const emStandBy = tarefasFiltradas.filter(t => isStandBy(t.status)).length;
     const atrasadas = ativas.filter(t => t.statusPrazo === 'vencida');
     const semPrazo = ativas.filter(t => t.statusPrazo === 'sem_data');
     const atrasoMedioDias = atrasadas.length > 0
@@ -249,12 +303,72 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
       atrasoMedioDias,
       taxaSemPrazo: ativas.length > 0 ? Math.round((semPrazo.length / ativas.length) * 100) : 0,
       tarefasSemResponsavel,
+      taxaStandBy: total > 0 ? Math.round((emStandBy / total) * 100) : 0,
+      taxaFechamento: total > 0 ? Math.round(((concluidas + canceladas) / total) * 100) : 0,
     };
+  }, [tarefasFiltradas]);
+
+  const serieDemandaCapacidade = useMemo<SerieDemandaCapacidade[]>(() => {
+    const mapa = new Map<string, { criadas: number; concluidas: number }>();
+
+    tarefasFiltradas.forEach((tarefa) => {
+      const dataCriacao = parseDataEntrada(tarefa.criadoEm ?? tarefa.dataInicio);
+      if (dataCriacao) {
+        const chave = chaveMes(dataCriacao);
+        const atual = mapa.get(chave) || { criadas: 0, concluidas: 0 };
+        atual.criadas += 1;
+        mapa.set(chave, atual);
+      }
+
+      if (isConcluida(tarefa.status)) {
+        const dataConclusao = parseDataEntrada(tarefa.atualizadoEm ?? tarefa.dataFim ?? tarefa.criadoEm);
+        if (dataConclusao) {
+          const chave = chaveMes(dataConclusao);
+          const atual = mapa.get(chave) || { criadas: 0, concluidas: 0 };
+          atual.concluidas += 1;
+          mapa.set(chave, atual);
+        }
+      }
+    });
+
+    return Array.from(mapa.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-12)
+      .map(([mes, values]) => ({
+        mes: labelMes(mes),
+        criadas: values.criadas,
+        concluidas: values.concluidas,
+      }));
+  }, [tarefasFiltradas]);
+
+  const topSolicitantes = useMemo(() => {
+    const mapa = new Map<string, number>();
+
+    tarefasFiltradas.forEach((tarefa) => {
+      const solicitante = tarefa.solicitante?.trim() || 'Nao informado';
+      mapa.set(solicitante, (mapa.get(solicitante) || 0) + 1);
+    });
+
+    return Array.from(mapa.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10);
+  }, [tarefasFiltradas]);
+
+  const gargalosCriticos = useMemo(() => {
+    return tarefasFiltradas
+      .filter((tarefa) => {
+        const standBy = tarefa.status.toLowerCase().includes('stand');
+        const prioridade = normalizarPrioridade(tarefa.prioridade);
+        const prioridadeCritica = prioridade === 'Urgente' || prioridade === 'Importante';
+        return standBy && prioridadeCritica;
+      })
+      .sort((a, b) => b.diasAtraso - a.diasAtraso);
   }, [tarefasFiltradas]);
 
   const tarefasTimeline = useMemo(() => {
     return tarefasFiltradas
-      .filter(t => !isFechadaOuCancelada(t.status))
+      .filter(t => isOperacionalAtiva(t.status))
       .sort((a, b) => {
         if (a.statusPrazo === 'vencida' && b.statusPrazo !== 'vencida') return -1;
         if (a.statusPrazo !== 'vencida' && b.statusPrazo === 'vencida') return 1;
@@ -298,5 +412,8 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
     insights,
     resumoPorExecutor,
     tarefasTimeline,
+    serieDemandaCapacidade,
+    topSolicitantes,
+    gargalosCriticos,
   };
 }

@@ -44,8 +44,12 @@ export function PieChartComponent({
           paddingAngle={2}
           dataKey="value"
           nameKey="name"
-          label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+          label={({ value, percent }) => {
+            const p = (percent * 100).toFixed(0);
+            return `${value} (${p}%)`;
+          }}
           labelLine={false}
+          fontSize={11}
         >
           {data.map((_, index) => (
             <Cell
