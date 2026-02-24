@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/AuthContext';
 import { fetchDadosNotion, type DadosNotionResult } from '../services/api';
 import type { TarefaProcessada } from '../services/api';
-import { supabase } from '../services/supabase';
+import { supabase, isSupabaseConfigured, supabaseConfigErrorMessage } from '../services/supabase';
 
 interface UseNotionDataReturn {
   tarefas: TarefaProcessada[];
@@ -31,6 +31,11 @@ export function useNotionData(): UseNotionDataReturn {
         setIsLoading(true);
         setError(null);
       }
+
+      if (!isSupabaseConfigured) {
+        throw new Error(supabaseConfigErrorMessage);
+      }
+
       const result = await fetchDadosNotion();
       setData(result);
       hasLoaded.current = true;
@@ -70,6 +75,7 @@ export function useNotionData(): UseNotionDataReturn {
 
   useEffect(() => {
     if (!user) return;
+    if (!isSupabaseConfigured) return;
 
     const channel = supabase
       .channel(`notion_tasks_realtime_${user.id}`)
