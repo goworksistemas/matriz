@@ -1,6 +1,6 @@
 {
   "name": "matriz-central-relatorios",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "description": "Central de Relatórios NetworkGO",
   "private": true,
   "type": "module",
@@ -30,14 +30,14 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "date-fns": "^3.2.0",
+    "exceljs": "^4.4.0",
     "lucide-react": "^0.309.0",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.1.0",
     "recharts": "^2.10.3",
-    "tailwind-merge": "^2.2.0",
-    "xlsx": "^0.18.5"
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",

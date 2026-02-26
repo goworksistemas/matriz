@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { Clock, Loader2, AlertCircle, RefreshCw, Download, RotateCcw } from 'lucide-react';
-import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
+import { exportToExcel } from '@/lib/exportExcel';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/Button';
 import { Select, SelectItem } from '@/components/ui/Select';
@@ -51,7 +51,7 @@ export function NotionPage() {
     gargalosCriticos,
   } = useNotionFilters(tarefas);
 
-  const handleExportExcel = useCallback(() => {
+  const handleExportExcel = useCallback(async () => {
     const dadosExport = tarefasFiltradas.map(t => ({
       'Titulo': t.titulo,
       'Status': t.status,
@@ -65,15 +65,12 @@ export function NotionPage() {
       'Status Prazo': t.statusPrazo,
     }));
 
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(dadosExport);
-    ws['!cols'] = [
-      { wch: 40 }, { wch: 20 }, { wch: 15 }, { wch: 25 },
-      { wch: 25 }, { wch: 20 }, { wch: 12 }, { wch: 12 },
-      { wch: 12 }, { wch: 15 },
-    ];
-    XLSX.utils.book_append_sheet(wb, ws, 'Tarefas Notion');
-    XLSX.writeFile(wb, `tarefas_notion_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`);
+    await exportToExcel({
+      data: dadosExport,
+      sheetName: 'Tarefas Notion',
+      fileName: `tarefas_notion_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`,
+      columnWidths: [40, 20, 15, 25, 25, 20, 12, 12, 12, 15],
+    });
     log('export_excel', 'report', 'notion', { records: tarefasFiltradas.length });
   }, [tarefasFiltradas, log]);
 

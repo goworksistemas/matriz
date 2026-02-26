@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
-  "buildDate": "2026-02-18T22:00:00Z",
-  "commitMessage": "fix(auth): corrige race condition no login e implementa fluxo de redefinição de senha"
+  "version": "2.2.0",
+  "buildDate": "2026-02-24T22:00:00Z",
+  "commitMessage": "feat(ranking): melhoria completa do painel de ranking com detalhamento mensal, sincronização N8N e otimização de performance"
 }

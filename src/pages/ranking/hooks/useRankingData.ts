@@ -2,8 +2,7 @@
 // HOOK PARA CARREGAR DADOS DO RANKING
 // ============================================
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAuth } from '@/hooks/AuthContext';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchDadosRanking, type DadosRankingResult } from '../services/api';
 import type {
   DealProcessado,
@@ -25,11 +24,9 @@ interface UseRankingDataReturn {
 }
 
 export function useRankingData(): UseRankingDataReturn {
-  const { user } = useAuth();
   const [data, setData] = useState<DadosRankingResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const hasLoaded = useRef(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -37,7 +34,6 @@ export function useRankingData(): UseRankingDataReturn {
       setError(null);
       const result = await fetchDadosRanking();
       setData(result);
-      hasLoaded.current = true;
     } catch (err) {
       console.error('Erro ao carregar dados do ranking:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
@@ -46,20 +42,9 @@ export function useRankingData(): UseRankingDataReturn {
     }
   }, []);
 
-  // Carregar quando o user estiver autenticado
   useEffect(() => {
-    if (user) {
-      loadData();
-    }
-  }, [user, loadData]);
-
-  // Retry: se falhou na primeira vez e user existe, tenta novamente após 1s
-  useEffect(() => {
-    if (user && error && !hasLoaded.current) {
-      const timer = setTimeout(() => loadData(), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [user, error, loadData]);
+    loadData();
+  }, [loadData]);
 
   return {
     deals: data?.deals || [],

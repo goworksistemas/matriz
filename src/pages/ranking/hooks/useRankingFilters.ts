@@ -10,6 +10,13 @@ import type {
   VendedorCompeticao,
 } from '@/types';
 
+export interface DadoGraficoMensalDeals {
+  mes: string;
+  mesNumero: number;
+  deals: number;
+  meta: number;
+}
+
 const MESES = [
   'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
   'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
@@ -139,6 +146,23 @@ export function useRankingFilters(
   }, [lineItemsAno, metas, filtrosGlobal.ano]);
 
   // ============================================
+  // GRÁFICO MENSAL (Deals)
+  // ============================================
+
+  const dadosGraficoMensalDeals = useMemo<DadoGraficoMensalDeals[]>(() => {
+    return MESES.map((mes, index) => {
+      const mesNumero = index + 1;
+      const dealsNoMes = dealsGanhosAno.filter(d => d.mes === mesNumero).length;
+
+      const metaDoMes = metas.find(
+        m => m.year === filtrosGlobal.ano && m.month === mesNumero
+      );
+
+      return { mes, mesNumero, deals: dealsNoMes, meta: metaDoMes?.monthlyGoalDeals || 0 };
+    });
+  }, [dealsGanhosAno, metas, filtrosGlobal.ano]);
+
+  // ============================================
   // COMPETIÇÃO - Ranking de vendedores
   // Usa os line items já filtrados por ano/mês
   // ============================================
@@ -234,6 +258,7 @@ export function useRankingFilters(
     dealsGanhosMes,
     dadosGraficoMensalRevenue,
     dadosGraficoMensalSeats,
+    dadosGraficoMensalDeals,
     rankingCompeticao,
   };
 }

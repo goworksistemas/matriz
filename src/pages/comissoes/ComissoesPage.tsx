@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { LayoutDashboard, Users, UserCheck, Loader2, AlertCircle, RefreshCw, CheckCircle, XCircle, Download, Clock } from 'lucide-react';
-import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
+import { exportToExcel } from '@/lib/exportExcel';
 import { ptBR } from 'date-fns/locale';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
@@ -135,8 +135,7 @@ export function ComissoesPage() {
     resetFiltrosSDR,
   } = useFilters(comissoes);
 
-  // Exportar Excel
-  const handleExportExcel = useCallback(() => {
+  const handleExportExcel = useCallback(async () => {
     const dadosExport = comissoesFiltradas.map(c => ({
       'Cliente': c.nomeCliente,
       'Vendedor': c.proprietarioNome,
@@ -158,17 +157,12 @@ export function ComissoesPage() {
       'Data Fechamento': c.dataFechamento || '',
     }));
 
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(dadosExport);
-    ws['!cols'] = [
-      { wch: 30 }, { wch: 20 }, { wch: 20 }, { wch: 20 },
-      { wch: 15 }, { wch: 12 }, { wch: 14 }, { wch: 10 },
-      { wch: 12 }, { wch: 16 }, { wch: 14 }, { wch: 18 },
-      { wch: 18 }, { wch: 16 }, { wch: 20 }, { wch: 15 },
-      { wch: 12 }, { wch: 15 },
-    ];
-    XLSX.utils.book_append_sheet(wb, ws, 'Comissões');
-    XLSX.writeFile(wb, `comissoes_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`);
+    await exportToExcel({
+      data: dadosExport,
+      sheetName: 'Comissões',
+      fileName: `comissoes_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`,
+      columnWidths: [30, 20, 20, 20, 15, 12, 14, 10, 12, 16, 14, 18, 18, 16, 20, 15, 12, 15],
+    });
     log('export_excel', 'report', 'comissoes', { records: comissoesFiltradas.length });
   }, [comissoesFiltradas, log]);
 

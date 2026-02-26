@@ -130,36 +130,51 @@ async function fetchDeals(): Promise<HubspotDeal[]> {
 
 const LINE_ITEMS_COLUMNS = 'id, hubspot_id, deal_id, quantity, amount, name';
 
-async function fetchLineItems(): Promise<HubspotLineItem[]> {
-  const allRows: HubspotLineItem[] = [];
-  const pageSize = 1000;
-  let lastId: string | null = null;
+async function fetchLineItemsByDealIds(dealIds: string[]): Promise<HubspotLineItem[]> {
+  if (dealIds.length === 0) return [];
 
-  while (true) {
-    let query = supabase
-      .from('hubspot_line_items')
-      .select(LINE_ITEMS_COLUMNS)
-      .eq('archived', false)
-      .order('id', { ascending: true })
-      .limit(pageSize);
-
-    if (lastId) {
-      query = query.gt('id', lastId);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Erro ao buscar line items:', error);
-      throw error;
-    }
-    if (!data || data.length === 0) break;
-    allRows.push(...(data as HubspotLineItem[]));
-    lastId = data[data.length - 1].id;
-    if (data.length < pageSize) break;
+  const BATCH_SIZE = 200;
+  const batches: string[][] = [];
+  for (let i = 0; i < dealIds.length; i += BATCH_SIZE) {
+    batches.push(dealIds.slice(i, i + BATCH_SIZE));
   }
 
-  return allRows;
+  const results = await Promise.all(
+    batches.map(async (batch) => {
+      const allRows: HubspotLineItem[] = [];
+      const pageSize = 1000;
+      let lastId: string | null = null;
+
+      while (true) {
+        let query = supabase
+          .from('hubspot_line_items')
+          .select(LINE_ITEMS_COLUMNS)
+          .eq('archived', false)
+          .in('deal_id', batch)
+          .order('id', { ascending: true })
+          .limit(pageSize);
+
+        if (lastId) {
+          query = query.gt('id', lastId);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error('Erro ao buscar line items:', error);
+          throw error;
+        }
+        if (!data || data.length === 0) break;
+        allRows.push(...(data as HubspotLineItem[]));
+        lastId = data[data.length - 1].id;
+        if (data.length < pageSize) break;
+      }
+
+      return allRows;
+    })
+  );
+
+  return results.flat();
 }
 
 // ============================================
@@ -278,39 +293,19 @@ function processSalesGoals(goals: SalesGoal[]): MetaVendas[] {
 // ============================================
 
 async function fetchUltimaAtualizacao(): Promise<string | null> {
-  const tabelas = [
-    'hubspot_deals',
-    'hubspot_owners',
-    'hubspot_line_items',
-  ];
-
-  const promises = tabelas.map(async (tabela) => {
+  try {
     const { data } = await supabase
-      .from(tabela)
+      .from('hubspot_deals')
       .select('_extracted_at')
       .order('_extracted_at', { ascending: false })
       .limit(1);
 
     if (data && data.length > 0) {
-      const row = data[0] as { _extracted_at: string };
-      return row._extracted_at;
-    }
-    return null;
-  });
-
-  try {
-    const resultados = await Promise.all(promises);
-    const datas = resultados
-      .filter((d): d is string => d !== null)
-      .map(d => new Date(d).getTime());
-
-    if (datas.length > 0) {
-      return new Date(Math.max(...datas)).toISOString();
+      return (data[0] as { _extracted_at: string })._extracted_at;
     }
   } catch (error) {
     console.error('Erro ao buscar última atualização:', error);
   }
-
   return null;
 }
 
@@ -364,7 +359,6 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
     pipelinesRaw,
     wonStageIds,
     dealsRaw,
-    lineItemsRaw,
     salesGoalsRaw,
     ultimaAtualizacao,
   ] = await Promise.all([
@@ -372,22 +366,15 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
     fetchPipelines(),
     fetchWonStageIds(),
     fetchDeals(),
-    fetchLineItems(),
     fetchSalesGoals(),
     fetchUltimaAtualizacao(),
   ]);
 
-  // Processar owners e criar mapa
   const proprietarios = processOwners(ownersRaw);
   const ownersMap = createOwnersMap(proprietarios);
-
-  // Processar pipelines
   const pipelinesMap = createPipelinesMap(pipelinesRaw);
-
-  // Processar deals (usa wonStageIds do banco para determinar deal ganho)
   const deals = processDeals(dealsRaw, ownersMap, pipelinesMap, wonStageIds);
 
-  // Criar mapa de deals ganhos por hubspot_id (para enriquecer line items)
   const wonDealsMap = new Map<string, DealProcessado>();
   deals.forEach(d => {
     if (d.isClosedWon) {
@@ -395,13 +382,17 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
     }
   });
 
-  // Enriquecer line items (apenas de deals ganhos)
-  const lineItems = processLineItems(lineItemsRaw, wonDealsMap);
+  const wonDealIds = [...wonDealsMap.keys()];
 
-  // Processar metas
+  let lineItems: LineItemEnriquecido[] = [];
+
+  if (wonDealIds.length > 0) {
+    const lineItemsRaw = await fetchLineItemsByDealIds(wonDealIds);
+    lineItems = processLineItems(lineItemsRaw, wonDealsMap);
+  }
+
   const metas = processSalesGoals(salesGoalsRaw);
 
-  // Vendedores únicos (dos deals ganhos)
   const vendedoresUnicos = [...new Set(
     deals
       .filter(d => d.isClosedWon)
