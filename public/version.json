@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
-  "buildDate": "2026-02-24T22:00:00Z",
-  "commitMessage": "feat(ranking): melhoria completa do painel de ranking com detalhamento mensal, sincronização N8N e otimização de performance"
+  "version": "2.2.1",
+  "buildDate": "2026-02-24T23:30:00Z",
+  "commitMessage": "perf(ranking): carregamento progressivo com cache, campanhas na competição e correções visuais"
 }
