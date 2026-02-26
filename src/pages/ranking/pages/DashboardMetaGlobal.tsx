@@ -343,14 +343,14 @@ export function DashboardMetaGlobal({
   const mediaMensalGrafico = useMemo(() => {
     const valores = dadosGraficoAtivo
       .slice(0, mesesDecorridos)
-      .map((d) => Number((d as Record<string, unknown>)[configAtivo.dataKey]) || 0);
+      .map((d) => Number((d as unknown as Record<string, unknown>)[configAtivo.dataKey]) || 0);
     const soma = valores.reduce((a, b) => a + b, 0);
     return mesesDecorridos > 0 ? soma / mesesDecorridos : 0;
   }, [dadosGraficoAtivo, mesesDecorridos, configAtivo.dataKey]);
 
   const dadosDetalheMensal = useMemo<DadoMesDetalhado[]>(() => {
     return dadosGraficoAtivo.map((d) => {
-      const rec = d as Record<string, unknown>;
+      const rec = d as unknown as Record<string, unknown>;
       return {
         mes: String(rec.mes),
         mesNumero: Number(rec.mesNumero),
