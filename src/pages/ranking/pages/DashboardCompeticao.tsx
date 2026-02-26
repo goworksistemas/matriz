@@ -10,6 +10,8 @@ import {
   Layers,
   Crown,
   Briefcase,
+  Target,
+  CalendarDays,
 } from 'lucide-react';
 import {
   BarChart,
@@ -186,6 +188,56 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
           </span>
         </div>
       </div>
+
+      <Card className="border-primary-200 dark:border-primary-500/30 bg-gradient-to-r from-primary-50 dark:from-primary-500/5 to-white dark:to-primary-600/10">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-primary-600 dark:text-primary-400">
+            <Target className="h-5 w-5" />
+            Campanhas Ativas
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-amber-500" />
+                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Campanha Salinhas Varejo</h4>
+                <span className="flex items-center gap-1 text-[11px] text-gray-400">
+                  <CalendarDays className="h-3 w-3" />
+                  17/02/26 a 15/05/26
+                </span>
+              </div>
+              <div className="space-y-1.5 text-gray-500 dark:text-gray-400 ml-4">
+                <p><span className="font-medium text-gray-700 dark:text-gray-300">Vendas — 1° colocado:</span> Mais contratos no periodo <span className="text-xs text-gray-400">• Min. 105 seats</span></p>
+                <p><span className="font-medium text-gray-700 dark:text-gray-300">Vendas — 2° colocado:</span> Segundo que mais vendeu contratos <span className="text-xs text-gray-400">• Min. 105 seats</span></p>
+                <p><span className="font-medium text-gray-700 dark:text-gray-300">Pre-Vendas e Virtual:</span> Mais reunioes realizadas ou vendas virtual <span className="text-xs text-gray-400">• Min. 180 reunioes</span></p>
+              </div>
+              <div className="ml-4 text-[11px] text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-white/[0.04] pt-2">
+                Meta minima da campanha atingida • Limite de 30 posicoes por contrato
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-sky-500" />
+                <h4 className="font-semibold text-gray-700 dark:text-gray-200">Campanha Mackbook</h4>
+                <span className="flex items-center gap-1 text-[11px] text-gray-400">
+                  <CalendarDays className="h-3 w-3" />
+                  17/02/26 a 15/12/25
+                </span>
+              </div>
+              <div className="space-y-1.5 text-gray-500 dark:text-gray-400 ml-4">
+                <p><span className="font-medium text-gray-700 dark:text-gray-300">Vendas — 1° colocado:</span> Mais seats vendidos no periodo <span className="text-xs text-gray-400">• Min. 250 seats</span></p>
+                <p><span className="font-medium text-gray-700 dark:text-gray-300">Vendas — 2° colocado:</span> Segundo que mais vendeu seats <span className="text-xs text-gray-400">• Min. 250 seats</span></p>
+                <p><span className="font-medium text-gray-700 dark:text-gray-300">Pre-Vendas e Virtual:</span> Mais reunioes ou vendas virtual <span className="text-xs text-gray-400">• Min. 400 reunioes / 250 virtuais</span></p>
+              </div>
+              <div className="ml-4 text-[11px] text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-white/[0.04] pt-2">
+                Meta minima da campanha atingida • Limite de 30 posicoes por contrato
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {kpis.melhorVendedor && (
         <div className="rounded-xl border border-amber-200/60 dark:border-amber-500/20 bg-gradient-to-r from-amber-50 to-white dark:from-amber-500/10 dark:to-gray-900/40 p-4">
