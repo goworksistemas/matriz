@@ -89,7 +89,7 @@ function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
           </span>
 
           <span className="text-lg font-bold text-primary-600 dark:text-primary-400 mt-1">
-            {formatNumber(v.seatsCapped, 1)}
+            {formatNumber(v.seatsCapped)}
           </span>
           <span className="text-[10px] text-gray-400 mb-2">seats</span>
 
@@ -141,7 +141,7 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
             <span className="text-xs font-medium text-gray-500">Total Seats</span>
           </div>
           <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {formatNumber(kpis.totalSeats, 1)}
+            {formatNumber(kpis.totalSeats)}
           </span>
         </div>
 
@@ -151,7 +151,7 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
             <span className="text-xs font-medium text-gray-500">Media/Vendedor</span>
           </div>
           <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {formatNumber(kpis.mediaSeats, 1)}
+            {formatNumber(kpis.mediaSeats)}
           </span>
         </div>
 
@@ -161,7 +161,7 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
             <span className="text-xs font-medium text-gray-500">Seats/Deal</span>
           </div>
           <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {formatNumber(kpis.ticketMedio, 1)}
+            {formatNumber(kpis.ticketMedio)}
           </span>
         </div>
 
@@ -305,12 +305,12 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
                       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     }}
                     formatter={(value: number, name: string) => [
-                      formatNumber(value, 1),
+                      formatNumber(value),
                       name === 'seats' ? 'Seats (c/ cap)' : 'Meta Minima',
                     ]}
                   />
                   <Bar dataKey="seats" radius={[0, 4, 4, 0]}>
-                    <LabelList dataKey="seats" position="right" offset={8} fill="var(--chart-axis)" fontSize={11} formatter={(v: number) => formatNumber(v, 1)} />
+                    <LabelList dataKey="seats" position="right" offset={8} fill="var(--chart-axis)" fontSize={11} formatter={(v: number) => formatNumber(v)} />
                     {dadosGraficoRanking.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={RANKING_BAR_COLORS[index % RANKING_BAR_COLORS.length]} />
                     ))}
@@ -389,12 +389,12 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
 
                         <td className="py-3 px-3 text-right">
                           <span className="font-semibold text-gray-900 dark:text-gray-100">
-                            {formatNumber(v.seatsCapped, 1)}
+                            {formatNumber(v.seatsCapped)}
                           </span>
                         </td>
 
                         <td className="py-3 px-3 text-right text-gray-400 dark:text-gray-500">
-                          {formatNumber(v.seatsRaw, 1)}
+                          {formatNumber(v.seatsRaw)}
                         </td>
 
                         <td className="py-3 px-3 text-right text-gray-600 dark:text-gray-300">

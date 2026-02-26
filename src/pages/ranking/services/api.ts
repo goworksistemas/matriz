@@ -353,7 +353,16 @@ export async function upsertSalesGoal(
 
 export interface DadosRankingResult extends DadosRanking {}
 
-export async function fetchDadosRanking(): Promise<DadosRankingResult> {
+export interface DadosRankingBase {
+  deals: DealProcessado[];
+  metas: MetaVendas[];
+  proprietarios: Proprietario[];
+  vendedoresUnicos: string[];
+  ultimaAtualizacao: string | null;
+  wonDealsMap: Map<string, DealProcessado>;
+}
+
+export async function fetchDadosRankingBase(): Promise<DadosRankingBase> {
   const [
     ownersRaw,
     pipelinesRaw,
@@ -382,15 +391,6 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
     }
   });
 
-  const wonDealIds = [...wonDealsMap.keys()];
-
-  let lineItems: LineItemEnriquecido[] = [];
-
-  if (wonDealIds.length > 0) {
-    const lineItemsRaw = await fetchLineItemsByDealIds(wonDealIds);
-    lineItems = processLineItems(lineItemsRaw, wonDealsMap);
-  }
-
   const metas = processSalesGoals(salesGoalsRaw);
 
   const vendedoresUnicos = [...new Set(
@@ -402,10 +402,20 @@ export async function fetchDadosRanking(): Promise<DadosRankingResult> {
 
   return {
     deals,
-    lineItems,
     metas,
     proprietarios,
     vendedoresUnicos,
     ultimaAtualizacao,
+    wonDealsMap,
   };
+}
+
+export async function fetchLineItemsEnriquecidos(
+  wonDealsMap: Map<string, DealProcessado>,
+): Promise<LineItemEnriquecido[]> {
+  const wonDealIds = [...wonDealsMap.keys()];
+  if (wonDealIds.length === 0) return [];
+
+  const lineItemsRaw = await fetchLineItemsByDealIds(wonDealIds);
+  return processLineItems(lineItemsRaw, wonDealsMap);
 }

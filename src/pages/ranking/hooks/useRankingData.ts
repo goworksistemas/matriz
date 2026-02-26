@@ -1,9 +1,9 @@
-// ============================================
-// HOOK PARA CARREGAR DADOS DO RANKING
-// ============================================
-
-import { useState, useEffect, useCallback } from 'react';
-import { fetchDadosRanking, type DadosRankingResult } from '../services/api';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  fetchDadosRankingBase,
+  fetchLineItemsEnriquecidos,
+  type DadosRankingBase,
+} from '../services/api';
 import type {
   DealProcessado,
   LineItemEnriquecido,
@@ -23,38 +23,66 @@ interface UseRankingDataReturn {
   refetch: () => Promise<void>;
 }
 
+let cachedBase: DadosRankingBase | null = null;
+let cachedLineItems: LineItemEnriquecido[] | null = null;
+
 export function useRankingData(): UseRankingDataReturn {
-  const [data, setData] = useState<DadosRankingResult | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [base, setBase] = useState<DadosRankingBase | null>(cachedBase);
+  const [lineItems, setLineItems] = useState<LineItemEnriquecido[]>(cachedLineItems || []);
+  const [isLoading, setIsLoading] = useState(!cachedBase);
   const [error, setError] = useState<string | null>(null);
+  const loadingLineItems = useRef(false);
 
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const result = await fetchDadosRanking();
-      setData(result);
+
+      const baseResult = await fetchDadosRankingBase();
+      cachedBase = baseResult;
+      setBase(baseResult);
+      setIsLoading(false);
+
+      if (!loadingLineItems.current) {
+        loadingLineItems.current = true;
+        const items = await fetchLineItemsEnriquecidos(baseResult.wonDealsMap);
+        cachedLineItems = items;
+        setLineItems(items);
+        loadingLineItems.current = false;
+      }
     } catch (err) {
       console.error('Erro ao carregar dados do ranking:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
-    } finally {
       setIsLoading(false);
+      loadingLineItems.current = false;
     }
   }, []);
 
   useEffect(() => {
-    loadData();
+    if (cachedBase) {
+      setBase(cachedBase);
+      setLineItems(cachedLineItems || []);
+      setIsLoading(false);
+
+      loadData();
+    } else {
+      loadData();
+    }
   }, [loadData]);
 
   return {
-    deals: data?.deals || [],
-    lineItems: data?.lineItems || [],
-    metas: data?.metas || [],
-    proprietarios: data?.proprietarios || [],
-    vendedoresUnicos: data?.vendedoresUnicos || [],
-    ultimaAtualizacao: data?.ultimaAtualizacao || null,
+    deals: base?.deals || [],
+    lineItems,
+    metas: base?.metas || [],
+    proprietarios: base?.proprietarios || [],
+    vendedoresUnicos: base?.vendedoresUnicos || [],
+    ultimaAtualizacao: base?.ultimaAtualizacao || null,
     isLoading,
     error,
-    refetch: loadData,
+    refetch: async () => {
+      cachedBase = null;
+      cachedLineItems = null;
+      await loadData();
+    },
   };
 }
