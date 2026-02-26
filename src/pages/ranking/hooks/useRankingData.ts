@@ -31,30 +31,35 @@ export function useRankingData(): UseRankingDataReturn {
   const [lineItems, setLineItems] = useState<LineItemEnriquecido[]>(cachedLineItems || []);
   const [isLoading, setIsLoading] = useState(!cachedBase);
   const [error, setError] = useState<string | null>(null);
-  const loadingLineItems = useRef(false);
+  const loadingRef = useRef(false);
 
-  const loadData = useCallback(async () => {
+  const fetchAll = useCallback(async (silent: boolean) => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+
     try {
-      setIsLoading(true);
-      setError(null);
+      if (!silent) {
+        setIsLoading(true);
+        setError(null);
+      }
 
       const baseResult = await fetchDadosRankingBase();
       cachedBase = baseResult;
       setBase(baseResult);
-      setIsLoading(false);
 
-      if (!loadingLineItems.current) {
-        loadingLineItems.current = true;
-        const items = await fetchLineItemsEnriquecidos(baseResult.wonDealsMap);
-        cachedLineItems = items;
-        setLineItems(items);
-        loadingLineItems.current = false;
-      }
+      if (!silent) setIsLoading(false);
+
+      const items = await fetchLineItemsEnriquecidos(baseResult.wonDealsMap);
+      cachedLineItems = items;
+      setLineItems(items);
     } catch (err) {
       console.error('Erro ao carregar dados do ranking:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
-      setIsLoading(false);
-      loadingLineItems.current = false;
+      if (!silent) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+        setIsLoading(false);
+      }
+    } finally {
+      loadingRef.current = false;
     }
   }, []);
 
@@ -63,12 +68,11 @@ export function useRankingData(): UseRankingDataReturn {
       setBase(cachedBase);
       setLineItems(cachedLineItems || []);
       setIsLoading(false);
-
-      loadData();
+      fetchAll(true);
     } else {
-      loadData();
+      fetchAll(false);
     }
-  }, [loadData]);
+  }, [fetchAll]);
 
   return {
     deals: base?.deals || [],
@@ -82,7 +86,7 @@ export function useRankingData(): UseRankingDataReturn {
     refetch: async () => {
       cachedBase = null;
       cachedLineItems = null;
-      await loadData();
+      await fetchAll(false);
     },
   };
 }
