@@ -1,17 +1,25 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { Target, Trophy, Loader2, AlertCircle, RefreshCw, Download, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { Target, Trophy, Loader2, AlertCircle, RefreshCw, Download, Clock, CheckCircle, XCircle, Gauge, Settings2, RotateCcw } from 'lucide-react';
 import { format } from 'date-fns';
 import { exportToExcel } from '@/lib/exportExcel';
 import { ptBR } from 'date-fns/locale';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
+import { Select, SelectItem } from '@/components/ui/Select';
 import { DashboardMetaGlobal } from './pages/DashboardMetaGlobal';
 import { DashboardCompeticao } from './pages/DashboardCompeticao';
+import { DashboardVelocimetro } from './pages/DashboardVelocimetro';
+import { PainelMetas } from './pages/PainelMetas';
 import { useRankingData } from './hooks/useRankingData';
 import { useRankingFilters } from './hooks/useRankingFilters';
 import { useAuditLog } from '@/hooks/useAuditLog';
 
 const N8N_WEBHOOK_URL = 'https://flux.gowork.com.br/webhook/atualizar_comissoes';
+
+const MESES_CURTO = [
+  'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+  'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
+];
 
 type SyncStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -123,6 +131,12 @@ export function RankingPage() {
     rankingCompeticao,
   } = useRankingFilters(deals, lineItems, metas);
 
+  const hasActiveFilters = useMemo(() => {
+    const anoAtual = new Date().getFullYear();
+    const mesAtual = new Date().getMonth() + 1;
+    return filtrosGlobal.ano !== anoAtual || filtrosGlobal.mes !== mesAtual;
+  }, [filtrosGlobal]);
+
   const handleExportExcelMeta = useCallback(async () => {
     const dadosExport = dealsGanhosAno.map(d => ({
       'Nome do Deal': d.dealName,
@@ -164,7 +178,7 @@ export function RankingPage() {
   const handleExportExcel = useCallback(async () => {
     if (activeTab === 'meta-global') {
       await handleExportExcelMeta();
-    } else {
+    } else if (activeTab === 'competicao') {
       await handleExportExcelCompeticao();
     }
   }, [activeTab, handleExportExcelMeta, handleExportExcelCompeticao]);
@@ -230,15 +244,46 @@ export function RankingPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              onClick={handleExportExcel}
-              variant="secondary"
-              size="sm"
-              title="Exportar para Excel"
+            <Select
+              value={String(filtrosGlobal.ano)}
+              onValueChange={(v) => updateFiltroGlobal('ano', Number(v))}
+              placeholder="Ano"
             >
-              <Download className="h-3.5 w-3.5 mr-1.5" />
-              <span className="hidden sm:inline text-xs">Excel</span>
-            </Button>
+              {anosDisponiveis.map((a) => (
+                <SelectItem key={a} value={String(a)}>{a}</SelectItem>
+              ))}
+            </Select>
+
+            <Select
+              value={String(filtrosGlobal.mes)}
+              onValueChange={(v) => updateFiltroGlobal('mes', Number(v))}
+              placeholder="Mês"
+            >
+              <SelectItem value="0">Todos</SelectItem>
+              {MESES_CURTO.map((m, i) => (
+                <SelectItem key={i + 1} value={String(i + 1)}>{m}</SelectItem>
+              ))}
+            </Select>
+
+            {hasActiveFilters && (
+              <Button variant="ghost" size="sm" onClick={resetFiltrosGlobal}>
+                <RotateCcw className="h-3.5 w-3.5" />
+              </Button>
+            )}
+
+            <div className="w-px h-5 bg-gray-200 dark:bg-white/[0.08]" />
+
+            {(activeTab === 'meta-global' || activeTab === 'competicao') && (
+              <Button
+                onClick={handleExportExcel}
+                variant="secondary"
+                size="sm"
+                title="Exportar para Excel"
+              >
+                <Download className="h-3.5 w-3.5 mr-1.5" />
+                <span className="hidden sm:inline text-xs">Excel</span>
+              </Button>
+            )}
 
             {syncState.status === 'loading' ? (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-white/[0.04] rounded-lg ring-1 ring-gray-200 dark:ring-white/[0.08]">
@@ -272,26 +317,46 @@ export function RankingPage() {
               <Trophy className="h-4 w-4 mr-2" />
               Competição Comercial
             </TabsTrigger>
+            <TabsTrigger value="velocimetro">
+              <Gauge className="h-4 w-4 mr-2" />
+              Velocímetro
+            </TabsTrigger>
+            <TabsTrigger value="metas">
+              <Settings2 className="h-4 w-4 mr-2" />
+              Painel de Metas
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="meta-global">
             <DashboardMetaGlobal
               metas={metas}
               filtrosGlobal={filtrosGlobal}
-              updateFiltroGlobal={updateFiltroGlobal}
-              resetFiltrosGlobal={resetFiltrosGlobal}
-              anosDisponiveis={anosDisponiveis}
               kpisMetaGlobal={kpisMetaGlobal}
               dadosGraficoMensalRevenue={dadosGraficoMensalRevenue}
               dadosGraficoMensalSeats={dadosGraficoMensalSeats}
               dadosGraficoMensalDeals={dadosGraficoMensalDeals}
-              onMetaSaved={refetch}
             />
           </TabsContent>
 
           <TabsContent value="competicao">
             <DashboardCompeticao
               rankingCompeticao={rankingCompeticao}
+            />
+          </TabsContent>
+
+          <TabsContent value="velocimetro">
+            <DashboardVelocimetro
+              kpisMetaGlobal={kpisMetaGlobal}
+              filtrosGlobal={filtrosGlobal}
+            />
+          </TabsContent>
+
+          <TabsContent value="metas">
+            <PainelMetas
+              metas={metas}
+              filtrosGlobal={filtrosGlobal}
+              anosDisponiveis={anosDisponiveis}
+              onMetaSaved={refetch}
             />
           </TabsContent>
         </Tabs>

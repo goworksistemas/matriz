@@ -292,6 +292,7 @@ export function ComissoesPage() {
               kpis={kpis}
               vendedoresUnicos={vendedoresUnicos}
               produtosUnicos={produtosUnicos}
+              etapasUnicas={etapasUnicas}
             />
           </TabsContent>
 

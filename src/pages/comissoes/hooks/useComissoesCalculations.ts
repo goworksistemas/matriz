@@ -110,12 +110,15 @@ export function useComissoesCalculations(comissoesFiltradas: Comissao[]) {
       const totalPeso = comissoes.reduce((acc, c) => acc + (c.peso ?? 0), 0);
       const totalComissaoSimples = comissoes.reduce((acc, c) => acc + c.comissaoSimples, 0);
 
-      // Prêmios
+      const comissaoAprovada = comissoes
+        .filter(c => c.nomeEtapa === 'Comissão Aprovada')
+        .reduce((acc, c) => acc + c.comissaoSimples, 0);
+
       const resultadoFisico = calcularPremioFisico(comissoes);
       const resultadoVirtual = calcularPremioVirtual(comissoes);
 
       const premioTotal = resultadoFisico.premio + resultadoVirtual.premio;
-      const totalAReceber = totalComissaoSimples + premioTotal;
+      const totalAReceber = comissaoAprovada + premioTotal;
 
       resumos.push({
         vendedorId,

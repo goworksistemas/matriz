@@ -89,7 +89,11 @@ export function useRankingFilters(
     const metaDoMes = metas.find(
       m => m.year === filtrosGlobal.ano && m.month === filtrosGlobal.mes
     );
-    const metaDoAno = metas.find(m => m.year === filtrosGlobal.ano);
+
+    const metasDoAno = metas.filter(m => m.year === filtrosGlobal.ano);
+    const metaAnualRevenue = Math.max(0, ...metasDoAno.map(m => m.annualGoal));
+    const metaAnualSeats = Math.max(0, ...metasDoAno.map(m => m.annualGoalSeats));
+    const metaAnualDeals = Math.max(0, ...metasDoAno.map(m => m.annualGoalDeals));
 
     return {
       revenueAno,
@@ -98,9 +102,9 @@ export function useRankingFilters(
       seatsMes,
       dealsAno,
       dealsMes,
-      metaAnualRevenue: metaDoAno?.annualGoal || 0,
-      metaAnualSeats: metaDoAno?.annualGoalSeats || 0,
-      metaAnualDeals: metaDoAno?.annualGoalDeals || 0,
+      metaAnualRevenue,
+      metaAnualSeats,
+      metaAnualDeals,
       metaMensalRevenue: metaDoMes?.monthlyGoal || 0,
       metaMensalSeats: metaDoMes?.monthlyGoalSeats || 0,
       metaMensalDeals: metaDoMes?.monthlyGoalDeals || 0,

@@ -81,6 +81,7 @@ export type TipoProduto = 'fisico' | 'virtual';
 export interface FiltrosGlobais {
   proprietario: string;
   produto: string;
+  etapa: string;
   dataInicio: Date | null;
   dataFim: Date | null;
 }

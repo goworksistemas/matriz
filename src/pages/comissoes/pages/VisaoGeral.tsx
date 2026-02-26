@@ -40,6 +40,7 @@ interface VisaoGeralProps {
   };
   vendedoresUnicos: string[];
   produtosUnicos: string[];
+  etapasUnicas: string[];
 }
 
 export function VisaoGeral({
@@ -51,12 +52,14 @@ export function VisaoGeral({
   kpis,
   vendedoresUnicos,
   produtosUnicos,
+  etapasUnicas,
 }: VisaoGeralProps) {
   // Verificar se há filtros ativos
   const hasActiveFilters = useMemo(() => {
     return (
       filtrosGlobais.proprietario !== '' ||
       filtrosGlobais.produto !== '' ||
+      filtrosGlobais.etapa !== '' ||
       filtrosGlobais.dataInicio !== null ||
       filtrosGlobais.dataFim !== null
     );
@@ -94,6 +97,22 @@ export function VisaoGeral({
               {produtosUnicos.map((p) => (
                 <SelectItem key={p} value={p}>
                   {p}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Etapa</label>
+            <Select
+              value={filtrosGlobais.etapa}
+              onValueChange={(v) => updateFiltroGlobal('etapa', v)}
+              placeholder="Todas"
+            >
+              <SelectItem value="">Todas</SelectItem>
+              {etapasUnicas.map((e) => (
+                <SelectItem key={e} value={e}>
+                  {e}
                 </SelectItem>
               ))}
             </Select>

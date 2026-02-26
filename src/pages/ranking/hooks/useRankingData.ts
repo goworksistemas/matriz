@@ -31,11 +31,10 @@ export function useRankingData(): UseRankingDataReturn {
   const [lineItems, setLineItems] = useState<LineItemEnriquecido[]>(cachedLineItems || []);
   const [isLoading, setIsLoading] = useState(!cachedBase);
   const [error, setError] = useState<string | null>(null);
-  const loadingRef = useRef(false);
+  const abortRef = useRef(0);
 
   const fetchAll = useCallback(async (silent: boolean) => {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
+    const thisRequest = ++abortRef.current;
 
     try {
       if (!silent) {
@@ -44,22 +43,24 @@ export function useRankingData(): UseRankingDataReturn {
       }
 
       const baseResult = await fetchDadosRankingBase();
+      if (abortRef.current !== thisRequest) return;
+
       cachedBase = baseResult;
       setBase(baseResult);
-
       if (!silent) setIsLoading(false);
 
       const items = await fetchLineItemsEnriquecidos(baseResult.wonDealsMap);
+      if (abortRef.current !== thisRequest) return;
+
       cachedLineItems = items;
       setLineItems(items);
     } catch (err) {
+      if (abortRef.current !== thisRequest) return;
       console.error('Erro ao carregar dados do ranking:', err);
       if (!silent) {
         setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
         setIsLoading(false);
       }
-    } finally {
-      loadingRef.current = false;
     }
   }, []);
 

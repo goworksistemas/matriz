@@ -410,6 +410,7 @@ export function ComissoesVendedores({
           compact
         />
       </div>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500 -mt-1 text-right">* Total a Receber considera apenas comissoes com status "Comissao Aprovada"</p>
 
       {/* Tabela Principal */}
       <Card>

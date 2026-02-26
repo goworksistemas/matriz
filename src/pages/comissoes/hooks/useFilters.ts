@@ -5,6 +5,7 @@ import type { Comissao, FiltrosGlobais, FiltrosVendedor, FiltrosSDR } from '@/ty
 const FILTROS_GLOBAIS_INICIAL: FiltrosGlobais = {
   proprietario: '',
   produto: '',
+  etapa: '',
   dataInicio: null,
   dataFim: null,
 };
@@ -43,6 +44,11 @@ export function useFilters(comissoes: Comissao[]) {
 
       // Filtro por produto
       if (filtrosGlobais.produto && c.produto !== filtrosGlobais.produto) {
+        return false;
+      }
+
+      // Filtro por etapa
+      if (filtrosGlobais.etapa && c.nomeEtapa !== filtrosGlobais.etapa) {
         return false;
       }
 
