@@ -1,5 +1,5 @@
 {
-  "version": "2.2.1",
-  "buildDate": "2026-02-24T23:30:00Z",
-  "commitMessage": "perf(ranking): carregamento progressivo com cache, campanhas na competição e correções visuais"
+  "version": "2.3.0",
+  "buildDate": "2026-02-25T01:00:00Z",
+  "commitMessage": "feat(ranking): velocimetro, painel de metas, filtros globais na toolbar e melhorias em comissoes"
 }

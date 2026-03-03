@@ -1,6 +1,6 @@
 {
   "name": "matriz-central-relatorios",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "Central de Relatórios NetworkGO",
   "private": true,
   "type": "module",
