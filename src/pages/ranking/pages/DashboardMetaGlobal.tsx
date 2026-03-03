@@ -23,7 +23,6 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { cn, formatCurrency, formatNumber } from '@/lib/utils';
 import type {
-  MetaVendas,
   FiltrosMetaGlobal,
   KPIsMetaGlobal,
   DadoGraficoMensal,
@@ -202,7 +201,6 @@ const GRAFICO_CONFIG: Record<GraficoTab, { dataKey: string; color: string; label
 };
 
 interface DashboardMetaGlobalProps {
-  metas: MetaVendas[];
   filtrosGlobal: FiltrosMetaGlobal;
   kpisMetaGlobal: KPIsMetaGlobal;
   dadosGraficoMensalRevenue: DadoGraficoMensal[];
@@ -211,7 +209,6 @@ interface DashboardMetaGlobalProps {
 }
 
 export function DashboardMetaGlobal({
-  metas,
   filtrosGlobal,
   kpisMetaGlobal,
   dadosGraficoMensalRevenue,

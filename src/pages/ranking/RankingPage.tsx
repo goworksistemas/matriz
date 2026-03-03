@@ -329,7 +329,6 @@ export function RankingPage() {
 
           <TabsContent value="meta-global">
             <DashboardMetaGlobal
-              metas={metas}
               filtrosGlobal={filtrosGlobal}
               kpisMetaGlobal={kpisMetaGlobal}
               dadosGraficoMensalRevenue={dadosGraficoMensalRevenue}
@@ -355,7 +354,6 @@ export function RankingPage() {
             <PainelMetas
               metas={metas}
               filtrosGlobal={filtrosGlobal}
-              anosDisponiveis={anosDisponiveis}
               onMetaSaved={refetch}
             />
           </TabsContent>

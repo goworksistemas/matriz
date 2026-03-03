@@ -24,14 +24,12 @@ interface MetaRow {
 interface PainelMetasProps {
   metas: MetaVendas[];
   filtrosGlobal: FiltrosMetaGlobal;
-  anosDisponiveis: number[];
   onMetaSaved: () => void;
 }
 
 export function PainelMetas({
   metas,
   filtrosGlobal,
-  anosDisponiveis,
   onMetaSaved,
 }: PainelMetasProps) {
   const [rows, setRows] = useState<MetaRow[]>([]);
