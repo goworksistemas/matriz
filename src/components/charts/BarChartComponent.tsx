@@ -24,6 +24,7 @@ interface BarChartComponentProps {
   categoryAxisWidth?: number;
   onItemClick?: (name: string) => void;
   activeItem?: string;
+  activeItems?: string[];
 }
 
 export function BarChartComponent({
@@ -36,6 +37,7 @@ export function BarChartComponent({
   categoryAxisWidth = 120,
   onItemClick,
   activeItem,
+  activeItems,
 }: BarChartComponentProps) {
   if (!data || data.length === 0) {
     return (
@@ -115,7 +117,11 @@ export function BarChartComponent({
           {colorByIndex &&
             data.map((item, index) => {
               const baseColor = CHART_COLORS[index % CHART_COLORS.length];
-              const dimmed = activeItem && item.name !== activeItem;
+              const hasFilter = activeItem || (activeItems && activeItems.length > 0);
+              const isActive = activeItem
+                ? item.name === activeItem
+                : activeItems?.includes(item.name);
+              const dimmed = hasFilter && !isActive;
               return (
                 <Cell
                   key={`cell-${index}`}

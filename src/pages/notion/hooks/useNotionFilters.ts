@@ -2,17 +2,19 @@ import { useState, useMemo, useCallback } from 'react';
 import type { TarefaProcessada } from '../services/api';
 
 export interface FiltrosNotion {
-  status: string;
-  prioridade: string;
-  departamento: string;
-  executor: string;
+  status: string[];
+  prioridade: string[];
+  departamento: string[];
+  executor: string[];
+  busca: string;
 }
 
 const FILTROS_INICIAL: FiltrosNotion = {
-  status: '',
-  prioridade: '',
-  departamento: '',
-  executor: '',
+  status: [],
+  prioridade: [],
+  departamento: [],
+  executor: [],
+  busca: '',
 };
 
 export interface KPIsNotion {
@@ -127,18 +129,20 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
 
   const tarefasFiltradas = useMemo(() => {
     return tarefas.filter(t => {
-      if (
-        filtros.status &&
-        t.status !== filtros.status &&
-        normalizarStatus(t.status) !== filtros.status
-      ) return false;
-      if (
-        filtros.prioridade &&
-        t.prioridade !== filtros.prioridade &&
-        normalizarPrioridade(t.prioridade) !== filtros.prioridade
-      ) return false;
-      if (filtros.departamento && t.departamento !== filtros.departamento) return false;
-      if (filtros.executor && !t.executores.includes(filtros.executor)) return false;
+      if (filtros.status.length > 0) {
+        const statusNorm = normalizarStatus(t.status);
+        if (!filtros.status.includes(t.status) && !filtros.status.includes(statusNorm)) return false;
+      }
+      if (filtros.prioridade.length > 0) {
+        const prioridadeNorm = normalizarPrioridade(t.prioridade);
+        if (!filtros.prioridade.includes(t.prioridade) && !filtros.prioridade.includes(prioridadeNorm)) return false;
+      }
+      if (filtros.departamento.length > 0 && !filtros.departamento.includes(t.departamento)) return false;
+      if (filtros.executor.length > 0 && !t.executores.some(e => filtros.executor.includes(e))) return false;
+      if (filtros.busca.trim()) {
+        const termo = filtros.busca.toLowerCase();
+        if (!t.titulo.toLowerCase().includes(termo)) return false;
+      }
       return true;
     });
   }, [tarefas, filtros]);
@@ -476,7 +480,13 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
   }, []);
 
   const hasActiveFilters = useMemo(() => {
-    return Object.values(filtros).some(v => v !== '');
+    return (
+      filtros.status.length > 0 ||
+      filtros.prioridade.length > 0 ||
+      filtros.departamento.length > 0 ||
+      filtros.executor.length > 0 ||
+      filtros.busca.trim() !== ''
+    );
   }, [filtros]);
 
   return {

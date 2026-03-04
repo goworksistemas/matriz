@@ -53,8 +53,11 @@ export function PainelExecutivo({
   gargalosCriticos,
   topTarefasCriticas,
 }: PainelExecutivoProps) {
-  const toggleFiltro = useCallback(<K extends keyof FiltrosNotion>(key: K, value: string) => {
-    const novoValor = filtros[key] === value ? '' : value;
+  const toggleFiltro = useCallback(<K extends 'status' | 'prioridade' | 'departamento' | 'executor'>(key: K, value: string) => {
+    const current = filtros[key] as string[];
+    const novoValor = current.includes(value)
+      ? current.filter(v => v !== value)
+      : [...current, value];
     onFiltroChange(key, novoValor as FiltrosNotion[K]);
   }, [filtros, onFiltroChange]);
 
@@ -220,7 +223,7 @@ export function PainelExecutivo({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Layers3 className="h-4 w-4 text-primary-500" /> Distribuicao por Status
-                {filtros.status && <span className="ml-2 text-xs font-normal text-primary-500">({filtros.status})</span>}
+                {filtros.status.length > 0 && <span className="ml-2 text-xs font-normal text-primary-500">({filtros.status.join(', ')})</span>}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -229,7 +232,7 @@ export function PainelExecutivo({
                 height={280}
                 layout="vertical"
                 onItemClick={handleFiltroStatus}
-                activeItem={filtros.status || undefined}
+                activeItems={filtros.status.length > 0 ? filtros.status : undefined}
               />
             </CardContent>
           </Card>
@@ -237,7 +240,7 @@ export function PainelExecutivo({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <ClipboardList className="h-4 w-4 text-primary-500" /> Prioridades
-                {filtros.prioridade && <span className="ml-2 text-xs font-normal text-primary-500">({filtros.prioridade})</span>}
+                {filtros.prioridade.length > 0 && <span className="ml-2 text-xs font-normal text-primary-500">({filtros.prioridade.join(', ')})</span>}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -246,7 +249,7 @@ export function PainelExecutivo({
                 height={280}
                 layout="vertical"
                 onItemClick={(name) => toggleFiltro('prioridade', name)}
-                activeItem={filtros.prioridade || undefined}
+                activeItems={filtros.prioridade.length > 0 ? filtros.prioridade : undefined}
               />
             </CardContent>
           </Card>
@@ -268,7 +271,7 @@ export function PainelExecutivo({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Building2 className="h-4 w-4 text-primary-500" /> Departamentos em Alerta
-                {filtros.departamento && <span className="ml-2 text-xs font-normal text-primary-500">({filtros.departamento})</span>}
+                {filtros.departamento.length > 0 && <span className="ml-2 text-xs font-normal text-primary-500">({filtros.departamento.join(', ')})</span>}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -277,7 +280,7 @@ export function PainelExecutivo({
                 height={300}
                 layout="vertical"
                 onItemClick={(name) => name !== 'Sem atrasos' && toggleFiltro('departamento', name)}
-                activeItem={filtros.departamento || undefined}
+                activeItems={filtros.departamento.length > 0 ? filtros.departamento : undefined}
               />
             </CardContent>
           </Card>
@@ -293,7 +296,7 @@ export function PainelExecutivo({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <UserCog className="h-4 w-4 text-primary-500" /> Carga por Responsavel
-                {filtros.executor && <span className="ml-2 text-xs font-normal text-primary-500">({filtros.executor})</span>}
+                {filtros.executor.length > 0 && <span className="ml-2 text-xs font-normal text-primary-500">({filtros.executor.join(', ')})</span>}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -304,7 +307,7 @@ export function PainelExecutivo({
                 categoryAxisWidth={220}
                 categoryLabelMaxChars={32}
                 onItemClick={(name) => toggleFiltro('executor', name)}
-                activeItem={filtros.executor || undefined}
+                activeItems={filtros.executor.length > 0 ? filtros.executor : undefined}
               />
             </CardContent>
           </Card>

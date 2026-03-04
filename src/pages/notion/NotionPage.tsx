@@ -1,10 +1,10 @@
 import { useCallback, useEffect } from 'react';
-import { Clock, Loader2, AlertCircle, RefreshCw, Download, RotateCcw } from 'lucide-react';
+import { Clock, Loader2, AlertCircle, RefreshCw, Download, RotateCcw, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { exportToExcel } from '@/lib/exportExcel';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/Button';
-import { Select, SelectItem } from '@/components/ui/Select';
+import { MultiSelect } from '@/components/ui/MultiSelect';
 import { ListagemTarefas } from './pages/ListagemTarefas';
 import { PainelExecutivo } from './pages/PainelExecutivo';
 import { useNotionData } from './hooks/useNotionData';
@@ -137,45 +137,70 @@ export function NotionPage() {
       <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Filtros */}
         <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4 mb-6">
-          <div className="flex flex-wrap items-end gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Status</label>
-              <Select value={filtros.status} onValueChange={(v) => updateFiltro('status', v)} placeholder="Todos">
-                <SelectItem value="">Todos</SelectItem>
-                {statusUnicos.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-              </Select>
+          <div className="flex flex-col gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                value={filtros.busca}
+                onChange={(e) => updateFiltro('busca', e.target.value)}
+                placeholder="Buscar tarefa por nome..."
+                className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+              />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Prioridade</label>
-              <Select value={filtros.prioridade} onValueChange={(v) => updateFiltro('prioridade', v)} placeholder="Todas">
-                <SelectItem value="">Todas</SelectItem>
-                {prioridadesUnicas.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-              </Select>
-            </div>
+            <div className="flex flex-wrap items-end gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Status</label>
+                <MultiSelect
+                  options={statusUnicos}
+                  selected={filtros.status}
+                  onChange={(v) => updateFiltro('status', v)}
+                  placeholder="Todos"
+                  searchPlaceholder="Buscar status..."
+                />
+              </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Departamento</label>
-              <Select value={filtros.departamento} onValueChange={(v) => updateFiltro('departamento', v)} placeholder="Todos">
-                <SelectItem value="">Todos</SelectItem>
-                {departamentosUnicos.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-              </Select>
-            </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Prioridade</label>
+                <MultiSelect
+                  options={prioridadesUnicas}
+                  selected={filtros.prioridade}
+                  onChange={(v) => updateFiltro('prioridade', v)}
+                  placeholder="Todas"
+                  searchPlaceholder="Buscar prioridade..."
+                />
+              </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Executor</label>
-              <Select value={filtros.executor} onValueChange={(v) => updateFiltro('executor', v)} placeholder="Todos">
-                <SelectItem value="">Todos</SelectItem>
-                {executoresUnicos.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-              </Select>
-            </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Departamento</label>
+                <MultiSelect
+                  options={departamentosUnicos}
+                  selected={filtros.departamento}
+                  onChange={(v) => updateFiltro('departamento', v)}
+                  placeholder="Todos"
+                  searchPlaceholder="Buscar departamento..."
+                />
+              </div>
 
-            {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={resetFiltros} className="mb-0.5">
-                <RotateCcw className="h-4 w-4 mr-1.5" />
-                Limpar
-              </Button>
-            )}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Executor</label>
+                <MultiSelect
+                  options={executoresUnicos}
+                  selected={filtros.executor}
+                  onChange={(v) => updateFiltro('executor', v)}
+                  placeholder="Todos"
+                  searchPlaceholder="Buscar executor..."
+                />
+              </div>
+
+              {hasActiveFilters && (
+                <Button variant="ghost" size="sm" onClick={resetFiltros} className="mb-0.5">
+                  <RotateCcw className="h-4 w-4 mr-1.5" />
+                  Limpar
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
