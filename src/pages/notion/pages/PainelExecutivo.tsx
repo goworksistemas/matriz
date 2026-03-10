@@ -360,7 +360,7 @@ export function PainelExecutivo({
                         tickLine={false}
                         axisLine={{ stroke: 'var(--chart-grid)' }}
                         tick={(tickProps: any) => {
-                          const { x, y, payload } = tickProps;
+                          const { x, y, payload, index } = tickProps;
                           const d = serieDemandaCapacidade.find(s => s.label === payload.value);
                           const vc = d?.variacaoCriadas;
                           const vf = d?.variacaoConcluidas;
@@ -379,21 +379,45 @@ export function PainelExecutivo({
                               <line x1={-20} y1={24} x2={20} y2={24} stroke="var(--chart-grid)" strokeWidth={1} />
                               <text x={0} y={0} dy={37} textAnchor="middle" fill={varColor(vc)} fontSize={11} fontWeight={700}>{fmtVar(vc)}</text>
                               <text x={0} y={0} dy={52} textAnchor="middle" fill={varColor(vf)} fontSize={11} fontWeight={700}>{fmtVar(vf)}</text>
+                              {index === 0 && (
+                                <>
+                                  <text x={-x + 4} y={0} dy={37} textAnchor="start" fill="#b45309" fontSize={9} fontWeight={700}>Criadas</text>
+                                  <text x={-x + 4} y={0} dy={52} textAnchor="start" fill="#047857" fontSize={9} fontWeight={700}>Finaliz.</text>
+                                </>
+                              )}
                             </g>
                           );
                         }}
                       />
                       <YAxis stroke="var(--chart-axis)" fontSize={11} tickLine={false} axisLine={false} width={40} />
                       <Tooltip
-                        contentStyle={tooltipStyle}
                         cursor={{ fill: 'var(--chart-cursor)' }}
-                        formatter={(value: number, name: string) => [value, name]}
-                        labelFormatter={(label: string) => {
+                        content={({ active, payload, label }) => {
+                          if (!active || !payload?.length) return null;
                           const d = serieDemandaCapacidade.find(s => s.label === label);
-                          const parts = [label];
-                          if (d?.variacaoCriadas != null) parts.push(`Var. Criadas: ${d.variacaoCriadas > 0 ? '+' : ''}${d.variacaoCriadas}%`);
-                          if (d?.variacaoConcluidas != null) parts.push(`Var. Finalizadas: ${d.variacaoConcluidas > 0 ? '+' : ''}${d.variacaoConcluidas}%`);
-                          return parts.join('\n');
+                          const fmtVar = (v: number | null | undefined) => {
+                            if (v == null) return null;
+                            const sinal = v > 0 ? '+' : '';
+                            const cor = v > 0 ? '#16a34a' : v < 0 ? '#dc2626' : '#6b7280';
+                            return <span style={{ color: cor, fontWeight: 600 }}>{sinal}{v}%</span>;
+                          };
+                          return (
+                            <div style={{ ...tooltipStyle, padding: '8px 12px', fontSize: 12 }}>
+                              <p style={{ fontWeight: 700, marginBottom: 4 }}>{label}</p>
+                              {payload.map((p: any) => (
+                                <p key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+                                  <span style={{ color: p.color }}>{p.name}</span>
+                                  <strong>{p.value}</strong>
+                                </p>
+                              ))}
+                              {(d?.variacaoCriadas != null || d?.variacaoConcluidas != null) && (
+                                <div style={{ borderTop: '1px dashed #e5e7eb', marginTop: 4, paddingTop: 4, fontSize: 11 }}>
+                                  {d?.variacaoCriadas != null && <p style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}><span style={{ color: '#b45309' }}>Var. Criadas</span>{fmtVar(d.variacaoCriadas)}</p>}
+                                  {d?.variacaoConcluidas != null && <p style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}><span style={{ color: '#047857' }}>Var. Finalizadas</span>{fmtVar(d.variacaoConcluidas)}</p>}
+                                </div>
+                              )}
+                            </div>
+                          );
                         }}
                       />
                       <Legend
@@ -401,12 +425,6 @@ export function PainelExecutivo({
                         align="right"
                         iconType="rect"
                         wrapperStyle={{ paddingBottom: 8, fontSize: '11px' }}
-                        payload={[
-                          { value: 'Criadas', type: 'rect', color: '#f59e0b' },
-                          { value: 'Finalizadas', type: 'rect', color: '#10b981' },
-                          { value: 'Var. Criadas %', type: 'line', color: '#b45309' },
-                          { value: 'Var. Finalizadas %', type: 'line', color: '#047857' },
-                        ]}
                       />
                       <Bar dataKey="criadas" name="Criadas" fill="#f59e0b" fillOpacity={0.85} radius={[3, 3, 0, 0]} barSize={28}>
                         <LabelList dataKey="criadas" position="top" offset={6} fill="#b45309" fontSize={12} fontWeight={700} />
