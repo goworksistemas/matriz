@@ -86,7 +86,7 @@ export function ListagemTarefas({ tarefas }: ListagemTarefasProps) {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] text-sm">
+            <table className="w-full min-w-[1050px] text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-white/[0.06]">
                   <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400">Tarefa</th>
@@ -94,6 +94,7 @@ export function ListagemTarefas({ tarefas }: ListagemTarefasProps) {
                   <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400">Status</th>
                   <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400">Prazo</th>
                   <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400">Departamento</th>
+                  <th className="text-left py-3 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400">Tags</th>
                 </tr>
               </thead>
               <tbody>
@@ -137,6 +138,15 @@ export function ListagemTarefas({ tarefas }: ListagemTarefasProps) {
                       </span>
                     </td>
                     <td className="py-3 px-3 text-gray-500 dark:text-gray-400">{tarefa.departamento}</td>
+                    <td className="py-3 px-3">
+                      <div className="flex flex-wrap gap-1">
+                        {tarefa.tags.map(tag => (
+                          <span key={tag} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-100 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

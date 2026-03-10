@@ -1,5 +1,17 @@
 import { useState, useMemo, useCallback } from 'react';
-import type { TarefaProcessada } from '../services/api';
+import type { TarefaProcessada, ComentarioNotion } from '../services/api';
+
+export type FiltroCard =
+  | 'ativas'
+  | 'vencidas'
+  | 'vence_hoje'
+  | 'conclusao'
+  | 'concluidas'
+  | 'canceladas'
+  | 'stand_by'
+  | 'sem_prazo'
+  | 'sem_dono'
+  | null;
 
 export interface FiltrosNotion {
   status: string[];
@@ -7,6 +19,9 @@ export interface FiltrosNotion {
   departamento: string[];
   executor: string[];
   busca: string;
+  filtroCard: FiltroCard;
+  granularidade: GranularidadeTempo;
+  periodoSelecionado: string | null;
 }
 
 const FILTROS_INICIAL: FiltrosNotion = {
@@ -15,6 +30,9 @@ const FILTROS_INICIAL: FiltrosNotion = {
   departamento: [],
   executor: [],
   busca: '',
+  filtroCard: null,
+  granularidade: 'mes',
+  periodoSelecionado: null,
 };
 
 export interface KPIsNotion {
@@ -56,10 +74,31 @@ export interface InsightNotion {
   }>;
 }
 
+export interface PerformanceAgente {
+  nome: string;
+  tempoMedioDias: number;
+  concluidas: number;
+  ativas: number;
+  totalComentarios: number;
+  percentInteracoes: number;
+  taxaNoPrazo: number;
+}
+
+export interface InteracaoUsuario {
+  nome: string;
+  totalComentarios: number;
+  percentual: number;
+}
+
+export type GranularidadeTempo = 'dia' | 'semana' | 'mes' | 'trimestre' | 'semestre' | 'ano';
+
 export interface SerieDemandaCapacidade {
-  mes: string;
+  label: string;
+  chave: string;
   criadas: number;
   concluidas: number;
+  variacaoCriadas?: number;
+  variacaoConcluidas?: number;
 }
 
 function parseDataEntrada(data: string | null): Date | null {
@@ -68,14 +107,52 @@ function parseDataEntrada(data: string | null): Date | null {
   return Number.isNaN(dt.getTime()) ? null : dt;
 }
 
-function chaveMes(data: Date): string {
-  return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+function chavePeriodo(data: Date, granularidade: GranularidadeTempo): string {
+  const ano = data.getFullYear();
+  switch (granularidade) {
+    case 'dia':
+      return `${ano}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`;
+    case 'semana': {
+      const d = new Date(Date.UTC(ano, data.getMonth(), data.getDate()));
+      const dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+      return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+    }
+    case 'mes':
+      return `${ano}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+    case 'trimestre':
+      return `${ano}-Q${Math.floor(data.getMonth() / 3) + 1}`;
+    case 'semestre':
+      return `${ano}-S${Math.floor(data.getMonth() / 6) + 1}`;
+    case 'ano':
+      return `${ano}`;
+    default:
+      return `${ano}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+  }
 }
 
-function labelMes(chave: string): string {
-  const [ano, mes] = chave.split('-').map(Number);
-  const dt = new Date(ano, (mes || 1) - 1, 1);
-  return dt.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+function labelPeriodo(chave: string, granularidade: GranularidadeTempo): string {
+  if (granularidade === 'dia') {
+    const [y, m, d] = chave.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  }
+  if (granularidade === 'semana') {
+    return `Sem ${chave.split('-W')[1]}/${chave.split('-')[0].slice(2)}`;
+  }
+  if (granularidade === 'mes') {
+    const [ano, mes] = chave.split('-').map(Number);
+    const dt = new Date(ano, (mes || 1) - 1, 1);
+    return dt.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+  }
+  if (granularidade === 'trimestre') {
+    return `${chave.split('-')[1]} ${chave.split('-')[0]}`;
+  }
+  if (granularidade === 'semestre') {
+    return `${chave.split('-')[1]} ${chave.split('-')[0]}`;
+  }
+  return chave;
 }
 
 function isConcluida(status: string): boolean {
@@ -124,11 +201,11 @@ function normalizarPrioridade(prioridade: string): string {
   return 'Sem prioridade';
 }
 
-export function useNotionFilters(tarefas: TarefaProcessada[]) {
+export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: ComentarioNotion[] = []) {
   const [filtros, setFiltros] = useState<FiltrosNotion>(FILTROS_INICIAL);
 
   const tarefasFiltradas = useMemo(() => {
-    return tarefas.filter(t => {
+    let resultado = tarefas.filter(t => {
       if (filtros.status.length > 0) {
         const statusNorm = normalizarStatus(t.status);
         if (!filtros.status.includes(t.status) && !filtros.status.includes(statusNorm)) return false;
@@ -145,6 +222,46 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
       }
       return true;
     });
+
+    if (filtros.filtroCard) {
+      resultado = resultado.filter(t => {
+        switch (filtros.filtroCard) {
+          case 'ativas':
+            return isOperacionalAtiva(t.status);
+          case 'vencidas':
+            return t.statusPrazo === 'vencida' && isOperacionalAtiva(t.status);
+          case 'vence_hoje':
+            return t.statusPrazo === 'hoje' && isOperacionalAtiva(t.status);
+          case 'conclusao':
+          case 'concluidas':
+            return isConcluida(t.status);
+          case 'canceladas':
+            return isCancelada(t.status);
+          case 'stand_by':
+            return isStandBy(t.status);
+          case 'sem_prazo':
+            return t.statusPrazo === 'sem_data' && isOperacionalAtiva(t.status);
+          case 'sem_dono':
+            return isOperacionalAtiva(t.status) && (t.executores.length === 0 || t.executor.toLowerCase() === 'nao atribuido');
+          default:
+            return true;
+        }
+      });
+    }
+
+    if (filtros.periodoSelecionado) {
+      resultado = resultado.filter(t => {
+        const dataCriacao = parseDataEntrada(t.criadoEm ?? t.dataInicio);
+        const dataConclusao = isConcluida(t.status) ? parseDataEntrada(t.atualizadoEm ?? t.dataFim ?? t.criadoEm) : null;
+        
+        const chaveCriacao = dataCriacao ? chavePeriodo(dataCriacao, filtros.granularidade) : null;
+        const chaveConclusao = dataConclusao ? chavePeriodo(dataConclusao, filtros.granularidade) : null;
+        
+        return chaveCriacao === filtros.periodoSelecionado || chaveConclusao === filtros.periodoSelecionado;
+      });
+    }
+
+    return resultado;
   }, [tarefas, filtros]);
 
   const kpis = useMemo<KPIsNotion>(() => {
@@ -396,10 +513,29 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
   const serieDemandaCapacidade = useMemo<SerieDemandaCapacidade[]>(() => {
     const mapa = new Map<string, { criadas: number; concluidas: number }>();
 
-    tarefasFiltradas.forEach((tarefa) => {
+    // Usamos as tarefas originais (sem o filtro de período) para construir a série histórica completa
+    const tarefasParaSerie = tarefas.filter(t => {
+      if (filtros.status.length > 0) {
+        const statusNorm = normalizarStatus(t.status);
+        if (!filtros.status.includes(t.status) && !filtros.status.includes(statusNorm)) return false;
+      }
+      if (filtros.prioridade.length > 0) {
+        const prioridadeNorm = normalizarPrioridade(t.prioridade);
+        if (!filtros.prioridade.includes(t.prioridade) && !filtros.prioridade.includes(prioridadeNorm)) return false;
+      }
+      if (filtros.departamento.length > 0 && !filtros.departamento.includes(t.departamento)) return false;
+      if (filtros.executor.length > 0 && !t.executores.some(e => filtros.executor.includes(e))) return false;
+      if (filtros.busca.trim()) {
+        const termo = filtros.busca.toLowerCase();
+        if (!t.titulo.toLowerCase().includes(termo)) return false;
+      }
+      return true;
+    });
+
+    tarefasParaSerie.forEach((tarefa) => {
       const dataCriacao = parseDataEntrada(tarefa.criadoEm ?? tarefa.dataInicio);
       if (dataCriacao) {
-        const chave = chaveMes(dataCriacao);
+        const chave = chavePeriodo(dataCriacao, filtros.granularidade);
         const atual = mapa.get(chave) || { criadas: 0, concluidas: 0 };
         atual.criadas += 1;
         mapa.set(chave, atual);
@@ -408,7 +544,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
       if (isConcluida(tarefa.status)) {
         const dataConclusao = parseDataEntrada(tarefa.atualizadoEm ?? tarefa.dataFim ?? tarefa.criadoEm);
         if (dataConclusao) {
-          const chave = chaveMes(dataConclusao);
+          const chave = chavePeriodo(dataConclusao, filtros.granularidade);
           const atual = mapa.get(chave) || { criadas: 0, concluidas: 0 };
           atual.concluidas += 1;
           mapa.set(chave, atual);
@@ -416,15 +552,27 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
       }
     });
 
-    return Array.from(mapa.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .slice(-12)
-      .map(([mes, values]) => ({
-        mes: labelMes(mes),
+    const ordenado = Array.from(mapa.entries())
+      .sort(([a], [b]) => a.localeCompare(b));
+
+    return ordenado.map(([chave, values], index) => {
+      const anterior = index > 0 ? ordenado[index - 1][1] : null;
+      
+      const calcVariacao = (atual: number, ant: number) => {
+        if (!ant || ant === 0) return atual > 0 ? 100 : 0;
+        return Math.round(((atual - ant) / ant) * 100);
+      };
+
+      return {
+        chave,
+        label: labelPeriodo(chave, filtros.granularidade),
         criadas: values.criadas,
         concluidas: values.concluidas,
-      }));
-  }, [tarefasFiltradas]);
+        variacaoCriadas: anterior ? calcVariacao(values.criadas, anterior.criadas) : undefined,
+        variacaoConcluidas: anterior ? calcVariacao(values.concluidas, anterior.concluidas) : undefined,
+      };
+    }).slice(-15); // Mostramos os últimos 15 períodos para não poluir
+  }, [tarefas, filtros.status, filtros.prioridade, filtros.departamento, filtros.executor, filtros.busca, filtros.granularidade]);
 
   const topSolicitantes = useMemo(() => {
     const mapa = new Map<string, number>();
@@ -485,9 +633,119 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
       filtros.prioridade.length > 0 ||
       filtros.departamento.length > 0 ||
       filtros.executor.length > 0 ||
-      filtros.busca.trim() !== ''
+      filtros.busca.trim() !== '' ||
+      filtros.filtroCard !== null
     );
   }, [filtros]);
+
+  const comentariosFiltrados = useMemo(() => {
+    if (comentarios.length === 0) return [];
+    const notionIdsFiltrados = new Set(tarefasFiltradas.map(t => t.notionId));
+    return comentarios.filter(c => notionIdsFiltrados.has(c.notionId));
+  }, [comentarios, tarefasFiltradas]);
+
+  const performancePorAgente = useMemo<PerformanceAgente[]>(() => {
+    const mapaComentariosPorTarefa = new Map<string, ComentarioNotion[]>();
+    for (const c of comentariosFiltrados) {
+      const arr = mapaComentariosPorTarefa.get(c.notionId) || [];
+      arr.push(c);
+      mapaComentariosPorTarefa.set(c.notionId, arr);
+    }
+
+    const mapaComentariosPorAutor = new Map<string, number>();
+    for (const c of comentariosFiltrados) {
+      mapaComentariosPorAutor.set(c.autor, (mapaComentariosPorAutor.get(c.autor) || 0) + 1);
+    }
+
+    const agentes = new Map<string, {
+      somaLeadTime: number;
+      concluidas: number;
+      concluidasComData: number;
+      ativas: number;
+      totalComentarios: number;
+      concluidasNoPrazo: number;
+    }>();
+
+    for (const tarefa of tarefasFiltradas) {
+      const executores = tarefa.executores.length > 0 ? tarefa.executores : ['Nao atribuido'];
+      const comentariosDaTarefa = mapaComentariosPorTarefa.get(tarefa.notionId) || [];
+
+      for (const exec of executores) {
+        const ag = agentes.get(exec) || { somaLeadTime: 0, concluidas: 0, concluidasComData: 0, ativas: 0, totalComentarios: 0, concluidasNoPrazo: 0 };
+
+        const comentariosDoAgente = comentariosDaTarefa.filter(c => c.autor === exec).length;
+        ag.totalComentarios += comentariosDoAgente;
+
+        if (isConcluida(tarefa.status)) {
+          ag.concluidas++;
+          const dataCriacao = parseDataEntrada(tarefa.criadoEm);
+          const dataConclusao = parseDataEntrada(tarefa.atualizadoEm ?? tarefa.dataFim);
+          if (dataCriacao && dataConclusao) {
+            const diffDias = Math.max(0, Math.floor((dataConclusao.getTime() - dataCriacao.getTime()) / (1000 * 60 * 60 * 24)));
+            ag.somaLeadTime += diffDias;
+            ag.concluidasComData++;
+          }
+          if (tarefa.dataFim) {
+            const fim = parseDataEntrada(tarefa.dataFim);
+            const conclusao = parseDataEntrada(tarefa.atualizadoEm ?? tarefa.dataFim);
+            if (fim && conclusao && conclusao.getTime() <= fim.getTime() + 86400000) {
+              ag.concluidasNoPrazo++;
+            }
+          }
+        } else if (isOperacionalAtiva(tarefa.status)) {
+          ag.ativas++;
+        }
+
+        agentes.set(exec, ag);
+      }
+    }
+
+    const totalComentariosGeral = comentariosFiltrados.length;
+
+    return Array.from(agentes.entries())
+      .map(([nome, ag]) => ({
+        nome,
+        tempoMedioDias: ag.concluidasComData > 0 ? Math.round((ag.somaLeadTime / ag.concluidasComData) * 10) / 10 : 0,
+        concluidas: ag.concluidas,
+        ativas: ag.ativas,
+        totalComentarios: ag.totalComentarios,
+        percentInteracoes: totalComentariosGeral > 0 ? Math.round((ag.totalComentarios / totalComentariosGeral) * 1000) / 10 : 0,
+        taxaNoPrazo: ag.concluidas > 0 ? Math.round((ag.concluidasNoPrazo / ag.concluidas) * 100) : 0,
+      }))
+      .filter(a => a.concluidas > 0 || a.ativas > 0)
+      .sort((a, b) => b.concluidas - a.concluidas || a.tempoMedioDias - b.tempoMedioDias);
+  }, [tarefasFiltradas, comentariosFiltrados]);
+
+  const interacoesPorUsuario = useMemo<InteracaoUsuario[]>(() => {
+    const mapa = new Map<string, number>();
+    for (const c of comentariosFiltrados) {
+      mapa.set(c.autor, (mapa.get(c.autor) || 0) + 1);
+    }
+    const total = comentariosFiltrados.length;
+    return Array.from(mapa.entries())
+      .map(([nome, totalComentarios]) => ({
+        nome,
+        totalComentarios,
+        percentual: total > 0 ? Math.round((totalComentarios / total) * 1000) / 10 : 0,
+      }))
+      .sort((a, b) => b.totalComentarios - a.totalComentarios);
+  }, [comentariosFiltrados]);
+
+  const insightsComentarios = useMemo(() => {
+    const totalComentarios = comentariosFiltrados.length;
+    const totalTarefas = tarefasFiltradas.length;
+    const tarefasComComentario = new Set(comentariosFiltrados.map(c => c.notionId)).size;
+    const tarefasSemComentario = totalTarefas - tarefasComComentario;
+    const mediaComentariosPorTarefa = totalTarefas > 0 ? Math.round((totalComentarios / totalTarefas) * 10) / 10 : 0;
+
+    return {
+      totalComentarios,
+      tarefasComComentario,
+      tarefasSemComentario,
+      percentTarefasSemComentario: totalTarefas > 0 ? Math.round((tarefasSemComentario / totalTarefas) * 100) : 0,
+      mediaComentariosPorTarefa,
+    };
+  }, [comentariosFiltrados, tarefasFiltradas]);
 
   return {
     filtros,
@@ -509,5 +767,8 @@ export function useNotionFilters(tarefas: TarefaProcessada[]) {
     serieDemandaCapacidade,
     topSolicitantes,
     gargalosCriticos,
+    performancePorAgente,
+    interacoesPorUsuario,
+    insightsComentarios,
   };
 }

@@ -112,7 +112,9 @@ export function BarChartComponent({
             position={layout === 'vertical' ? 'right' : 'top'}
             offset={8}
             fill="var(--chart-axis)"
-            fontSize={11}
+            fontSize={13}
+            fontWeight={600}
+            hide={false}
           />
           {colorByIndex &&
             data.map((item, index) => {

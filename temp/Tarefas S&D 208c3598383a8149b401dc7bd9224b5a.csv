@@ -1,0 +1,1179 @@
+﻿Nome da tarefa,Data de criação,Data,Status,Prioridade,Descrição,Executor,Solicitante,Criado por,Departamento,Última edição,Última edição por,Links,Tags
+Treinamento Oliar | Equipamentos Portal,23 de julho de 2025 13:09,14 de outubro de 2025 → 27 de fevereiro de 2026,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Maikel,Luis Cuba | Sistemas,SISTEMAS,10 de fevereiro de 2026 11:41,Luis Cuba | Sistemas,,
+Sistemas | Indicadores DP,4 de junho de 2025 10:23,,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Ocupação | Manutenção dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,"Adicionar medidas de ocupação (clientes não alocados)
+Redesenhar layout",Gabriel Galdino da Silva | Assistente de Dados,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Acessos Departamentos | ChatGPT,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Networkgo | Botão de editar escritório virtual,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Nova versão dashboard de agua e energia,4 de junho de 2025 10:23,,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Sistemas | Dados gen 3 | DigitalOlcean,4 de junho de 2025 10:23,,9 - Concluído,Baixa,"Devido a limitações técnicas relacionadas à licença da Microsoft, iremos migrar parte das nossas ferramentas para a DigitalOcean.
+
+O custo mínimo para manter a operação na Microsoft seria de aproximadamente US$ 424 (cerca de R$ 2.400) mensais. Buscando otimizar despesas e obter maior controle sobre os dados, optamos por iniciar testes em um servidor DigitalOcean com custo inicial de US$ 18, e posteriormente, em ambiente de produção, US$ 24 por mês (cerca de R$ 135).
+
+É importante ressaltar que essa mudança não elimina a necessidade da licença Pro do Power BI, que continuará sendo utilizada para armazenar dashboards, manter o layout visual e controlar o acesso dos usuários.","Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Luis Cuba,Luis Cuba | Sistemas,"SISTEMAS, TI",17 de novembro de 2025 11:57,Thiago Moura,,
+Atualização Pipelines | Titulos Atrasados e Contratos,4 de junho de 2025 10:23,,9 - Concluído,Média,,Luis Cuba | Sistemas,leonardo,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Kahoot | Dash visual de resultados,4 de junho de 2025 10:23,,1 - STAND-BY,Média,Procurar de onde vem os dados -> conferir se existe API,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Pietro | Manutenção app de comissão,4 de junho de 2025 10:23,,1 - STAND-BY,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Webhook PS e termometro (churn),4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Indicadores Facilities,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Analise realista,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Michele | Cashflow,4 de junho de 2025 10:23,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+ORACULO ASIMOV | Fluxo n8n e MVP,4 de junho de 2025 10:23,28 de outubro de 2025 → 21 de novembro de 2025,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Maikel,Luis Cuba | Sistemas,SISTEMAS,24 de novembro de 2025 17:40,Luis Cuba | Sistemas,,
+Enzo | Manutenção hyperflow | ia,4 de junho de 2025 10:23,,1 - STAND-BY,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Sistemas | Controle de Reservas próprio,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Sistemas | Atendimento Express | UAIPE | QRCODE,4 de junho de 2025 10:23,,1 - STAND-BY,Urgente,Chatbot,Luis Cuba | Sistemas,Suhaila Mourad,Luis Cuba | Sistemas,FACILITIES,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Márcia | Resumo MO,4 de junho de 2025 10:23,,9 - Concluído,Média,,Luis Cuba | Sistemas,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | App de Obras,4 de junho de 2025 10:23,,1 - STAND-BY,Média,"foto, quantidade tamanho m2 -material obra dentro aplicativo obras
+
+Descarte antigo
+
+Descarte item quebrado
+
+Descarte re-layout
+
+Descarte desperdício de obra",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+DASHBOARD COMERCIAL,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Ligações caindo para Camila comercial,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+DANIEL | ALTERAÇÕES APP DE OBRAS,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+THEDIM | PUTIZFILMES,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | App de obras no portal,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Márcia | Folha OneFlow,4 de junho de 2025 10:23,,10 - Cancelado,Urgente,,Luis Cuba | Sistemas,Maikel,Luis Cuba | Sistemas,FINANCEIRO,17 de novembro de 2025 11:57,Thiago Moura,,
+"Auditoria ocupação ",4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Sistema de medição de temperatura,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Reativar app de OS glide,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | fazer processo de bloqueio para desligamento de colaboradores,4 de junho de 2025 10:23,,1 - STAND-BY,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Marcia | Solicitação NeoCode,4 de junho de 2025 10:23,,1 - STAND-BY,Média,"Boa tarde,
+
+@Luis Cuba | Analista de Dados - Gowork conforme alinhado segue os nome para desinstalar o programa NEOCODE ACTIVITIES.
+
+Hoje temos 33 de 44 posições ocupadas.
+
+Estamos desinstalando devido os mesmos não mais fazer mais parte do grupo de marcação de Ponto, os mesmos estavam somente para análise de acompanhamento de atividades.nn
+
+segue os nome para desinstalar:
+
+RH – Jullia Couto
+
+RH – Samuel Santos
+
+Jurídico – Denise Freitas
+
+Comercial – Maria Cristina
+
+Comercial – Natasha
+
+Comercial Willian Maia
+
+TI – Leandro Locci
+
+Gestão  - Luciano Paz
+
+MKT – Leonardo
+
+segue os nome para instalar:
+
+Jurídico - PIETRO DE OLIVEIRA LINS
+
+Cobrança - ROSANA APARECIDA CARDOSO CORREA
+
+MKT -  ANNA JULIA NERY QUEIROZ
+
+Ajustar nome no programa NEOCODE ACTIVITIES:
+
+Financeiro – KAIQUE HENRIQUE DA SILVA  - Máquina antiga Karyn
+
+Financeiro  – DANIELA MACEDO FERNANDES  - Máquina antiga Rodrigo Pacce
+
+Aguardando posicionamento do TI – Não esta registrando captura da utilização:
+
+ELVIS PEREIRA DA SILVA
+
+LUCAS SILVA TELES",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Enzo | Orçamento Blip,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CIRCLE | COMUNIDADE NETWORKGO,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Maikel | Cotar orçamento anual da pluga ",4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | acrescentar processo troca de moveis e RMA nas OS do portal,4 de junho de 2025 10:23,,1 - STAND-BY,Média,"Colocar arquitetura aqui 
+
+>  
+
+>  
+
+>> Este texto foi feito por GPT 
+
+>> não foi revisado favor revisar 
+
+>>  
+
+> **Processo para Substituição de Mobiliário de Design ou Cadeiras Quebradas** 
+
+>  
+
+> 1. **Abertura de Ordem de Serviço (OS):** Assim que um item quebrado (como cadeiras ou qualquer mobiliário de design) for identificado na unidade, o Community Leader ou responsável deve abrir uma OS detalhando o problema do item. 
+
+>  
+
+> 2. **Encaminhamento da OS para Almoxarifado e Compras:** A OS aberta deve ser automaticamente copiada para as equipes de almoxarifado e compras. Elas avaliarão a necessidade de substituir ou comprar um novo item. Como prioridade, a substituição deve ser feita com agilidade para evitar que um item quebrado fique exposto na unidade. 
+
+>  
+
+> 3. **Retirada do Item Quebrado da Exposição:** O Community Leader deve retirar imediatamente o material quebrado do ambiente da unidade para que ele não seja utilizado ou visto pelos clientes. 
+
+>  
+
+> 4. **Entrega de Item Novo ou Substituição:** Quando o novo item ou a substituição for entregue, o mobiliário quebrado deve ser encaminhado de volta ao almoxarifado. Este setor tem a responsabilidade de verificar se o item está dentro do prazo de garantia padrão mínima de um ano para mobiliários e, se estiver, iniciar o processo de devolução ou troca junto ao fornecedor. 
+
+>  
+
+> 5. **Documentação Fotográfica e Controle de OS:** Todo o processo, desde a abertura da OS até a entrega do novo item e devolução do item quebrado, deve ser documentado com fotos. Essas fotos devem ser anexadas ao sistema de OS da GOWORK para garantir rastreabilidade e controle. 
+
+>  
+
+> 6. **Linha Específica para Substituição de Mobiliário no Sistema de OS:** Deve ser criada uma categoria específica no sistema de OS para o processo de substituição de mobiliário com defeito ou quebrado. Isso garantirá uma gestão mais organizada e eficiente dessas ocorrências. 
+
+>  
+
+> Este processo tem o objetivo de assegurar que itens quebrados sejam rapidamente substituídos, mantendo a qualidade e a segurança nos espaços da GOWORK, além de garantir o correto aproveitamento das garantias oferecidas pelos fornecedores. 
+
+> **",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Câmeras com IA para checkin ",4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+lista de contatos gowork | aplicação,4 de junho de 2025 10:23,,1 - STAND-BY,Importante,Lista de contatos úteis internas a ser criada e reinserida nos aparelhos celulares. Também analisar a necessidade de criar uma conta separada por departamento.,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+DESKBEE | FACEID | ELVIS,4 de junho de 2025 10:23,,1 - STAND-BY,Importante,"Iniciando levantamento de requisitos para teste e correções. O IDFace esta ativo, porém sem comunicação com o servidor por uma instabilidade detectada no passado. O fornecedor foi contatado para darmos continuidade no projeto.",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FERNANDO | NOVO NETWORKGO,4 de junho de 2025 10:23,,1 - STAND-BY,Importante,,Luis Cuba | Sistemas,,Luis Cuba | Sistemas,,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+APP DE OBRAS | NOVAS FUNCIONALIDADES,4 de junho de 2025 10:23,,1 - STAND-BY,Baixa,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+NOVO PORTAL | SUGESTÃO LUIS ANTONIO,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+REUNIÃO ELVIS | ORÇAMENTO WINDOWS CLOUD,4 de junho de 2025 10:23,,1 - STAND-BY,Baixa,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+QR CODES OLIAR,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Sistema de OSs recorrentes,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+QR CODE COPA | TRANSFERIR PARA GOOGLE FORMS,4 de junho de 2025 10:23,,1 - STAND-BY,Baixa,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Verificação empresas entra e sai,4 de junho de 2025 10:23,,1 - STAND-BY,Baixa,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+NPS NO PORTAL NETWORKGO,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Integração API Meta Ads com POWER BI CAC,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Integração API Google Ads com POWER BI CAC,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"RELACIONAMENTO | CRM ",4 de junho de 2025 10:23,,1 - STAND-BY,Importante,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Agendar reunião PLENO | API Whatsapp,4 de junho de 2025 10:23,,1 - STAND-BY,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Chatbot | RH | Jurídico,4 de junho de 2025 10:23,,1 - STAND-BY,Média,"
+Interação e disparo automático
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Dash Hub ou Power Etapas de Conversão,4 de junho de 2025 10:23,,1 - STAND-BY,Média,"
+Painel de visualização e Export de Leads e sua jornada dentro do funil de conversão.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Monitoramente de uso de rede | Maikel,4 de junho de 2025 10:23,,1 - STAND-BY,Média,"Sites de sugestão:
+
+
+
+
+
+https://blogac.me/timebra-monitoramento-de-trafego-de-rede-para-aumentar-o-faturamento-corporativo-de-isp/
+
+
+
+https://www.mikweb.com.br/",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+INTEGRAÇÃO API OMIE PARA ONEFLOW,4 de junho de 2025 10:23,,1 - STAND-BY,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Bottura | Dash IA x SDR,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Esquema de compras,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Walk-in | Reconetcar dados ao dashboard em power bi,4 de junho de 2025 10:23,,9 - Concluído,Importante,"Auditar dados:
+      Envios recepção -> CADASTRO WALKIN TODAS AS UNIDADES (Formulário base)
+      Envios visitantes -> PASTA ENTRADAS UNIDADES
+      Ficha orçamento -> FICHA ORÇAMENTO RECEPÇÃO
+
+Verificar automações:
+      Automações -> conferir o que pode estar causando problemas (falta de dados)
+
+Criar relatório:
+      Quantas visitas agendadas teve?
+      Quantos walk-in teve?
+      Quantos cadastros a recepção fez?
+            Desses cadastros, quantos clientes preencheram a ficha orçamento?",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Sistemas | Revisão Check-list fácil,4 de junho de 2025 10:23,,9 - Concluído,Média,"Pipeline:
+
+- Criar pipeline para atualização automática
+
+Revisar na Dashboard:
+
+- Sincronizar filtros das páginas
+- Espaçamento
+- Conferir se valores estão corretos",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"MAIKEL | Homologação portal ",4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Sala de reunião online,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Deslocar reserva | Nova funcionalidade,10 de março de 2026 09:48,10 de março de 2026 → 27 de março de 2026,2 - Solicitação,Importante,"Permitir que o usuário consiga alterar o horário da reserva, considerar todas as regras de conflitos e o sistema de créditos caso ele reduza ou aumente o tempo da reserva",Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 09:51,Luis Cuba | Sistemas,https://networkgo.com.br/rooms/reservations/uuid,NetworlGo
+IMPLANTAÇÃO DESKBEE | MAIKEL,4 de junho de 2025 10:23,,9 - Concluído,Importante,"**Implantação do sistema hot desk nas unidades (deskbee) – urgente.**
+
+**Campus 2**
+
+**Campus 1**
+
+**Consolação**
+
+**Funchal.**
+
+**Pinheiros (Butantã e pinheiros)**
+
+**Ministro**",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FERNANDO | CADASTRO DE BIOMETRIA,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FACILITIES | TREINAMENTO | TI & SISTEMAS,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+MANUTEÇÃO | DASHBOARD DESKBEE,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+SISTEMAS | Mudar integração hubspot <> App comercial,4 de junho de 2025 10:23,,9 - Concluído,Baixa,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Atualizações e Melhorias | Sistema e Dash OSs,4 de junho de 2025 10:23,,9 - Concluído,Média,"Sistema:
+
+- Ao abrir uma OS, o criador da mesma poderá incluir um prazo para que a mesma seja realizada.
+    - Com o prazo atribuído, caso a OS não esteja concluída até a data limite, o status deve ser atualizado para ""Atrasado""
+    - O prazo limite definido poderá ser alterado conforme novas atualizações do caso.
+- Indicação de que a OS foi criada a pedido do Fernando para controle das requisições dele (prazo de entrega, tipo de demanda, nível de prioridade, etc.)
+- Definição do departamento responsável pela OS, incluindo:
+
+    - Departamento que criou a OS;
+    - Departamento que está responsável pela fase atual da OS.
+
+Dashboard:
+
+- Estruturar melhor o visual, aumentar tamanhos dos gráficos para melhor visualização dos dados.
+- Na tabela, adicionar:
+    - Unidade da OS;
+    - Departamento da OS;
+- Dias para conclusão:
+    - Se for == 0 e Status != Concluído (ainda não foi finalizada), deve mostrar a quanto tempo a OS está pendente
+- Adicionar filtro sobre o departamento",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Ocupação | Atualizações | Abril/2025,4 de junho de 2025 10:23,,9 - Concluído,Baixa,"Fluxo seguido:
+
+- Solicitação: Abertura de solicitações
+- Alteração de informação: Caso esteja em dúvida ou esteja faltando alguma informação
+- Arquitetura: Caso seja necessário ajustes na planta que não conseguimos fazer
+- Concluído: Solicitações finalizadas",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Centralizar arquivos OMIE | Notebooks Power BI (API's),4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Checklist,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Dashbaord ajustes indicadores,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+PBI - CUSTOS LIMPEZA | Controle Café,4 de junho de 2025 10:23,,9 - Concluído,Baixa,Conferir questão dos dados faltantes,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Adicionar botões dashboard OS,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Adicionar horário solicitações | Dashboard Chamados,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | NOVOS PIPELINES,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+PBI - CUSTOS LIMPEZA | Dados em branco,4 de junho de 2025 10:23,,9 - Concluído,Baixa,Separar dados em branco (unidade de destino e data de pedido),,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Dashboard de chamados,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+SISTEMAS | Atualizar dash de titulos atrasados,4 de junho de 2025 10:23,,9 - Concluído,Baixa,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+SISTEMAS | Manutenção dashboard de ocupação,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Larissa | Treinamento entrada unidades,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Ocupação | Atualizações | Março/2025,4 de junho de 2025 10:23,,9 - Concluído,Baixa,"Fluxo seguido:
+
+- Solicitação: Abertura de solicitações
+- Alteração de informação: Caso esteja em dúvida ou esteja faltando alguma informação
+- Arquitetura: Caso seja necessário ajustes na planta que não conseguimos fazer
+- Concluído: Solicitações finalizadas",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Márcia | Linhas de telefone,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+MAIKEL | CHAMADOS SEM INTERAÇÃO,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Sistemas | Revisão de dashboards e Centralização de acesso,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Ocupação | Manutenção Dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,"DASHBOARD OCUPAÇÃO:
+
+Ocupação:
+- Atualizado
+
+Diferença mensal: 
+- Atualizado
+
+Review:
+
+- Atualizado
+
+Ticket médio:
+- Não precisa de alterações
+
+Diferença diária da OCUPAÇÃO
+- Implementada",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | Manutenção fluxo de entrada,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Credenciais OMIE,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Contratos | Manutenção Dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Manutenção Dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FERNANDO | Manutenção processo de entrada,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Michele | Alteração cashflow,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+ANGELA | AJUSTES GOEVO,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Pietro | Reunião check point,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+MAIKEL | PROVA HEAD FACILITIES,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Michele | Dashboard Comissão comercial ",4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+PIETRO | COMISSÃO COMERCIAL,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Cronograma Fcilities de chamados sem interação,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FACILITIES | LIBERAR 8 POSIÇÕES NO APP DESKBBEE PARA HOMEFLOEX E HOTDESK,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CUBA | DOMINIOS APP NOCODE,4 de junho de 2025 10:23,,9 - Concluído,Média,Personalizar urls de nossos sistemas internos.,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Bottura | Chatbota IA | Gocorporate,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Relatório sistema de compras vinculado a obras,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Bottura | CHATBOT IA | GOWORK ",4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Amanda | Novo recurso de mapas app de ocupação,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Paula | Novas telas no power bi,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Paula | Aplicativo Relacionamento | Atividades,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Paula | Atualização app de relacionamento,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Angela | Relatório de compras para troca de fornecedor,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Luma | Desativar salas paulista 475,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Michele | Manutenção Cashflow,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Luciano | Dashboard de chamados,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Paula Lemos | Video de integração portal,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Solicitação CFO | CMO | Custo colab por CC,4 de junho de 2025 10:23,,9 - Concluído,Importante,"Demanda recorrente.
+
+Deve ser entregue até i dia 15 de cada mês.",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Luciano | Sala de reunião Rebouças,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Relatório qualicorp,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Michele | Planilha automática consulta CNPJ,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"SAFEQ | PINS ",4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Luis | Termos de uso impressoras ",4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Facilities | Bloquear ROOFTOP paulista 302,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Michele | Manutenção relatório deskbee,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Michele | Manutenção Cashflow/Projeção,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Luciano | Sharepoint Recepção Rebouças,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Projeto | Novo portal,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+MANUTENÇÃO RELATÓRIO SAFEQ,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Elvis | Migração de demanda LinkVox,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Maikel | Relatório de acesso control id, tempo de permanencia",4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+ALTERAÇÃO DE LAYOUT DASHBOARD LIMPEZA,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"incluir no app de churn a opção ""CLIENTE JUDICIAL."" na Conclusão Juridico.  Obrigada.",4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FERNANDO | Assinatura e compra online,4 de junho de 2025 10:23,,9 - Concluído,Urgente,"
+Assinatura e compra online  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+PROJEÇÃO | CATEGORIAS A SEREM LANÇADAS,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COBRANÇA HOMEFLEX,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+MÁRCIA | NEOCODE | REVER USUÁRIOS,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+ALTERÇÕES NETWORKGO,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Aplicativo de AUDITORIA,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FERNANDO | VERIFICAR VARIAÇÃO DE OCUPAÇÃO,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CASHFLOW | VALIDAÇÃO DE NÚMEROS DO PASSADO,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CADASTRO DE UNIDADE P4/REBOUÇAS,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Treinamento do processo de impressora SAFEQ,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+NOVOS DEV | REUNIÃO LEANDRO KAFNET,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FERNANDO | Novos dados Genial,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+MANUTENÇÃO PROJEÇÃO,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Apresentação DIVERSIDADE,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Treinamento DADOS DE HIDROMETROS E ENERGIA,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Reunião Paula | Relacionamento,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+RELATÓRIO ISRAEL | FERNANDO,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+INFOREQUEST E DADOS GENIAL,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Alterações app de obras,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FORMULÁRIO ÚNICO DE VISTAS | FERNANDO BOTTURA,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+REVISÃO PROJEÇÃO DE RECEITAS,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+SERVIDOR PARA RUCKUS,4 de junho de 2025 10:23,,9 - Concluído,Urgente,"Servidor Ruckus servidor novo instalado. falta migrar as licenças. Como só temos 1 todos os equipamentos precisam ser migrados de uma vez. Impossível fazer m horário comercial, vamos verificar a possibilidade com o fornecedor de realizar fora do horário.",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Status do app de ocupação | Provisório,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+PROJEÇÃO E CASHFLOW EM PLANILHA | CFO,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Reunião Cristiane | CL ",4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Venda rápida | Fernando Bottura | App de vendas,4 de junho de 2025 10:23,,9 - Concluído,Média,"1. App para fechamento sonsorial foto da pessoa assinatura dedo foto documento
+
+Valor
+
+Qtidade de seats meses, unidade valo mensalidade
+
+Caxinha ok no contrato",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Sala de reunião | Automatizar,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Automatizar lançamentos de sala de reunião
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Aplicativo para DP e RH,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Travar outlook comercial | Fernando,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+Travar outlook do time comercial para que o mesmo só possa utilizar o hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Aplicativo para controle de obras e vinculo ao compras,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+AUTOMATIZAR ATUALIZAÇÃO | NPS | POWER BI,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+NOVO APLICATIVO DE OS,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Chips, notebooks e celulares | RH",4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Reativa linha LINKVOX | os 75377,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Relatório HubSpot para retorno das reuniões marcadas pelos SDR´s,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+ATUALIZAR DASHBOARD MAIKEL | DESCONTO E CUSTO POR UNIDADE GOEVO,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Dashboard sala de reunião | Financeiro,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Aplicativo de cobrança | Financeiro,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+GESTÃO DE ESTOQUE UNIDADES,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+SHAREPOINT UNIDADE AAMEDA SANTOS,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+NOVO APLICATIVO DE SALA DE REUNIÃO,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+ATUALIZAÇÃO APP DE RELACIONAMENTO,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+ATUALIZAÇÃO APP DE OCUPAÇÃO,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Reserve manager/Deskbee | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Sistema de reservas, check-in, check-out para controlde de planos e cobranças
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Dashboard de Compras | Dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Automação | Comissao contratos,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+calcular porcentagem e valor da comissão apor confirmação do pagamento
+
+Em reunião com Kelly Maikel alinhos que deve ser inserido o capo de ""Data limite de entrega""  
+
+
+Se for antes ede 20 dias precisa de aprovação e quem autorizou.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Conciliação do cartão do crédito automático,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+SafeQ | Implantação,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Sistema para gestão de tempo | Márcia Fária,4 de junho de 2025 10:23,,9 - Concluído,Urgente,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Atualizar dashboard de contratos,4 de junho de 2025 10:23,,9 - Concluído,Importante,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Auditoria | App de ocupação,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Realizar validação de valores, quantidades e status dos cliente no app de ocupação.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Alteração layout limpeza | Angela,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Manutenção APP comissão - Bug´s Kanban,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+LINKVOX | CHECK DE LINHAS,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+MAIKEL | ANÁLISE DE COMPRAS | CNAB 2.0,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Pedido | Valor | Obs financeiro | Obs Compras
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+METRIFICAÇÃO DE OBRAS | DANIEL,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Planilha que siga o modelo da planilha de facilities
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | ShP vs Communication Site | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CORRIGIR | DASHBOARD E CUSTOS DE LIMPEZA,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Avaliação de OS,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+FIX | BI DE ENERGIA | MINISTRO,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Análise de faturamento,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Ultimo treimestra de 2022   
+
+
+regra de corte  
+
+
+Outros 4 trimestres de 2023  
+
+
+  
+
+
+Despesas - aluguel cond  
+
+
+Folha de pag - PJ , CLT e terc  
+
+
+Outros -   
+Seguros  
+
+
+Ativos  
+
+
+Impostos  
+
+
+Receitas
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Indicadores de chamados | Fernando,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+Bom dia Luis, tudo bem?
+
+
+
+A alteração que precisamos realizar ´alterar a visualização dos chamados em atendimento à mais de 10 dias e visualizarmos os chamados aguardando interação do cliente e colocar para mostrar os que estiverem a mais de 10 dias.
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | Comparar Custos Marketing Hub e RD station,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Amanda | Aplicativo Relacionamento,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+verificar API's da Wehelp e otimizar o input,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Financeiro | Planilha consulta CNPJ,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Aautomatizar consulta de CNPJ par avalidação de informações pertinentes.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+APP DE OCUPAÇÃO 2.0,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+App de ocupação 2.0   
+
+
+Melhorias e upgrades.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Treinamneto | App de ocuação | Comericla,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+Treinamento sobre atualização do app de ocupação.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Exceção | Montar relatório de acesso para ONTEX,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CFO | CALCULOS,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+Michele,
+
+
+
+Bom dia..Espero que tenha saído tudo bem com a cirurgia..
+
+
+
+O Pedro está pedindo a documentação abaixo.
+
+
+
+Será que o Cuba tem isso no BI?
+
+
+
+- Capex médio por *seat*
+
+- Churn Físico e Virtual
+
+- Ticket médio físico e virtual
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | Whatsapp x Comercial | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Integração whatsapp
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CFO | CALCULO DA GOSTOS COM A FOLHA,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | Adicionar projeção de saldo ao cashflow,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Demanda solicitada dia 21/11/2023 pelo whatsapp
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+ANGELA \ CUSTO LIMPEZA | MANUTENÇÃO,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+**Boa tarde Cuba,**
+
+
+
+Solicito alterar o BI de limpeza incluindo os dados da empresa **PERFECTA SUPRI** será mais um fornecedor de insumos de limpeza.
+
+
+
+**A partir de 16/11/23 vamos começar a efetuar pedido através dessa empresa.**
+
+
+
+APÓS A EMPRESA VIASUPRI INCLUIR UM QUADRO COM O NOME DA EMPRESA “PERFECTA SUPRI”
+
+O quando Total Geral / Unidade colocar em outra página
+
+Sugestão: Reduzir o quadro gráfico “Total Geral”  e  o gráfico azul Total Geral/Unidades colocar abaixo do gráfico Total Geral.
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+LUCIANO | PREMIAÇÃO MANUTENÇÃO | MANUTENÇÃO,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Dashboard de ocupação | Novo layout e correção de bugs,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Relatório de OS | Maikel,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CASHFLOW | FINANCEIRO,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Extrair dados do cashflow poer bi e encaminha para Michele no formato de planilha com a estética padrão.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CASHFLOW | NOVO LAYOUT | CFO,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Novo layout solicitado pelo CFO para facilitar análise
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Calculo de CAC | LTV | Fernando,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Double check | Custos telefonia,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Automação provas recrutamento | Gabriela,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Plataforma de cursos e  aperfeiçoamentos,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Intuito de aprimorar times para o atendimento ao cliente, processos financeiros, RH e tecnologia
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Vídeo de integração| Fernando,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Fernando solicitou a Kelly para elaborar um vídeo de integração ao cliente.  
+
+
+De forma resumida sobre portal, regras e outras questões.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | KPI | Dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Planilha DEZKER | Fernando,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Ajustar calculo para conseguir maipular os resultados da empresa de acordo com a ocupação.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Termos e condições | Portal | SANCHEZ,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Inserir termos e condições no portal.  
+
+
+Validar método de consulta
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Cashflow | Michele,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Automatizar casdhflow via api OMIE na plataforma power bi
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Contratação | Satrlink,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Contratar internet starlink
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fichas tour e walk-in | Release dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Bruno | Arrumar duplicações HS ",4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Contatos e empresas sendo vinculados e gerando duplicatas no hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Telefonia CLARO,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | Remapear fluxograma walk-in e visitas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | Cuba bater portal x ocupação 300 clientes,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"RH | Automações Destaque | Sistemas ",4 de junho de 2025 10:23,,9 - Concluído,Importante,Atualizar automações referente aos QRcodes dos colaboradores que participam do destaque do mês,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Validação telefonia | Sistema,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Quem não usou a linha telefônica nos ultima 3 meses?
+Quem está usando, mas não esta na lista de ativos?
+
+Realizar comparativo com histórico de uso e situações contratuais.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | WEBHOOK - Control id | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Encaminhar um comando sempre que alguém entrar
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Migração PHONETRACK | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Planilha de ativos | Relatório,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Boa tarde, Cuba tudo bem?
+
+Preciso que vc valide as nf dentro das tabelas da pasta Planilha Bases dentro da tabela reclassificação ativos 2023.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Edição Video Go Tranning da semana,4 de junho de 2025 10:23,,9 - Concluído,Média,Titulo:  Transformando ideias em realidade: Equipe Recepção,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+edição do video da semana - Go Trainning,4 de junho de 2025 10:23,,9 - Concluído,Média,Titulo: Transformando ideias em realidade: Equipe BackOffice,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"relatorio OMIE  clientes adimplentes ",4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+Maikel, bom dia! 
+Por gentileza, verificar a possibilidade de extração de clientes adimplentes e ativos dos últimos 2 meses, do sistema OMIE, para disparo de NPS.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Criar no share point o menu ""Eventos""",4 de junho de 2025 10:23,,9 - Concluído,Média,"
+  
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+CONECTAR PLANILHA DO SHARE POINT NO PBI,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+EDIÇÃO DE VIDEO gO TRANNING,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Edição Video Go trainning | Supere-se Equipe de Obras,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Automação OMIE | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"PLANNER JORNADA CLIENTE - COLOCAR DANI E THAMIRES ARQ,",4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Luciano | Premiação Manutenção | Dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Desenvolver dashboard para avaliação de performance da equipe N1
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Mayra | Estruturar Permissões e Mapear SharePoint | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+COMERCIAL | Relatório de leads,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Emitir relatório semanal comparando leads RD e Hubspot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | HubSpot UIx | Sistema,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Excluir planner - Melhorias unidades,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"criar no sharepoint pasta para colocar layout/imagens das placas Gowork ",4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Recepção | Comissão recepção | Dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Márcia | Indicadores | Power BI,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | Walk-in | Processos,4 de junho de 2025 10:23,,9 - Concluído,Média,,,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+TI | Abertura de OS | Vídeo de treinamento,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Víde de treinamento de abertura de OS
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Consumo energia | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Hidrometros | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+Desenvolver método para registrar medidores diariamente .
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Angela | Criação Power Bi de custos de limpeza | Dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Criar um Power BI das informações de custos com a limpeza referente as empresas RL | Viasupri | Ecolab | Café
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+João Marcos | App sala de reunião | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Comercial | Comissão SDR | Dashboard,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Giovanna | Testes de Integração Hubspot e Meta | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+João | Fornecer acesso | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Fornecer acesso ao e-mail financeiro5@gowork.com.br para os planners e ao portal gowork conforme solicitado pelo colaborador João Marcos.
+
+Anexo print da solicitação.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | API check-list fácil | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Conectar base do check-list fácil ao power bi
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Débora | Conceder acesso | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Conceder acesso a comercial Débora ao aplicativo de comissões e a planilha de controle
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Amanda | Conceder acessos | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Conceder acesso a Amanda Gentil para visualizar todas a unidades e departamentos coerentes.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Maikel | Control id ",4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+Fazer verificação nos registros ativos da control id e relatório para inativação.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Elvis | Liberar acesso ao sharepoint do RH para o email rh5@gowork.com.br | Sistemas ",4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Luciano | Alinhamento de parâmetros para Bõnus | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Fernando | criar relatório Dash pesquisa problemas área por localização, para tratarmos recorrência | Power Bi",4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Giovanna | Levantar Leads do Antigo Portal | Power BI ",4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | SharePoint | Sistema,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Criar biblioteca no SharePoint para armazenar vídeos de treinamentos relacionados ao HubSpot
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Larissa | Ficha tour AMAURI II | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Incluir no Formulário, a opção Amauri II, na pergunta 3 do Ficha Tour
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+"Bruno | Integração dos leads do META ao HubSpot | Sistema ",4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Michele | Apresentação Fundo | Indicadores,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+Atualizar a montar indicadores para apresentação.
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Fernando | Extração de leads do MySql | Sistemas,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Hidrômetros | Power BI,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | Mapear origens de leads,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | WALKING - Comercial no Humb,4 de junho de 2025 10:23,,9 - Concluído,Média,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Maikel | mapeamentos BI,4 de junho de 2025 10:23,,9 - Concluído,Importante,"
+
+",,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Tela de conhecimento Dexter,23 de fevereiro de 2026 16:46,24 de novembro de 2025 → 25 de novembro de 2025,9 - Concluído,Importante,"Realizar a criação de uma tela CRUD para edição - acompanhamento ",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Adicionar logo do sistema de medição,23 de fevereiro de 2026 16:46,20 de janeiro de 2026 → 23 de janeiro de 2026,9 - Concluído,Importante,,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Reavaliação dos designer,23 de fevereiro de 2026 16:46,21 de novembro de 2025 → 21 de novembro de 2025,9 - Concluído,Importante,"Realização do designer e funcionalidade de todas as paginas ",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Integração do dexter,23 de fevereiro de 2026 16:46,21 de novembro de 2025 → 21 de novembro de 2025,9 - Concluído,Importante,"Integrar o dexter junto ao App Gowork ",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Manter funcionalidades validas com banco de dados,23 de fevereiro de 2026 16:46,21 de novembro de 2025 → 5 de janeiro de 2026,9 - Concluído,Importante,Forms e botões integrados ao maximo com BD para maior facilidade com Backand,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Validar | Telas a serem desenvolvidas,23 de fevereiro de 2026 16:46,15 de dezembro de 2025,9 - Concluído,Importante,"é preciso conversar com o time para validar se será repassado para o Dev novas telas a serem feitas além da parte de OS, como:
+
+Chamado
+Empresa
+Correspondência",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Backand parte financeira | APP Jornadas,23 de fevereiro de 2026 16:46,28 de novembro de 2025 → 1 de dezembro de 2025,9 - Concluído,Importante,"Integração do banco de dados com o app jornadas para funcionalidade de títulos financeiros ",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Frontend primario dexter,23 de fevereiro de 2026 16:46,27 de novembro de 2025 → 28 de novembro de 2025,9 - Concluído,Importante,Realizar primeiro ajuste para adaptação do dexter com app de jornadas,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Ajustes finos de visualização de abas,23 de fevereiro de 2026 16:46,1 de dezembro de 2025 → 15 de janeiro de 2026,9 - Concluído,Importante,Realizar ajustes finos de telas como botões e funcionalidades que trazem prestigio ao sistema,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Permissões de usuários,23 de fevereiro de 2026 16:46,1 de dezembro de 2025 → 15 de dezembro de 2025,9 - Concluído,Importante,Realizar a separação e liberação por usuário por permissão,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+otimização de layout,23 de fevereiro de 2026 16:46,11 de dezembro de 2025 11:00 (BRT) → 14:00,9 - Concluído,Importante,Refazer completamente o layout do sistema de medição de água e energia,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Otimização de Layout: Dropdown,23 de fevereiro de 2026 16:46,11 de dezembro de 2025 14:00 (BRT) → 15:00,9 - Concluído,Importante,Refazer a listagem de drop para mobile e desktop para maior responsividade,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Otimização de Layout: Cores,23 de fevereiro de 2026 16:46,11 de dezembro de 2025 15:00 (BRT) → 16:00,9 - Concluído,Importante,Alterar todas as cores do modelo de energia,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Otimização de Layout: Animações,23 de fevereiro de 2026 16:46,11 de dezembro de 2025 16:00 (BRT) → 17:30,9 - Concluído,Importante,Inserir animação do Header do sistema para prestigio do sistema,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Criação da aba jornadas Obras,23 de fevereiro de 2026 16:46,12 de dezembro de 2025 → 18 de dezembro de 2025,9 - Concluído,Importante,"Criação de Aba e nova funcionalidades, como administrativa, kanban e arquitetura.",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Pesquisa de funcionalidade - App Relacionamento,23 de fevereiro de 2026 16:46,18 de dezembro de 2025 10:20 (BRT) → 29 de dezembro de 2025 09:00 (BRT),9 - Concluído,Importante,"Realização de uma pesquisa de funcionalidade e usabilidade do app de relacionamento para criação da aba
+
+Foi realizada conversas presenciais e alinhado envio de um documento no dia 22/12 com uma analise mais detalhada pelo Sanches",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Estruturação do App do RH,23 de fevereiro de 2026 16:46,30 de dezembro de 2025 → 5 de janeiro de 2026,9 - Concluído,Importante,Realização das funcionalidades basicas do sistema do RH,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Ajuste de front-end,23 de fevereiro de 2026 16:46,19 de janeiro de 2026 → 20 de janeiro de 2026,9 - Concluído,Importante,"Realização de ajustes como modo dark, fix de cores entre outros.",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Criação de sistema de avaliação comportamental,23 de fevereiro de 2026 16:46,16 de janeiro de 2026 → 20 de janeiro de 2026,9 - Concluído,Importante,"Criação de todo o modelo e revalidação do sistema para que seja justo, integrando com o sistema de RH e três respostas pelo sistema",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Criação de modulo de obras,23 de fevereiro de 2026 16:46,1 de dezembro de 2025 → 16 de janeiro de 2026,9 - Concluído,Importante,Criação do sistema por completo ajustes e atuações de usuários,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Criação de modulo de jornada do cliente,23 de fevereiro de 2026 16:46,1 de janeiro de 2026 → 31 de janeiro de 2026,9 - Concluído,Importante,"Criação e ajuste de jornada do cliente, ou seja, ajuste para produção",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Ajuste de Kanban em relação a design,23 de fevereiro de 2026 16:46,23 de janeiro de 2026 → 26 de janeiro de 2026,9 - Concluído,Importante,Ajustes de layout dos cads de kanban,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Criação do sistema de avaliação,23 de fevereiro de 2026 16:46,12 de janeiro de 2026 → 27 de janeiro de 2026,9 - Concluído,Importante,Sistema de avaliação comportamental integrado ao sistema de RH/DP,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Ajustes finos modulo de jornada do cliente,23 de fevereiro de 2026 16:46,28 de janeiro de 2026 → 29 de janeiro de 2026,9 - Concluído,Importante,Realização de ajustes na ficha de criação de jornada do cliente,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+"Ajuste de criação de Jornada ",23 de fevereiro de 2026 16:46,28 de janeiro de 2026 → 29 de janeiro de 2026,9 - Concluído,Importante,Ajuste na criação de jornada (necessidade de recarregar a pagina para ver jornada),Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Dashboard Gerencial - Jornada de pendecia,23 de fevereiro de 2026 16:46,3 de fevereiro de 2026 → 6 de fevereiro de 2026,9 - Concluído,Importante,"KPIs tempo real, filtros período, gráfico envelhecimento, exportação relatórios",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Módulo Atuação - Jornada de pendecia,23 de fevereiro de 2026 16:46,3 de fevereiro de 2026 → 6 de fevereiro de 2026,9 - Concluído,Importante,"Lista/Cards inadimplentes, atribuição responsável, registro atuações, visualização atraso",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Kanban Pipeline - Jornada de pendecia,23 de fevereiro de 2026 16:46,3 de fevereiro de 2026 → 6 de fevereiro de 2026,9 - Concluído,Importante,"5 estágios visuais, drag & drop, registro observações, informações por card",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Régua Automática - Jornada de pendecia,23 de fevereiro de 2026 16:46,3 de fevereiro de 2026 → 6 de fevereiro de 2026,9 - Concluído,Importante,"Gatilhos configuráveis, ações automáticas, interface timeline, ativação individual",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Relatórios de atuações - Jornada de pendecia,23 de fevereiro de 2026 16:46,3 de fevereiro de 2026 → 6 de fevereiro de 2026,9 - Concluído,Importante,"Envelhecimento, liquidações, analítico geral, por responsável, atuações, exportação CSV",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Integração Relacionamento - Jornada de pendecia,23 de fevereiro de 2026 16:46,3 de fevereiro de 2026 → 6 de fevereiro de 2026,9 - Concluído,Importante,"Badge visual perfil cliente, navegação direta, indicador lista",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Detalhe Cliente - Jornada de pendecia,23 de fevereiro de 2026 16:46,3 de fevereiro de 2026 → 6 de fevereiro de 2026,9 - Concluído,Importante,"Visão geral financeira, lista títulos, timeline atividades, layout padrão",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Jornadas - Finalização de destalhes de cards,23 de fevereiro de 2026 16:46,9 de fevereiro de 2026 → 13 de fevereiro de 2026,9 - Concluído,Importante,Realização de finalizações do detalhamento dos cards do modúlo de substituição do planner,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Jornadas - Implantação dos dados dentro do sistema,23 de fevereiro de 2026 16:46,9 de fevereiro de 2026 → 12 de fevereiro de 2026,9 - Concluído,Importante,Implantação dos dados dentro do sistema,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Módulo de obras - botão de vinculo de cliente,23 de fevereiro de 2026 16:46,12 de fevereiro de 2026 → 13 de fevereiro de 2026,9 - Concluído,Importante,Criação de um botão de vinculo do cliente - no caso criar uma obra na qual o cliente ainda não esteja cadastrado,Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Diagnóstico do ambiente front-end,23 de fevereiro de 2026 16:46,18 de fevereiro de 2026 → 20 de fevereiro de 2026,9 - Concluído,Importante,"Realizada auditoria técnica completa do projeto antes de qualquer alteração. Foram identificadas inconsistências no ambiente de desenvolvimento: conflito de versão entre a biblioteca Tailwind declarada e a utilizada na prática, ausência de arquivos de configuração obrigatórios e componentes de interface gerados por ferramenta automatizada em vez do processo oficial. O diagnóstico definiu o caminho correto de correção e evitou retrabalho nas etapas seguintes.",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Normalização do ambiente de desenvolvimento,23 de fevereiro de 2026 16:46,18 de fevereiro de 2026 → 20 de fevereiro de 2026,9 - Concluído,Importante,"Corrigidas todas as inconsistências identificadas no diagnóstico. O sistema de estilos foi migrado para a versão correta do Tailwind com configuração formal via plugin do Vite, eliminando a dependência de um arquivo CSS estático pré-compilado que impedia a adição de novos estilos. Dependências internas foram padronizadas e o gerenciador de componentes shadcn/ui foi inicializado corretamente, habilitando a instalação e atualização de componentes via linha de comando a partir desse ponto.",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Reestruturação da navegação principal,23 de fevereiro de 2026 16:46,18 de fevereiro de 2026 → 20 de fevereiro de 2026,9 - Concluído,Importante,"Substituída a barra de navegação horizontal por uma barra lateral, adequando a estrutura do sistema ao crescimento previsto de módulos e funcionalidades. A nova navegação centraliza em um único componente o acesso a todas as seções do sistema, com suporte a recolhimento, troca de tema e informações do usuário autenticado. Todos os oito dashboards existentes foram adaptados para operar com a nova estrutura sem alteração de rotas ou regras de negócio.
+",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+Remoção de componentes obsoletos e validação final,23 de fevereiro de 2026 16:46,18 de fevereiro de 2026 → 20 de fevereiro de 2026,9 - Concluído,Importante,"Após a reestruturação da navegação, três componentes que deixaram de ser utilizados foram identificados e removidos do projeto. Realizada verificação global para garantir ausência de referências residuais antes da exclusão. O build de produção foi executado e concluído com sucesso, confirmando a integridade do sistema ao final do dia.",Thiago Moura,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,23 de fevereiro de 2026 16:48,Gabriel Galdino da Silva | Assistente de Dados,,
+MÓDULO DE ORÇAMENTO E VITRINI DE SERVIÇOS EMPRESA | NETWORKGO,23 de fevereiro de 2026 12:43,23 de fevereiro de 2026 → 13 de março de 2026,4 - Em andamento,Média,,"Thiago Moura, Luis Cuba | Sistemas",Luis Cuba,Thiago Moura,SISTEMAS,10 de março de 2026 10:20,Luis Cuba | Sistemas,,
+COMUNICADO DE VIRADA | JORNADA CLIENTES | PIPEGO,19 de fevereiro de 2026 13:30,13 de fevereiro de 2026 → 23 de fevereiro de 2026,9 - Concluído,Urgente,,"Thiago Moura, Gabriel Galdino da Silva | Assistente de Dados",Thiago Moura,Thiago Moura,SISTEMAS,25 de fevereiro de 2026 15:12,Thiago Moura,,
+APRESENTAÇÃO RESULTADOS | DEZ/2025 e JAN/2026,18 de fevereiro de 2026 12:32,18 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Baixa,,Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 14:34,Luis Cuba | Sistemas,,Apresentação de resultado
+NOVA FUNCIONALIDADE | APLICATIVO RH,12 de fevereiro de 2026 16:10,12 de fevereiro de 2026 → 13 de fevereiro de 2026,9 - Concluído,Média,,"Thiago Moura, Luis Cuba | Sistemas",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,18 de fevereiro de 2026 16:15,Luis Cuba | Sistemas,,
+IMPLEMENTAÇÃO TACTIQ | RELACIONAMENTO | PROPOSTA,2 de fevereiro de 2026 11:15,,2 - Solicitação,Baixa,,"Thiago Moura, Luis Cuba | Sistemas",Thiago Moura,Thiago Moura,SISTEMAS,2 de fevereiro de 2026 11:40,Thiago Moura,,
+INCLUIR DADOS FUNCIONÁRIOS | SISTEMA RH-DP,29 de janeiro de 2026 17:42,29 de janeiro de 2026 → 30 de janeiro de 2026,9 - Concluído,Importante,,Thiago Moura,Thiago Moura,Thiago Moura,SISTEMAS,3 de fevereiro de 2026 13:53,Luis Cuba | Sistemas,,
+Ideia: Vínculo com a empresa no momento do cadastro,29 de janeiro de 2026 12:09,,1 - STAND-BY,Importante,,Thiago Moura,Raphael Relacionamento,Raphael Janffer,SISTEMAS,3 de fevereiro de 2026 10:06,Thiago Moura,,
+CENTRAL | SUGESTÕES E MELHORIAS - FTD,29 de janeiro de 2026 08:24,29 de janeiro de 2026 → 12 de março de 2026,4 - Em andamento,Importante,,Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 12:27,Thiago Moura,,PipeGO
+JORNADA DE PENDENCIAS | PIPEGO | DASHBOARD COBRANÇA,28 de janeiro de 2026 17:19,28 de janeiro de 2026 → 13 de fevereiro de 2026,9 - Concluído,Importante,,Thiago Moura,Raphael Relacionamento,Raphael Janffer,SISTEMAS,20 de fevereiro de 2026 10:25,Thiago Moura,,
+Criação de Timeline onboarding - Rafael - CustOps,26 de janeiro de 2026 08:17,22 de janeiro de 2026 → 28 de janeiro de 2026,9 - Concluído,Média,,Thiago Moura,Luis Cuba,Thiago Moura,SISTEMAS,28 de janeiro de 2026 14:01,Luis Cuba | Sistemas,https://goofficeslatam.sharepoint.com/:f:/g/IgBs8wHfClzyT4nGf-YxTtWFAd_AmLIm-5hKqeccbb0w0NE?e=GOSl8H,
+SISTEMA DE NOTIFICAÇÃO | JORNADAS CLIENTES | PIPEGO,26 de janeiro de 2026 08:03,26 de janeiro de 2026 → 30 de janeiro de 2026,9 - Concluído,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Thiago Moura",Thiago Moura,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,25 de fevereiro de 2026 15:04,Thiago Moura,,
+Debug - PipeGo -  aba Jornada cliente - Kanban e Lista,23 de janeiro de 2026 12:10,28 de janeiro de 2026 → 3 de fevereiro de 2026,9 - Concluído,Importante,,"Luis Cuba | Sistemas, Thiago Moura",Thiago Moura,Thiago Moura,SISTEMAS,3 de fevereiro de 2026 14:00,Luis Cuba | Sistemas,pipego.gowork.com.br,
+Alteração | PipeGO | Detalhes de cliente,19 de janeiro de 2026 16:54,19 de janeiro de 2026 → 21 de janeiro de 2026,9 - Concluído,Média,,Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,26 de janeiro de 2026 08:44,Luis Cuba | Sistemas,,
+WEBHOOK - SISTEMA OBRAS,15 de janeiro de 2026 14:59,15 de janeiro de 2026 → 19 de janeiro de 2026,9 - Concluído,Importante,,"Thiago Moura, Gabriel Galdino da Silva | Assistente de Dados",Thiago Moura,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,3 de fevereiro de 2026 17:49,Thiago Moura,,
+CustOps,14 de janeiro de 2026 10:59,14 de janeiro de 2026 → 22 de janeiro de 2026,9 - Concluído,Média,,"Thiago Moura, Luis Cuba | Sistemas",Luis Cuba,Thiago Moura,SISTEMAS,26 de janeiro de 2026 08:46,Luis Cuba | Sistemas,,
+CRIAÇÃO SISTEMA DE COMPRAS |,7 de janeiro de 2026 08:55,23 de fevereiro de 2026 → 30 de abril de 2026,4 - Em andamento,Média,,Thiago Moura,Felipe Sanchez,Thiago Moura,"FINANCEIRO, RELACIONAMENTO",2 de março de 2026 15:59,Luis Cuba | Sistemas,,
+PDE - PLANO DE DESENVOLVIMENTO ESTRATÉGICO,12 de dezembro de 2025 13:30,22 de dezembro de 2025 → 30 de janeiro de 2026,9 - Concluído,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Thiago Moura, Luis Cuba | Sistemas",Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,3 de fevereiro de 2026 14:03,Luis Cuba | Sistemas,,
+Gowork medição - Otimização FRONT-END,11 de dezembro de 2025 15:08,,9 - Concluído,Importante,,Thiago Moura,Gabriel Galdino,Thiago Moura,SISTEMAS,18 de dezembro de 2025 14:58,Luis Cuba | Sistemas,,
+Testes nos modulos do cliente em networkgo | Módulo de recados,8 de dezembro de 2025 10:03,8 de dezembro de 2025 → 9 de dezembro de 2025,9 - Concluído,Importante,Realizar testes de funcionalidade e responsividade em todas as telas e modulos de clientes.,Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,26 de janeiro de 2026 08:43,Luis Cuba | Sistemas,,
+Gerar relatório de chamados e timeline,8 de dezembro de 2025 09:54,8 de dezembro de 2025 → 25 de janeiro de 2026,9 - Concluído,Urgente,Para importação em novo sistema.,"Luis Cuba | Sistemas, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,26 de janeiro de 2026 08:32,Luis Cuba | Sistemas,,
+"Disparo/Automação de ranking comercial não esta funcionando, revisar.",8 de dezembro de 2025 09:51,8 de dezembro de 2025 → 8 de dezembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,18 de dezembro de 2025 14:55,Luis Cuba | Sistemas,,
+Disparo/Automação de ocupação não esta funcionando. Revisar,8 de dezembro de 2025 09:50,8 de dezembro de 2025 → 8 de dezembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,18 de dezembro de 2025 14:55,Luis Cuba | Sistemas,,
+PIPELINE | ALIMENTAR BD NETWORK GO (omie_contracts),5 de dezembro de 2025 09:14,5 de dezembro de 2025 → 5 de dezembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de dezembro de 2025 14:58,Luis Cuba | Sistemas,,
+PIPELINE | ALIMENTAR BD (companies) NETWORK GO,5 de dezembro de 2025 08:36,5 de dezembro de 2025 → 5 de dezembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de dezembro de 2025 14:58,Luis Cuba | Sistemas,,
+Migrar app Jornadas para github / Cursor,4 de dezembro de 2025 11:13,1 de janeiro de 2026 → 13 de janeiro de 2026,9 - Concluído,Importante,,"Luis Cuba | Sistemas, Thiago Moura",Luis Cuba,Thiago Moura,SISTEMAS,13 de janeiro de 2026 09:18,Luis Cuba | Sistemas,,
+Migrar app estoque para github / Cursor,4 de dezembro de 2025 11:11,,9 - Concluído,Importante,,"Luis Cuba | Sistemas, Thiago Moura",Luis Cuba,Thiago Moura,SISTEMAS,18 de dezembro de 2025 14:58,Luis Cuba | Sistemas,,
+Migrar sistema de sala de reunião,3 de dezembro de 2025 13:34,24 de novembro de 2025 → 13 de janeiro de 2026,9 - Concluído,Urgente,"Implantação do sistema de sala de reunião com status urgente, executado por Luis Cuba, programada para ocorrer de 24 de novembro a 5 de dezembro de 2025. Criado e editado por Luis Cuba em 3 de dezembro de 2025.",Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,"RECEPÇÃO, SISTEMAS",13 de janeiro de 2026 09:20,Luis Cuba | Sistemas,https://github.com/goworksistemas/networkgo/activity?ref=producao,
+SISTEMA DE MEDIÇÃO,3 de dezembro de 2025 13:21,1 de dezembro de 2025 → 5 de fevereiro de 2026,9 - Concluído,Urgente,,"Gabriel Galdino da Silva | Assistente de Dados, Thiago Moura",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de fevereiro de 2026 11:45,Luis Cuba | Sistemas,,
+ORACULO | Alterar o Banco de Dados,26 de novembro de 2025 14:02,26 de novembro de 2025 → 26 de novembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,3 de dezembro de 2025 13:31,Luis Cuba | Sistemas,,
+Automatizar ficha sala de reunião para não utilizar papeis,25 de novembro de 2025 11:13,1 de dezembro de 2025 → 15 de janeiro de 2026,9 - Concluído,Média,,Luis Cuba | Sistemas,Michele,Luis Cuba | Sistemas,FINANCEIRO,10 de fevereiro de 2026 11:54,Luis Cuba | Sistemas,,
+ORACULO ASIMOV | FRONT-END,24 de novembro de 2025 17:40,,1 - STAND-BY,Importante,,"Thiago Moura, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,20 de janeiro de 2026 15:52,Thiago Moura,"https://flux.gowork.com.br/workflow/hHU71zDuS4CGiJM0 ",
+SUBSTITUIÇÃO APP  | CHECKLIST FÁCIL,24 de novembro de 2025 17:32,,2 - Solicitação,Média,,Thiago Moura,Maikel,Luis Cuba | Sistemas,AUDITORIA,6 de março de 2026 15:49,Luis Cuba | Sistemas,https://www.bitrix24.com.br/alternatives/typeform-alternativa-gratuita.php?utm_source=google&utm_medium=cpc&utm_campaign=21506112473-&gad_source=1&gad_campaignid=22309522779&gbraid=0AAAAADJNAbLbGbOTdXb3FJdWyzT8E1dq1&gclid=Cj0KCQiAoZDJBhC0ARIsAERP-F8CKyUbBtXWhNt0VOQ1pSEFoUmg5bEsTYOenxTaxCJ5Pm9aZd1Ypl8aArwgEALw_wcB,
+Meta HL’s,24 de novembro de 2025 15:40,25 de novembro de 2025 → 30 de janeiro de 2026,9 - Concluído,Urgente,,"Luis Cuba | Sistemas, Thiago Moura",Maikel,Luis Cuba | Sistemas,FACILITIES,26 de janeiro de 2026 08:45,Luis Cuba | Sistemas,https://goofficeslatam-my.sharepoint.com/:x:/r/personal/engenharia_gowork_com_br/_layouts/15/Doc.aspx?sourcedoc=%7BC81C0CD9-D9E0-48E9-B3E8-97AAFF3D6C67%7D&file=VALIDA%25u00c7%25u00c3O%20Planilha%20de%20Metas%20HL%202026.xlsx&fromShare=true&action=default&mobileredirect=true,
+PROJEÇÃO GEN 3 | Reagrupar as Categorias,24 de novembro de 2025 15:36,24 de novembro de 2025 → 5 de dezembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,FINANCEIRO,18 de dezembro de 2025 14:56,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/16007463-4825-471d-adaa-24fd8f582eaf/60d8ac14ace7e4c1c0d0?language=pt-BR&experience=power-bi&clientSideAuth=0,
+Documentação | http://facil.gowork.com.br | QRcodes Angela,24 de novembro de 2025 14:10,24 de novembro de 2025 → 28 de novembro de 2025,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,3 de dezembro de 2025 13:24,Luis Cuba | Sistemas,https://www.notion.so/QR-PIDO-2bec3598383a8086b9b6e3a86ee75a2c?source=copy_link,
+"Passo a Passo | Reserva de Sala de Reunião ",24 de novembro de 2025 09:49,24 de novembro de 2025 → 19 de dezembro de 2025,9 - Concluído,Média,,Luis Cuba | Sistemas,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,13 de janeiro de 2026 10:01,Luis Cuba | Sistemas,https://www.canva.com/design/DAG6jnBHscw/kyT47NZjX7AljC-OIW3Kfw/edit,
+Relatórios Auster,18 de novembro de 2025 07:56,18 de novembro de 2025 → 2 de dezembro de 2025,9 - Concluído,Urgente,,"Luis Cuba | Sistemas, Gabriel Galdino da Silva | Assistente de Dados",FUNDO,Luis Cuba | Sistemas,SISTEMAS,3 de dezembro de 2025 13:27,Luis Cuba | Sistemas,https://goofficeslatam.sharepoint.com/:x:/r/_layouts/15/Doc.aspx?sourcedoc=%7B5782EE4C-249F-49C3-A39D-D4143CF9D781%7D&file=Relat%C3%B3rio%20Completo.xlsx&action=default&mobileredirect=true,
+Solicitar Café sala de reunião,17 de novembro de 2025 11:35,,2 - Solicitação,Média,,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,FINANCEIRO,18 de fevereiro de 2026 16:37,Luis Cuba | Sistemas,,
+RH - DP | Realizar e analisar aplicativo Jornada RH,17 de novembro de 2025 10:26,7 de janeiro de 2026 → 12 de fevereiro de 2026,9 - Concluído,Média,,"Thiago Moura, Luis Cuba | Sistemas",Márcia Faria,Thiago Moura,"DP, RH",18 de fevereiro de 2026 16:34,Luis Cuba | Sistemas,,
+RH | Projeto de App análise Comportamental | empresarial,13 de novembro de 2025 13:44,4 de março de 2026 → 14 de março de 2026,6 - Aguardando terceiros,Média,,Thiago Moura,Maikel,Thiago Moura,"DP, RH",10 de março de 2026 10:22,Luis Cuba | Sistemas,,RH/DP
+FACILITIES | QR CODE - Organização Banheiro,13 de novembro de 2025 10:07,13 de novembro de 2025 → 28 de novembro de 2025,9 - Concluído,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Thiago Moura, Luis Cuba | Sistemas",Fernando Bottura,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,3 de dezembro de 2025 13:32,Luis Cuba | Sistemas,,
+Criar aplicativo para gerenciar acessos do Power Bi,19 de setembro de 2025 17:14,30 de setembro de 2025 → 23 de outubro de 2025,9 - Concluído,Urgente,,"Luis Cuba | Sistemas, Thiago Moura",Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Totem | Manter WebApp ativo 24h,5 de setembro de 2025 16:16,,9 - Concluído,Baixa,,Thiago Moura,,Thiago Moura,,17 de novembro de 2025 11:57,Thiago Moura,,
+APP PIPEGO | SUBSTITUIR JORNADAS,18 de agosto de 2025 17:07,1 de agosto de 2025 → 27 de março de 2026,8 - Aprovação,Importante,,Thiago Moura,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 10:31,Thiago Moura,,
+"ZooxWifi | Gerenciar Conexõs Wifi, remover sistema de senha e implantar SSO ou token",30 de junho de 2025 10:35,,1 - STAND-BY,Média,,"Gabriel Galdino da Silva | Assistente de Dados, Thiago Moura",Maikel,Luis Cuba | Sistemas,TI,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Implantação | Qrápido,26 de fevereiro de 2026 14:46,10 de março de 2026 → 31 de maio de 2026,4 - Em andamento,Média,,"Raphael Janffer, Gabriel Galdino da Silva | Assistente de Dados",Angela,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 15:05,Luis Cuba | Sistemas,,Qrápido
+Atendimento Hyperflow - Novo Fluxo,11 de fevereiro de 2026 15:29,11 de fevereiro de 2026 → 13 de março de 2026,8 - Aprovação,Importante,,"Luis Cuba | Sistemas, Raphael Janffer",Raphael Relacionamento,Raphael Janffer,SISTEMAS,10 de março de 2026 10:24,Raphael Janffer,,Hyperflow
+Implantar networkgo | Parte 2 | Chamados e OSs,7 de janeiro de 2026 10:51,7 de janeiro de 2026 → 23 de fevereiro de 2026,9 - Concluído,Média,,Luis Cuba | Sistemas,Suhaila Mourad,Luis Cuba | Sistemas,FACILITIES,2 de março de 2026 15:39,Luis Cuba | Sistemas,,
+DEMANDA - APP PARA CONTROLE DE ESTOQUE UNIDADES,4 de junho de 2025 10:23,11 de novembro de 2025 → 31 de março de 2026,4 - Em andamento,Importante,,Thiago Moura,Amanda Gentil,Luis Cuba | Sistemas,"ENGENHARIA, FACILITIES",2 de março de 2026 16:00,Luis Cuba | Sistemas,,
+TOTEM | ENTRADAS | Incluir tablet nas unidades,4 de junho de 2025 10:23,1 de setembro de 2025 → 31 de março de 2026,6 - Aguardando terceiros,Média,"Paulista 475 | ok
+Campus 2 | ok
+Joaquim Antunes | ok","Luis Cuba | Sistemas, Thiago Moura",Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,2 de março de 2026 16:07,Luis Cuba | Sistemas,,
+SUBSTITUIR | GOCHAT,11 de novembro de 2025 14:22,,10 - Cancelado,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas, Raphael Janffer",Luis Cuba,Luis Cuba | Sistemas,COMERCIAL,29 de janeiro de 2026 13:59,Luis Cuba | Sistemas,,
+FORMULÁRIOS | ADICIONAR O CAMPO SOLICITADO PELO FERNANDO,5 de novembro de 2025 08:25,3 de novembro de 2025 → 7 de novembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Fernando Bottura,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+ROTINA DE ATUALIZAÇÃO | CONEXÃO ENTRE N8N E JUPYTER,3 de novembro de 2025 14:08,,10 - Cancelado,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+POWER BI | REPARAR A ATUALIZAÇÃO QUE QUEBROU,3 de novembro de 2025 14:04,,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+JUPYTER | REESTRUTURAR A ORGANIZAÇÃO DOS ARQUIVOS,3 de novembro de 2025 11:35,3 de novembro de 2025 → 7 de novembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+HYPERFLOW | ESTUDAR E ANALISAR O HISTÓRICO DE CHAT,3 de novembro de 2025 08:13,3 de novembro de 2025 → 7 de novembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de dezembro de 2025 14:55,Luis Cuba | Sistemas,https://desk.hyperflow.global/chats,
+N8N | DOCUMENTAR FLUXO DO ORACULO,31 de outubro de 2025 13:19,,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+RELEASE | DASHBOARD CONTROLE DE VISITAS,31 de outubro de 2025 11:45,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/f52c1e01-1261-43c0-b78d-79003190a20a/b25bbf52318d30a915ed?experience=power-bi,
+RELEASE | DASHBOARD OCUPAÇÃO,31 de outubro de 2025 11:44,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/16063a41-bfd9-4bd8-973f-bb2c32ba6a2c/d3936946db95a5496a85?experience=power-bi,
+RELEASE | DASHBOARD RELACIONAMENTO,31 de outubro de 2025 11:44,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/c32477f1-0779-4ebc-9c3c-9d7a76a0f081/a30a47425105c95d7e3b?experience=power-bi,
+RELEASE | DASHBOARD KAHOOT,31 de outubro de 2025 11:44,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/1bb8cb38-5de8-487e-9774-532cafdbb753/75db3b808640d481cd6d?experience=power-bi,
+RELEASE | DASHBOARD PB INDICADORES DP,31 de outubro de 2025 11:44,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/3abc22a1-9e12-4d2a-a775-d95c27db1410/66b590d78c21d1b177bc?experience=power-bi,
+RELEASE | DASHBOARD PBI INDICADORES DP 2.0,31 de outubro de 2025 11:44,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/4f305d2a-dcbd-46de-b124-d0ea70747771/9d478b1890ae3100b362?experience=power-bi,
+RELEASE | DASHBOARD TITULOS ATRASADOS,31 de outubro de 2025 11:44,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/9b50eda8-7c17-4c94-a5a2-c663efe97ae4/ea81df0e077730bed41d?experience=power-bi,
+RELEASE | DASHBOARD RANKING FINANCEIRO,31 de outubro de 2025 11:44,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/d6c5a68e-fcd6-46e0-92c9-a9c60c62b748/0bd61a899689d5c864ed?experience=power-bi,
+RELEASE | DASHBOARD WALK-IN,31 de outubro de 2025 11:44,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/82b08038-e0db-421a-b7ae-256da2634630/a06da546056925000d81?experience=power-bi,
+RELEASE | DASHBOARD PBI - AGUA & LUZ,31 de outubro de 2025 11:40,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/15fa097f-4792-4ae2-a29c-2f85f60e6dda/308b3bea11da93e8553e?experience=power-bi,
+RELEASE | DASHBOARD PBI - CUSTOS LIMPEZA,31 de outubro de 2025 11:40,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/0684412e-5f51-4ff3-aad0-1019764bcc78/ReportSection?experience=power-bi,
+RELEASE | DASHBOARD SALAS DE REUNIÃO 2.O,31 de outubro de 2025 11:40,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/de5840a0-bbc5-48f4-a782-ef507fc414bc/bb58b4c7cd59680c0ab6?experience=power-bi,
+RELEASE | DASHBOARD PROJEÇÃO GEN 3,31 de outubro de 2025 11:40,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/16007463-4825-471d-adaa-24fd8f582eaf/a3ae0a84b5c0791e3e21?experience=power-bi,
+RELEASE | DASHBOARD PROJEÇÃO NOVA VERSÃO,31 de outubro de 2025 11:40,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/b727721b-86f0-4efa-8bca-9bd6a8cd7a15/a3ae0a84b5c0791e3e21?experience=power-bi,
+RELEASE | DASHBOARD COMPRAS 3.0,31 de outubro de 2025 11:40,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/0e9e724f-12bd-473a-bfee-253bb711b05a/903267c0db5200491a35?experience=power-bi,
+RELEASE | DASHBOARD ORDENS DE SERVIÇO 3.0,31 de outubro de 2025 11:34,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/f1de4f92-95f3-41e8-bb21-b07cbde86979/3ef14c9db19eb3b0aa0c?experience=power-bi,
+RELEASE | DASHBOARD CHAMADOS 3.0,31 de outubro de 2025 11:33,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/32f8fa38-e2f9-4315-8161-fc9d4ca2bda5/319ef06b104b9956cccd?experience=power-bi,
+RELEASE | DASHBOARD CHAMADOS,31 de outubro de 2025 11:33,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/125dcc79-bdec-43d8-a4c7-9766e7c47a6b/af0f332332c877c36b9c?experience=power-bi,
+RELEASE | DASHBOARD OBRAS,31 de outubro de 2025 11:33,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/a6c190ec-eb86-45aa-8a8b-bbaf4fdb9267?experience=power-bi,
+PBI | IDENTIDADE VISUAL,31 de outubro de 2025 11:01,4 de novembro de 2025 → 6 de novembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://www.notion.so/ID-Visual-Gowork-268c3598383a80de8fbeee4bb0a79af0?source=copy_link,
+Mariana | Gocorporate | Validar relatórios,28 de outubro de 2025 09:38,31 de outubro de 2025 → 14 de novembro de 2025,9 - Concluído,Urgente,,"Luis Cuba | Sistemas, Gabriel Galdino da Silva | Assistente de Dados",Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,3 de dezembro de 2025 13:31,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/7d7811c9-57b7-4ffd-b5d0-7ec1103fd121/54b1849a79da2b9e3d93?experience=power-bi,
+Popular Banco de Dados,22 de setembro de 2025 11:53,25 de setembro de 2025 → 5 de dezembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de dezembro de 2025 14:54,Luis Cuba | Sistemas,,
+Relatório RECAPEX | App de obras | Pedidos Goevo,19 de setembro de 2025 10:46,,10 - Cancelado,Importante,,Luis Cuba | Sistemas,Maikel,Luis Cuba | Sistemas,ENGENHARIA,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Dashboard | Walk-in | Hubspot,18 de agosto de 2025 17:06,12 de setembro de 2025 → 11 de novembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/82b08038-e0db-421a-b7ae-256da2634630/bf3c7e59b037324964b0?experience=power-bi,
+Capa de contrato,3 de junho de 2025 15:39,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Felipe Sanchez,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Conferir dados dashboards,3 de junho de 2025 15:49,,9 - Concluído,Importante,Separar dashs que estão atualizando ou não,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,,17 de novembro de 2025 11:57,Thiago Moura,,
+Elaborar especificação para Projeto com Carol,3 de junho de 2025 16:20,,1 - STAND-BY,,,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Dashboard Deskbee,4 de junho de 2025 16:14,,9 - Concluído,,Adicionar filtros de unidades  bater os calculos de custo,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,,17 de novembro de 2025 11:57,Thiago Moura,,
+Manutenção dashboard Maikel,6 de junho de 2025 08:14,,9 - Concluído,,,,,Gabriel Galdino da Silva | Assistente de Dados,,17 de novembro de 2025 11:57,Thiago Moura,,
+Release | Dashboard de Obras/Engenharia,12 de junho de 2025 11:22,,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,ENGENHARIA,17 de novembro de 2025 11:57,Thiago Moura,,
+Dashboard de Comissão,13 de junho de 2025 12:52,,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+Telefone Bruno,13 de junho de 2025 12:53,,9 - Concluído,Média,,Luis Cuba | Sistemas,Márcia Faria,Luis Cuba | Sistemas,DP,17 de novembro de 2025 11:57,Thiago Moura,,
+Melhorias | Dashboard Ocupação,18 de junho de 2025 10:01,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Maikel,Gabriel Galdino da Silva | Assistente de Dados,,17 de novembro de 2025 11:57,Thiago Moura,,
+Melhorias | Dashboard Maikel,18 de junho de 2025 14:10,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Maikel,Gabriel Galdino da Silva | Assistente de Dados,,17 de novembro de 2025 11:57,Thiago Moura,,
+Nuvem | Cloud Control id | Robotec,20 de junho de 2025 10:41,1 de setembro de 2025 → 3 de abril de 2026,6 - Aguardando terceiros,Importante,,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,TI,2 de março de 2026 15:38,Luis Cuba | Sistemas,,
+"Desenhar processo app de ocupação, inclusão de clientes.",30 de junho de 2025 16:23,,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,,Luis Cuba | Sistemas,,17 de novembro de 2025 11:57,Thiago Moura,,
+App de Ocupação | Inclusão de vagas de garagem,1 de julho de 2025 17:05,,9 - Concluído,,,Gabriel Galdino da Silva | Assistente de Dados,,Gabriel Galdino da Silva | Assistente de Dados,,17 de novembro de 2025 11:57,Thiago Moura,,
+Filtro de status app de ocupação | Aba Vagas,2 de julho de 2025 09:49,,9 - Concluído,Média,,Luis Cuba | Sistemas,Felipe Sanchez,Luis Cuba | Sistemas,RELACIONAMENTO,17 de novembro de 2025 11:57,Thiago Moura,,
+Relatório Reincidência / Retrabalho,2 de julho de 2025 10:45,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Suhaila Mourad,Gabriel Galdino da Silva | Assistente de Dados,,17 de novembro de 2025 11:57,Thiago Moura,,
+Acessos novos funcionários - Relacionamento,3 de julho de 2025 17:31,,9 - Concluído,Importante,,Luis Cuba | Sistemas,,Gabriel Galdino da Silva | Assistente de Dados,RELACIONAMENTO,17 de novembro de 2025 11:57,Thiago Moura,,
+Chamados abandonados,7 de julho de 2025 11:32,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://app.powerbi.com/view?r=eyJrIjoiNmMyZWE4MDUtOTdiYi00YmVmLThlYjYtYjFiZGI2ZDc1YTc0IiwidCI6IjkzODJjNDFmLTQyOGQtNDk3My1iODAzLWEwYTZkMzgwOTEzZSJ9,
+RH | Projeto automação para Hunter ativo de contratação,7 de julho de 2025 13:41,7 de janeiro de 2026 → 31 de março de 2026,6 - Aguardando terceiros,Importante,,Luis Cuba | Sistemas,Maikel,Luis Cuba | Sistemas,RH,3 de março de 2026 11:03,Luis Cuba | Sistemas,,
+Manual Reset Nome o E-mail,7 de julho de 2025 16:53,,9 - Concluído,Importante,,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,TI,17 de novembro de 2025 11:57,Thiago Moura,,
+Manual limpar contatos de agenda,7 de julho de 2025 16:54,,9 - Concluído,Importante,,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,TI,17 de novembro de 2025 11:57,Thiago Moura,,
+Reconhecimento facial | Cameras | Avventures,8 de julho de 2025 15:31,,1 - STAND-BY,Média,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,TI,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Backup Fabric - Power BI,8 de julho de 2025 16:20,,9 - Concluído,,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,,17 de novembro de 2025 11:57,Thiago Moura,,
+Qualicorp,14 de julho de 2025 09:46,,9 - Concluído,Urgente,Relatórios de chamados,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,JURIDICO,17 de novembro de 2025 11:57,Thiago Moura,,
+"Bug NetworkGo | Salvamento no link de ",15 de julho de 2025 12:10,,9 - Concluído,Importante,,Luis Cuba | Sistemas,Lesley,Luis Cuba | Sistemas,FINANCEIRO,17 de novembro de 2025 11:57,Thiago Moura,,
+Qualicorp | Relatório de chamados,15 de julho de 2025 14:38,,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,JURIDICO,17 de novembro de 2025 11:57,Thiago Moura,,
+Inativar Biometrias,17 de julho de 2025 16:46,,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Larissa Oliveira,Luis Cuba | Sistemas,"RECEPÇÃO, SISTEMAS",17 de novembro de 2025 11:57,Thiago Moura,,
+NetworkGO,18 de julho de 2025 14:25,,9 - Concluído,Importante,Melhora sistema de pagamento,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+NetworkGO | Ajustes tela de reserva de sala de reunião,30 de julho de 2025 10:25,,9 - Concluído,Importante,,Luis Cuba | Sistemas,Larissa Oliveira,Luis Cuba | Sistemas,"RECEPÇÃO, SISTEMAS",17 de novembro de 2025 11:57,Thiago Moura,,
+Suporte | NetworkGO | Beatriz,4 de agosto de 2025 10:07,,9 - Concluído,Importante,"Navegador do usuário esqtva com cookies e por algum motivo estava deslocando os containers, acessei via anydesk e fiz limpeza no mesmo",Luis Cuba | Sistemas,Beatriz Araujo,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Networkgo | Notificação extrajudicial | Alterar textos,18 de agosto de 2025 17:06,,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://networkgo.gowork.com.br/escritorio-virtual,
+Manutenção CashFlow,18 de agosto de 2025 18:53,15 de setembro de 2025 → 30 de setembro de 2025,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://app.powerbi.com/view?r=eyJrIjoiMTgyYWJmN2UtMmQ3My00ODZlLWJiZDMtMzcyNmYyNjE2YzgxIiwidCI6IjkzODJjNDFmLTQyOGQtNDk3My1iODAzLWEwYTZkMzgwOTEzZSJ9,
+Conta MetaBusines | Templates de mensagens,18 de agosto de 2025 18:53,13 de janeiro de 2026 → 28 de fevereiro de 2026,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,2 de março de 2026 15:32,Luis Cuba | Sistemas,,
+CUSTOS LIMPEZA,21 de agosto de 2025 08:51,,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Angela,Gabriel Galdino da Silva | Assistente de Dados,FACILITIES,17 de novembro de 2025 11:57,Thiago Moura,,
+Relatório de Chamados e OSs,2 de setembro de 2025 09:29,,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Checklist - PBI | Verificação diária das atualizações,3 de setembro de 2025 14:55,,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,,17 de novembro de 2025 11:57,Thiago Moura,,
+Manutenção | Dashboards de Comissões individuais,5 de setembro de 2025 11:35,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Organização Notion | Unificação das páginas,5 de setembro de 2025 14:21,,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Calendário Jupyter | Rotina de atualização,5 de setembro de 2025 14:39,9 de setembro de 2025 → 19 de setembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+PBI | Documentação de Ativos,5 de setembro de 2025 14:44,16 de setembro de 2025 → 19 de setembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://www.notion.so/264c3598383a80a38823f435afef82d4?v=264c3598383a8007be93000c1e7b5220,
+Maikel | Criar alertas no dashboard de agua e energia,5 de setembro de 2025 15:00,9 de setembro de 2025 → 16 de setembro de 2025,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Compras 3.0 | Atualizar Base de Dados,5 de setembro de 2025 16:09,,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+PBI | Atualização e Status dos BI’s ativos,5 de setembro de 2025 16:11,8 de setembro de 2025 → 9 de setembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+OBRAS | Gatilho (Avisos de obras atrasadas),5 de setembro de 2025 16:11,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Release | Dashboard Titulos Atrasados,9 de setembro de 2025 08:30,15 de setembro de 2025 → 19 de setembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,Cobranaça,17 de novembro de 2025 11:57,Thiago Moura,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/9b50eda8-7c17-4c94-a5a2-c663efe97ae4/ea81df0e077730bed41d?experience=power-bi,
+"Estruturação de cobrança – Split de boletos para condomínio e IPTU (CoBuilt)  ",9 de setembro de 2025 08:35,16 de setembro de 2025 → 13 de março de 2026,4 - Em andamento,Importante,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,CEO,2 de março de 2026 15:34,Luis Cuba | Sistemas,,
+Substituir sistema de entrada nas unidades por ChatBot do TypeBot,9 de setembro de 2025 09:12,,10 - Cancelado,Importante,,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,RECEPÇÃO,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+AppScripts | Ocupação,9 de setembro de 2025 10:39,15 de setembro de 2025 → 26 de setembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Integrar Ecommerce com agenda do portal interno,10 de setembro de 2025 10:31,10 de setembro de 2025 → 15 de dezembro de 2025,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,13 de janeiro de 2026 10:06,Luis Cuba | Sistemas,,
+Automação | Varredura de Notas Fiscais,10 de setembro de 2025 13:06,10 de setembro de 2025 → 15 de setembro de 2025,9 - Concluído,Urgente,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Maikel,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Alerta Água e Luz | Configurar Webhook,11 de setembro de 2025 11:17,15 de setembro de 2025 → 26 de setembro de 2025,9 - Concluído,Urgente,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+PBI | Rotina de Atualização,16 de setembro de 2025 08:13,15 de setembro de 2025 → 16 de setembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+PBI | Migração para o GEN 3,16 de setembro de 2025 08:19,15 de setembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Revisão Acessos IAs | Departamentos  | CHAT GPT | PESQUISA PARA TIME GOWORK,16 de setembro de 2025 10:43,16 de setembro de 2025 → 17 de setembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Maikel,Luis Cuba | Sistemas,SISTEMAS,11 de fevereiro de 2026 16:21,Gabriel Galdino da Silva | Assistente de Dados,https://www.notion.so/Acessos-Departamentos-ChatGPT-208c3598383a819bb0a0fbecacc55977?source=copy_link,
+Relatório Control ID | ID-SECURE,16 de setembro de 2025 11:12,16 de setembro de 2025 → 31 de março de 2026,6 - Aguardando terceiros,Importante,Relat´porio de ocupação Controlid:,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,18 de fevereiro de 2026 17:33,Luis Cuba | Sistemas,https://idsecure.com.br/auth/login,
+Planilhas CL | Compartilhar com os responsáveis de atualização,16 de setembro de 2025 15:33,16 de setembro de 2025 → 17 de setembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://goofficeslatam-my.sharepoint.com/:x:/r/personal/bpm2_gowork_com_br/_layouts/15/Doc.aspx?sourcedoc=%7B6890CE60-79EB-44D6-AC11-FB7460AC8DCA%7D&file=Mapeamento_Responsaveis_Consumo.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&wdOrigin=SHAREPOINT.SHELL%2CAPPHOME-WEB.FILEBROWSER.RECENT&wdPreviousSession=614f331b-eb97-4256-acd0-be4a66074614&wdPreviousSessionSrc=AppHomeWeb&ct=1757364661269,
+Integração whatsapp para fluxos e disparos internos,17 de setembro de 2025 08:18,,9 - Concluído,Importante,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Movimentar relatórios do workspace OLDs para o DESATIVADOS,17 de setembro de 2025 10:05,17 de setembro de 2025 → 17 de setembro de 2025,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://app.powerbi.com/groups/548307eb-2a55-485c-a33f-e87a56ed1ab0/list?experience=power-bi,
+Disparos Whatsapp Obras | N8N | GLIDE APP,19 de setembro de 2025 09:22,15 de setembro de 2025 → 20 de outubro de 2025,9 - Concluído,Importante,,"Luis Cuba | Sistemas, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Luis Cuba | Sistemas,ENGENHARIA,17 de novembro de 2025 11:57,Thiago Moura,,
+CLIENTES ESTRANGEIROS | API IUGU,19 de setembro de 2025 09:56,14 de janeiro de 2026 → 16 de janeiro de 2026,9 - Concluído,Média,,Luis Cuba | Sistemas,Michele,Gabriel Galdino da Silva | Assistente de Dados,FINANCEIRO,10 de fevereiro de 2026 11:58,Luis Cuba | Sistemas,,
+AUTOMATIZAR - KAHOOT,19 de setembro de 2025 15:47,13 de outubro de 2025 → 11 de fevereiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,RH,18 de fevereiro de 2026 16:13,Luis Cuba | Sistemas,,
+Publicar o Power Bi de contratos,19 de setembro de 2025 17:12,,9 - Concluído,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Ocupação | Print da tela 1vez por mês,22 de setembro de 2025 08:58,24 de setembro de 2025 → 21 de outubro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Sistema | Varredura de Boletos,22 de setembro de 2025 14:53,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Maikel,Gabriel Galdino da Silva | Assistente de Dados,FINANCEIRO,17 de novembro de 2025 11:57,Thiago Moura,,
+PROJEÇÃO GEN 3,23 de setembro de 2025 14:02,25 de setembro de 2025 → 10 de outubro de 2025,9 - Concluído,Urgente,,"Luis Cuba | Sistemas, Gabriel Galdino da Silva | Assistente de Dados",Fernando Bottura,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Importar Jornadas,24 de setembro de 2025 16:55,30 de setembro de 2025 → 24 de outubro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Refazer Dashboard de NFs | Pedidos OMIE para trazer número da NF,29 de setembro de 2025 17:26,29 de setembro de 2025 → 1 de outubro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://app.powerbi.com/groups/me/reports/119bc77d-56d3-450b-984c-edcb83b9b89f/ReportSection?experience=power-bi,
+Licenças Hubspot | Remover na renovação,30 de setembro de 2025 10:07,,1 - STAND-BY,Importante,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Manutenção fluxo de formulário de energia Ministro,30 de setembro de 2025 10:47,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Atualização Kahoot,30 de setembro de 2025 11:05,29 de setembro de 2025 → 27 de outubro de 2025,9 - Concluído,Importante,,Luis Cuba | Sistemas,Márcia Faria,Luis Cuba | Sistemas,"DP, RH",17 de novembro de 2025 11:57,Thiago Moura,,
+"Remoção de biometria entrada dos prédios, porém liberação no andar",30 de setembro de 2025 11:45,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,"DP, JURIDICO",17 de novembro de 2025 11:57,Thiago Moura,,
+Instalação Neocode,30 de setembro de 2025 12:09,15 de dezembro de 2025 → 31 de março de 2026,6 - Aguardando terceiros,Importante,,Luis Cuba | Sistemas,Márcia Faria,Luis Cuba | Sistemas,DP,10 de março de 2026 10:05,Luis Cuba | Sistemas,,
+Alerta de água e luz | Whatsapp | Alteração,2 de outubro de 2025 10:04,8 de outubro de 2025 → 20 de outubro de 2025,9 - Concluído,Baixa,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Alerta de OBRAS | Whatsapp,2 de outubro de 2025 10:06,2 de outubro de 2025 → 10 de outubro de 2025,9 - Concluído,Baixa,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+IA | LER PLANTA E QUANTIFICAR POSIÇÕES,2 de outubro de 2025 13:14,2 de outubro de 2025 → 3 de outubro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Maikel,Luis Cuba | Sistemas,ENGENHARIA,17 de novembro de 2025 11:57,Thiago Moura,,
+Backup e documentação | Fluxos n8n,2 de outubro de 2025 15:58,2 de outubro de 2025 → 10 de outubro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,,
+Criar fluxo de sequencia unica para tabelas OMIE | PROJEÇÃO,2 de outubro de 2025 16:10,6 de outubro de 2025 → 10 de outubro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,http://161.35.104.75/user/luiscuba/lab/tree/OMIE/sequencia_Projecao/sequencia_projecao.ipynb,
+Pietro | Automçaões | Relatório de vendas vinda do hubspot,8 de outubro de 2025 15:41,13 de outubro de 2025 → 17 de outubro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Pietro,Luis Cuba | Sistemas,COMERCIAL,17 de novembro de 2025 11:57,Thiago Moura,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/d6c5a68e-fcd6-46e0-92c9-a9c60c62b748/0bd61a899689d5c864ed?experience=power-bi,
+Pietro | Automação de comissões | Pós venda,8 de outubro de 2025 15:53,,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Pietro,Luis Cuba | Sistemas,COMERCIAL,17 de novembro de 2025 11:57,Thiago Moura,,
+Documentar n8n | Notificar whatsapp de negócio fechado,9 de outubro de 2025 10:44,14 de outubro de 2025 → 20 de outubro de 2025,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://www.notion.so/CADASTROS-DE-VISITANTES-E-ENVIOS-DA-RECEP-O-SOBRE-WALK-INS-28cc3598383a8021929ed300030f5bfe?source=copy_link,
+Entradas unidades | integrar com whatsapp,13 de outubro de 2025 13:02,13 de outubro de 2025 → 17 de outubro de 2025,9 - Concluído,Importante,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,RECEPÇÃO,17 de novembro de 2025 11:57,Thiago Moura,,
+Disparador Whatsapp,14 de outubro de 2025 12:00,,1 - STAND-BY,Média,,Luis Cuba | Sistemas,Maikel,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Ecommerce | NeyworkGO | Upload de fotos salas de reunião,16 de outubro de 2025 09:18,16 de outubro de 2025 → 17 de outubro de 2025,9 - Concluído,Média,,Luis Cuba | Sistemas,Raphael Relacionamento,Luis Cuba | Sistemas,SISTEMAS,13 de janeiro de 2026 10:07,Luis Cuba | Sistemas,,
+NFs Paulista 475 | Reembolso,16 de outubro de 2025 10:15,16 de outubro de 2025 → 17 de outubro de 2025,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Maikel,Luis Cuba | Sistemas,ENGENHARIA,17 de novembro de 2025 11:57,Thiago Moura,https://drive.google.com/drive/folders/1iA36TXxJEAKg31lI_ECEn6zssHSomW1O,
+Chatbot RH | Coletar CPF,16 de outubro de 2025 10:16,,1 - STAND-BY,Importante,,Luis Cuba | Sistemas,Maikel,Luis Cuba | Sistemas,RH,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Dashboard | Ocupação | Dif capacidade real e métrica,16 de outubro de 2025 12:46,22 de outubro de 2025 → 27 de outubro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,17 de novembro de 2025 11:57,Thiago Moura,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/16063a41-bfd9-4bd8-973f-bb2c32ba6a2c/d3936946db95a5496a85?experience=power-bi,
+Pietro | Automçaões | Relatório de vendas vinda do hubspot |  Parte 2,27 de outubro de 2025 10:46,,10 - Cancelado,Média,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Pietro,Luis Cuba | Sistemas,COMERCIAL,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Totem | Adicionar suporte a idiomas,27 de outubro de 2025 14:14,,9 - Concluído,Importante,,Luis Cuba | Sistemas,Larissa Oliveira,Luis Cuba | Sistemas,RECEPÇÃO,17 de novembro de 2025 11:57,Thiago Moura,,
+WALK-IN | Perguntas do Formulário,28 de outubro de 2025 10:00,28 de outubro de 2025 → 28 de outubro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Fernando Bottura,Gabriel Galdino da Silva | Assistente de Dados,CEO,17 de novembro de 2025 11:57,Thiago Moura,,
+RELEASE | DASHBOARD CHECKLIST,31 de outubro de 2025 11:31,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,,
+RELEASE | DASHBOARD COMISSÕES,31 de outubro de 2025 11:33,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/099dd600-f1cb-44e6-9c2f-f60f9a63b79a/67d3733588c7ddf6ebe8?experience=power-bi,
+RELEASE | DASHBOARD CONTRATOS,31 de outubro de 2025 11:33,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/3ce730a5-869f-4fd7-ada5-28cdf7f43552/27783bf8a79281ed8ac2?experience=power-bi,
+RELEASE | DASHBOARD MAIKEL,31 de outubro de 2025 11:33,,1 - STAND-BY,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,24 de novembro de 2025 17:35,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/f98bc26b-8a62-4094-8c79-ebaec381f837/435d9993d21cc92c18d0?experience=power-bi,
+PEDIDOS X OBRAS,12 de dezembro de 2025 13:24,12 de dezembro de 2025 → 16 de dezembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Maikel,Gabriel Galdino da Silva | Assistente de Dados,ENGENHARIA,18 de dezembro de 2025 14:57,Luis Cuba | Sistemas,,
+DEV - REVISAR ATIVIDADES DO ALE,12 de dezembro de 2025 13:57,,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de dezembro de 2025 14:59,Luis Cuba | Sistemas,,
+MENSAGEM DE ANIVERSÁRIO,15 de dezembro de 2025 10:59,15 de dezembro de 2025 → 15 de dezembro de 2025,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de dezembro de 2025 14:58,Luis Cuba | Sistemas,,
+"RELACIONAMENTO - ATU. POWER BI ",15 de dezembro de 2025 13:35,15 de dezembro de 2025 → 15 de dezembro de 2025,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Felipe Sanchez,Gabriel Galdino da Silva | Assistente de Dados,"RELACIONAMENTO, SISTEMAS",18 de dezembro de 2025 14:58,Luis Cuba | Sistemas,,
+SUPORTE AOS COLABORADORES,16 de dezembro de 2025 08:19,1 de dezembro de 2025 → 31 de dezembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Felipe Sanchez,Gabriel Galdino da Silva | Assistente de Dados,"RECEPÇÃO, SISTEMAS",18 de dezembro de 2025 14:57,Luis Cuba | Sistemas,,
+DESABILITAR OS TRIGGERS NO BANCO,16 de dezembro de 2025 09:36,15 de dezembro de 2025 → 15 de dezembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,"RECEPÇÃO, SISTEMAS",18 de dezembro de 2025 14:56,Luis Cuba | Sistemas,https://supabase.com/dashboard/project/qgtbxeobqlyptevsckjp/sql/2f1a76f0-6ae8-4b72-9bd8-9f57e7bd3c12,
+DESABILITAR TERMOS DE USO DO BANCO,16 de dezembro de 2025 09:38,15 de dezembro de 2025 → 15 de dezembro de 2025,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,"RECEPÇÃO, SISTEMAS",18 de dezembro de 2025 14:55,Luis Cuba | Sistemas,https://supabase.com/dashboard/project/qgtbxeobqlyptevsckjp/sql/2f1a76f0-6ae8-4b72-9bd8-9f57e7bd3c12,
+RELEASE - PBI DE RELACIONAMENTO,16 de dezembro de 2025 13:27,16 de dezembro de 2025 → 16 de dezembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Felipe Sanchez,Gabriel Galdino da Silva | Assistente de Dados,RELACIONAMENTO,18 de dezembro de 2025 14:57,Luis Cuba | Sistemas,https://app.powerbi.com/groups/c94d777b-a433-4518-b531-b28545b20780/reports/c32477f1-0779-4ebc-9c3c-9d7a76a0f081/58fb73a1232b93dc65bd?language=pt-BR&experience=power-bi,
+AGUA E LUZ - CORREÇÃO NA PLANILHA,17 de dezembro de 2025 09:46,17 de dezembro de 2025 → 17 de dezembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de dezembro de 2025 14:56,Luis Cuba | Sistemas,,
+APP GOWORK - POPULAR TABELAS (OBRAS),17 de dezembro de 2025 10:08,17 de dezembro de 2025 → 17 de dezembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de dezembro de 2025 14:56,Luis Cuba | Sistemas,,
+APP GOWORK - POPULAR TABELAS (RELACIONAMENTO),18 de dezembro de 2025 11:20,18 de dezembro de 2025 → 18 de dezembro de 2025,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Thiago Moura,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de dezembro de 2025 14:56,Luis Cuba | Sistemas,,
+CONSUMO PLANNER | AUTOMAÇÃO GRAPH,15 de janeiro de 2026 14:33,9 de fevereiro de 2026 → 13 de fevereiro de 2026,9 - Concluído,Baixa,,Gabriel Galdino da Silva | Assistente de Dados,Thiago Moura,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de fevereiro de 2026 16:16,Luis Cuba | Sistemas,,
+VARREDURA - NF,15 de janeiro de 2026 15:02,13 de janeiro de 2026 → 15 de janeiro de 2026,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Maikel,Gabriel Galdino da Silva | Assistente de Dados,ENGENHARIA,26 de janeiro de 2026 08:30,Luis Cuba | Sistemas,https://goofficeslatam-my.sharepoint.com/:f:/g/personal/engenharia8_gowork_com_br/IgAo9Sp2znWnSoBk5oFNwvhSAZREOTe8pPnZPDTlZSLiyLQ?e=bYttBs,
+REFAÇÃO | BANCO DE DADOS RH/DP,20 de janeiro de 2026 15:54,19 de janeiro de 2026 → 23 de janeiro de 2026,9 - Concluído,Média,Banco de dados sistema de medição e RH,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Thiago Moura,"DP, RH, SISTEMAS",3 de fevereiro de 2026 17:51,Thiago Moura,https://supabase.com/dashboard/project/quzpakmslmcifvpjkdod,
+WEBHOOK - JURIDICO,21 de janeiro de 2026 10:28,21 de janeiro de 2026 → 21 de janeiro de 2026,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,10 de fevereiro de 2026 11:58,Luis Cuba | Sistemas,,
+Melhorias NetworkGo,21 de janeiro de 2026 12:03,21 de janeiro de 2026 → 31 de março de 2026,4 - Em andamento,Média,,Luis Cuba | Sistemas,Luis Cuba,Thiago Moura,"FACILITIES, SISTEMAS",10 de março de 2026 10:01,Luis Cuba | Sistemas,,
+"ANOTAÇÃO | Apresentração portal para comercial ",23 de janeiro de 2026 09:32,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+"<MATRIZ> COMISSÕES ",23 de janeiro de 2026 14:02,26 de janeiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,"Luis Cuba | Sistemas, Gabriel Galdino da Silva | Assistente de Dados",Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:15,Luis Cuba | Sistemas,https://github.com/goworksistemas/comissoes,
+BIA | IA DO RH,23 de janeiro de 2026 16:19,,1 - STAND-BY,Urgente,,Luis Cuba | Sistemas,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,"RH, SISTEMAS",6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+LIMPAR COMENTÁRIOS,23 de janeiro de 2026 17:12,26 de janeiro de 2026 → 30 de janeiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Thiago Moura,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,3 de fevereiro de 2026 17:48,Thiago Moura,,
+IMPORTAR FATURAS - OMIE,26 de janeiro de 2026 08:09,20 de janeiro de 2026 → 30 de janeiro de 2026,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,10 de fevereiro de 2026 11:39,Luis Cuba | Sistemas,http://161.35.104.75/user/luiscuba/lab/tree/Network%20Go/fatura2/extracao_omie.ipynb,
+CENTRAL DE DADOS - HUBSPOT,26 de janeiro de 2026 14:42,26 de janeiro de 2026 → 30 de janeiro de 2026,9 - Concluído,Importante,Vamos criar a base para alimentar a central de Dados,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,10 de fevereiro de 2026 11:38,Luis Cuba | Sistemas,http://161.35.104.75/user/luiscuba/lab/tree/Central%20de%20Dados,
+PIPEGO | ATUALIZAÇÃO INATIVOS - BANCO ANTIGO | GLIDE,26 de janeiro de 2026 17:19,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Thiago Moura,Thiago Moura,SISTEMAS,3 de fevereiro de 2026 17:50,Thiago Moura,,
+PIPEGO | ATUALIZAÇÃO - NOTA AUDITORIA - BANCO ANTIGO | GLIDE,26 de janeiro de 2026 17:22,,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Thiago Moura,Thiago Moura,SISTEMAS,3 de fevereiro de 2026 17:48,Thiago Moura,,
+COMPARATIVO DE CUSTOS,27 de janeiro de 2026 09:26,30 de janeiro de 2026 → 27 de março de 2026,4 - Em andamento,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,6 de março de 2026 16:22,Gabriel Galdino da Silva | Assistente de Dados,,
+CHAMADOS | RELATÓRIO DIÁRIO,27 de janeiro de 2026 15:11,27 de janeiro de 2026 → 30 de janeiro de 2026,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de fevereiro de 2026 11:42,Luis Cuba | Sistemas,,
+TELA MATRIZ,28 de janeiro de 2026 10:44,28 de janeiro de 2026 → 3 de fevereiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,3 de fevereiro de 2026 13:55,Luis Cuba | Sistemas,https://github.com/goworksistemas/matriz.git,
+Atualizar LGPD | Networkgo,28 de janeiro de 2026 13:10,28 de janeiro de 2026 → 2 de fevereiro de 2026,9 - Concluído,Importante,,Luis Cuba | Sistemas,Felipe Sanchez,Luis Cuba | Sistemas,JURIDICO,10 de fevereiro de 2026 12:00,Luis Cuba | Sistemas,,
+NOTIFICAÇÃO | RESERVA INTERNA,28 de janeiro de 2026 15:13,28 de janeiro de 2026 → 6 de fevereiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Raphael Relacionamento,Raphael Janffer,SISTEMAS,10 de fevereiro de 2026 11:51,Luis Cuba | Sistemas,,
+PROBLEMA DE ACESSO,28 de janeiro de 2026 15:37,28 de janeiro de 2026 → 28 de janeiro de 2026,9 - Concluído,Urgente,,Luis Cuba | Sistemas,Raphael Relacionamento,Raphael Janffer,SISTEMAS,3 de fevereiro de 2026 13:53,Luis Cuba | Sistemas,https://networkgo.gowork.com.br/companies/2baa07f1-3832-46f8-b1e0-4fdf4a3a3dda,
+OSs | RELATÓRIO DIÁRIO,28 de janeiro de 2026 17:55,,1 - STAND-BY,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+GoAcademy | Plataforma de cursos e aprendizado,29 de janeiro de 2026 09:23,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+IMPORTAR FATURAS - IUGU,29 de janeiro de 2026 14:12,2 de fevereiro de 2026 → 6 de fevereiro de 2026,9 - Concluído,Importante,Alimentar o banco do NetworkGo com as faturas que vem da IUGU.,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de fevereiro de 2026 16:15,Luis Cuba | Sistemas,,
+APLICAÇÕES INTERNAS,29 de janeiro de 2026 14:15,29 de janeiro de 2026 → 23 de fevereiro de 2026,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,23 de fevereiro de 2026 15:54,Luis Cuba | Sistemas,,
+INSERÇÃO DE TAG | SATISFAÇÃO DO CLIENTE | NETWORKGO,30 de janeiro de 2026 09:28,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Thiago Moura,Thiago Moura,SISTEMAS,30 de janeiro de 2026 09:29,Thiago Moura,,
+Briefing - Estudos sobre os conceitos.,30 de janeiro de 2026 11:59,6 de março de 2026 → 13 de março de 2026,4 - Em andamento,Importante,,"Luis Cuba | Sistemas, Raphael Janffer",Raphael Relacionamento,Raphael Janffer,SISTEMAS,10 de março de 2026 10:21,Luis Cuba | Sistemas,,
+"Atividades e responsabilidades
+• ",30 de janeiro de 2026 12:12,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Raphael Relacionamento,Raphael Janffer,SISTEMAS,30 de janeiro de 2026 12:12,Raphael Janffer,,
+Icone de retorno de página,2 de fevereiro de 2026 09:30,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Raphael Relacionamento,Raphael Janffer,SISTEMAS,2 de fevereiro de 2026 09:30,Raphael Janffer,,
+Notificação de Reservas Externas – Recepções,2 de fevereiro de 2026 11:25,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Raphael Relacionamento,Raphael Janffer,SISTEMAS,2 de fevereiro de 2026 11:26,Raphael Janffer,,
+Melhoria | Adicionar status Kanban  - “Em Reavaliação” | NetworkGo Custops,2 de fevereiro de 2026 11:34,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Raphael Relacionamento,Raphael Janffer,SISTEMAS,2 de março de 2026 14:12,Thiago Moura,,
+EXTRAÇÃO NF | ANOS RETROATIVOS,2 de fevereiro de 2026 13:42,2 de fevereiro de 2026 → 2 de fevereiro de 2026,9 - Concluído,Urgente,"Coletar as Notas Fiscais no email da Michele, Marcia e Juscelino",Gabriel Galdino da Silva | Assistente de Dados,Maikel,Gabriel Galdino da Silva | Assistente de Dados,"FINANCEIRO, RH, SISTEMAS",9 de fevereiro de 2026 08:44,Luis Cuba | Sistemas,,
+Cibranças | Sanches,2 de fevereiro de 2026 15:17,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Felipe Sanchez,Luis Cuba | Sistemas,Cobranaça,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+IDEIA | Sistema de Validação de Reservas c/ Automação de Fechaduras,2 de fevereiro de 2026 15:25,,2 - Solicitação,Importante,,"Thiago Moura, Raphael Janffer",Raphael Relacionamento,Raphael Janffer,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+"Pesquisa Ofical da Meta - API Cobrança ",2 de fevereiro de 2026 17:31,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Raphael Relacionamento,Raphael Janffer,SISTEMAS,2 de fevereiro de 2026 17:32,Raphael Janffer,,
+Disparar e-mail | Cancelamento de reserva,3 de fevereiro de 2026 08:53,3 de fevereiro de 2026 → 3 de fevereiro de 2026,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,3 de fevereiro de 2026 13:53,Luis Cuba | Sistemas,,
+Reunião Fernando,3 de fevereiro de 2026 09:43,,2 - Solicitação,Média,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+RH-DP | AJUSTE BANCO DE DADOS | SUPABASE,3 de fevereiro de 2026 10:02,3 de fevereiro de 2026 → 4 de fevereiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Thiago Moura,Thiago Moura,SISTEMAS,9 de fevereiro de 2026 08:49,Thiago Moura,,
+Revisar fluxo Gocorporate | Hyperflow,4 de fevereiro de 2026 09:15,4 de fevereiro de 2026 → 20 de março de 2026,4 - Em andamento,Média,,"Raphael Janffer, Luis Cuba | Sistemas",Luis Cuba,Luis Cuba | Sistemas,COMERCIAL,6 de março de 2026 11:38,Raphael Janffer,,
+Sugestão de Mudança Visual – Notificação de Reserva Indisponível,4 de fevereiro de 2026 09:20,,2 - Solicitação,Média,,Luis Cuba | Sistemas,Raphael Relacionamento,Raphael Janffer,SISTEMAS,4 de fevereiro de 2026 17:20,Thiago Moura,,
+💡 Ideia de Melhoria – Live Chat nos Chamados,4 de fevereiro de 2026 10:38,4 de fevereiro de 2026 → 5 de fevereiro de 2026,9 - Concluído,Média,,"Luis Cuba | Sistemas, Raphael Janffer",Raphael Relacionamento,Raphael Janffer,SISTEMAS,2 de março de 2026 15:40,Luis Cuba | Sistemas,,
+Disparo em Massa - Email de Boas Vindas,4 de fevereiro de 2026 14:23,,9 - Concluído,Urgente,,"Luis Cuba | Sistemas, Gabriel Galdino da Silva | Assistente de Dados",Raphael Relacionamento,Raphael Janffer,SISTEMAS,24 de fevereiro de 2026 16:42,Gabriel Galdino da Silva | Assistente de Dados,,
+Sugestão de melhoria – Nome da Aba “Dashboard”,4 de fevereiro de 2026 14:39,,9 - Concluído,Média,,"Luis Cuba | Sistemas, Thiago Moura",Raphael Relacionamento,Raphael Janffer,SISTEMAS,2 de março de 2026 14:14,Thiago Moura,,
+"Criar Video - Tutorial das Abas do portal ",4 de fevereiro de 2026 15:49,9 de março de 2026 → 3 de abril de 2026,4 - Em andamento,Importante,,Raphael Janffer,Luis Cuba,Raphael Janffer,SISTEMAS,10 de março de 2026 10:21,Luis Cuba | Sistemas,,
+Solicitação de Café - Sala de reunião Interno e Externo,5 de fevereiro de 2026 13:42,9 de março de 2026 → 13 de março de 2026,4 - Em andamento,Urgente,,"Thiago Moura, Raphael Janffer",Raphael Relacionamento,Raphael Janffer,SISTEMAS,9 de março de 2026 17:43,Raphael Janffer,,
+CONSUMO PLANNER | AUTOMAÇÃO GRAPH (1),5 de fevereiro de 2026 17:01,15 de janeiro de 2026 → 23 de janeiro de 2026,9 - Concluído,Baixa,,Gabriel Galdino da Silva | Assistente de Dados,Thiago Moura,Thiago Moura,SISTEMAS,5 de fevereiro de 2026 17:03,Thiago Moura,,
+Seguestão - Busca inteligente visual de forma pratica e rapida,6 de fevereiro de 2026 16:28,25 de fevereiro de 2026 → 9 de março de 2026,9 - Concluído,Média,,"Luis Cuba | Sistemas, Thiago Moura",Raphael Relacionamento,Raphael Janffer,SISTEMAS,9 de março de 2026 08:30,Thiago Moura,,
+Webhook n8n | Disparo de pesquisas por e-mail,11 de fevereiro de 2026 12:26,11 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,RELACIONAMENTO,2 de março de 2026 15:34,Luis Cuba | Sistemas,,
+Fluxo Sistêmico – Execução de Ordem de Serviço (OS),11 de fevereiro de 2026 13:34,2 de março de 2026 → 13 de março de 2026,6 - Aguardando terceiros,Importante,,"Luis Cuba | Sistemas, Raphael Janffer",Raphael Relacionamento,Raphael Janffer,SISTEMAS,2 de março de 2026 15:43,Luis Cuba | Sistemas,,
+Comercial | Dashboard,11 de fevereiro de 2026 14:08,11 de fevereiro de 2026 → 13 de março de 2026,4 - Em andamento,Importante,Estruturação: 11/02 até 13/02 >>> Desenvolvimento: 16/02 até 17/02,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Pietro,Luis Cuba | Sistemas,COMERCIAL,10 de março de 2026 10:22,Gabriel Galdino da Silva | Assistente de Dados,,"ConectGo, Dashboard"
+Check List – Recepção Larissa,11 de fevereiro de 2026 17:17,11 de fevereiro de 2026 → 2 de março de 2026,9 - Concluído,Importante,,"Luis Cuba | Sistemas, Raphael Janffer",Raphael Relacionamento,Raphael Janffer,SISTEMAS,2 de março de 2026 15:37,Luis Cuba | Sistemas,,
+NETWORKGO | NOTIFICAR E-MAIL SOBRE CORRESPONDENCIA,12 de fevereiro de 2026 11:49,12 de fevereiro de 2026 → 16 de fevereiro de 2026,9 - Concluído,Importante,,"Luis Cuba | Sistemas, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,18 de fevereiro de 2026 16:15,Luis Cuba | Sistemas,,
+LIMPEZA | CORRESPONDÊNCIA,13 de fevereiro de 2026 11:55,13 de fevereiro de 2026 → 13 de fevereiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,18 de fevereiro de 2026 16:13,Luis Cuba | Sistemas,,
+NOTIFICAÇÃO | CORRESPONDÊNCIA | RECEPÇÃO,13 de fevereiro de 2026 11:59,,2 - Solicitação,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,"RECEPÇÃO, SISTEMAS",10 de março de 2026 14:30,Gabriel Galdino da Silva | Assistente de Dados,https://flux.gowork.com.br/workflow/QwXaWQs8auLkm8N4,
+REFINAMENTO | MENSUREGO,16 de fevereiro de 2026 09:55,16 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:10,Luis Cuba | Sistemas,,
+Apresentação de resultados | dezembro de 2025 e janeiro de 2026,18 de fevereiro de 2026 12:35,18 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Baixa,,Raphael Janffer,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:34,Luis Cuba | Sistemas,,Apresentação de resultado
+Apresentação de resultados | dezembro de 2025 e janeiro de 2026,18 de fevereiro de 2026 12:35,18 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Baixa,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:27,Luis Cuba | Sistemas,,Apresentação de resultado
+Fluxo Hyperflow – Inclusão do Setor de Pendências (Cobranças),18 de fevereiro de 2026 14:47,19 de fevereiro de 2026 → 19 de fevereiro de 2026,9 - Concluído,Urgente,,Raphael Janffer,Raphael Relacionamento,Raphael Janffer,SISTEMAS,6 de março de 2026 15:21,Luis Cuba | Sistemas,,Hyperflow
+🔐 Validação de Identidade para Locação de Sala de Reunião – Coworking,18 de fevereiro de 2026 15:20,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Raphael Relacionamento,Raphael Janffer,SISTEMAS,24 de fevereiro de 2026 15:40,Raphael Janffer,,
+Teste de conhecimento,18 de fevereiro de 2026 16:24,18 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Média,,Raphael Janffer,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,9 de março de 2026 14:19,Luis Cuba | Sistemas,,
+MATRIZ | NOTION,18 de fevereiro de 2026 17:36,18 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,2 de março de 2026 12:16,Luis Cuba | Sistemas,https://flux.gowork.com.br/workflow/ADu0wfK2rMUcP6Wt,
+Templantes de emails - ConectGo | Supabase,18 de fevereiro de 2026 18:35,23 de fevereiro de 2026 → 2 de março de 2026,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:12,Luis Cuba | Sistemas,,
+Separar tela de login e reset | ConectGO,19 de fevereiro de 2026 13:33,19 de fevereiro de 2026 → 20 de fevereiro de 2026,9 - Concluído,Importante,,Luis Cuba | Sistemas,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,21 de fevereiro de 2026 09:47,Luis Cuba | Sistemas,,
+Video Tutorial - Tela de Empresa,20 de fevereiro de 2026 14:03,9 de março de 2026 → 3 de abril de 2026,4 - Em andamento,Importante,,Raphael Janffer,Luis Cuba,Raphael Janffer,SISTEMAS,10 de março de 2026 10:21,Luis Cuba | Sistemas,,
+REGISTRAR | MENSURE GO | DOCUMENTAÇÃO,23 de fevereiro de 2026 10:07,23 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:14,Luis Cuba | Sistemas,,
+REGISTRAR | PIPE GO | DOCUMENTAÇÃO,23 de fevereiro de 2026 10:09,23 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:14,Luis Cuba | Sistemas,,
+REGISTRAR | PEOPLE GO | DOCUMENTAÇÃO,23 de fevereiro de 2026 10:09,23 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:14,Luis Cuba | Sistemas,,
+REGISTRAR | CONECT GO | DOCUMENTAÇÃO,23 de fevereiro de 2026 10:09,23 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:14,Luis Cuba | Sistemas,,
+REGISTRAR | UNIT GO | DOCUMENTAÇÃO,23 de fevereiro de 2026 10:09,23 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:14,Luis Cuba | Sistemas,,
+REGISTRAR | GO ACADEMY,23 de fevereiro de 2026 10:09,23 de fevereiro de 2026 → 20 de março de 2026,6 - Aguardando terceiros,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,10 de março de 2026 13:12,Luis Cuba | Sistemas,,
+REGISTRAR | QRÁPIDO | DOCUMENTAÇÃO,23 de fevereiro de 2026 10:11,23 de fevereiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,"Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:14,Luis Cuba | Sistemas,,
+MOVER | TAREFAS DO THIAGO,23 de fevereiro de 2026 16:30,23 de fevereiro de 2026 → 23 de fevereiro de 2026,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:05,Luis Cuba | Sistemas,,
+CENTRAL | SUGESTÕES E MELHORIAS - BD,24 de fevereiro de 2026 11:30,29 de janeiro de 2026 → 27 de fevereiro de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:01,Luis Cuba | Sistemas,,
+ATUALIZAÇÃO DADOS JORNADAS CLIENTES | PIPEGO,24 de fevereiro de 2026 14:46,23 de fevereiro de 2026 → 25 de fevereiro de 2026,9 - Concluído,Importante,,"Thiago Moura, Gabriel Galdino da Silva | Assistente de Dados",Thiago Moura,Thiago Moura,SISTEMAS,25 de fevereiro de 2026 15:03,Thiago Moura,,
+AJUSTE DE SEGURANÇA | PIPEGO,24 de fevereiro de 2026 15:13,23 de fevereiro de 2026 → 24 de fevereiro de 2026,9 - Concluído,Média,,Thiago Moura,Thiago Moura,Thiago Moura,SISTEMAS,24 de fevereiro de 2026 15:22,Thiago Moura,,
+"Apagar/Destativar o Carrossel ",24 de fevereiro de 2026 15:43,,8 - Aprovação,Importante,,"Raphael Janffer, Luis Cuba | Sistemas",Raphael Relacionamento,Raphael Janffer,SISTEMAS,10 de março de 2026 11:21,Raphael Janffer,,
+SUPORTE | CORREÇÃO CONTRATOS,25 de fevereiro de 2026 11:53,25 de fevereiro de 2026 → 25 de fevereiro de 2026,9 - Concluído,Urgente,,"Gabriel Galdino da Silva | Assistente de Dados, Raphael Janffer",Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:08,Luis Cuba | Sistemas,,
+ATUALIZAÇÕES PÓS REUNIÃO | FINANCEIRO | PIPEGO,25 de fevereiro de 2026 16:13,27 de fevereiro de 2026 → 31 de março de 2026,9 - Concluído,Média,"Inserir botão de cliente não cadastrado - vendas e virtual
+Possibilidade de retornar fase retirar restrição
+Nova fase inicial - contrato barrado exemplo",Thiago Moura,Michele,Thiago Moura,SISTEMAS,5 de março de 2026 10:56,Thiago Moura,,
+CORREÇÃO | Nº DOCUMENTO,26 de fevereiro de 2026 11:10,26 de fevereiro de 2026 → 26 de fevereiro de 2026,9 - Concluído,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Gabriel Galdino,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,2 de março de 2026 12:08,Luis Cuba | Sistemas,,
+"Automação ""Dedo Duro"" (Facilities/TI)",26 de fevereiro de 2026 11:42,26 de fevereiro de 2026 → 13 de março de 2026,4 - Em andamento,Importante,"🎯 Objetivo
+Implementar um monitoramento ativo sobre o sistema de chamados (NetworkGo/PipeGo) para identificar gargalos de atendimento, inconsistências de dados e descumprimento de prazos (SLA), notificando os responsáveis via E-mail e WhatsApp.",Gabriel Galdino da Silva | Assistente de Dados,Suhaila Mourad,Luis Cuba | Sistemas,FACILITIES,6 de março de 2026 16:42,Gabriel Galdino da Silva | Assistente de Dados,https://flux.gowork.com.br/workflow/0TYp3EKSaVfc7fim,
+Comercial | Automação Contratos,26 de fevereiro de 2026 14:57,6 de março de 2026 → 13 de março de 2026,6 - Aguardando terceiros,Importante,"Criar fluxo automatizado onde:
+
+  1. Os dados do negócio no HubSpot alimentem automaticamente o contrato.
+  2. O envio para assinatura seja integrado.
+  3. Após assinatura, o contrato seja automaticamente salvo no negócio correspondente.
+  4. Integração automática com o novo Portal.
+  5. Redução de tempo operacional e risco de erro.","Gabriel Galdino da Silva | Assistente de Dados, Luis Cuba | Sistemas",Pietro,Gabriel Galdino da Silva | Assistente de Dados,COMERCIAL,10 de março de 2026 10:23,Gabriel Galdino da Silva | Assistente de Dados,,
+IMPLEMENTAÇÃO CRIAÇÃO DE JORNADA | PIPEGO,26 de fevereiro de 2026 16:05,,2 - Solicitação,Média,,Thiago Moura,Fernando Bottura,Thiago Moura,SISTEMAS,26 de fevereiro de 2026 16:06,Thiago Moura,,
+MÓDULO LEVANTAMENTO TÉCNICO | PIPEGO,26 de fevereiro de 2026 16:35,4 de março de 2026 → 6 de março de 2026,9 - Concluído,Média,,Thiago Moura,Maikel,Thiago Moura,"SISTEMAS, TI",10 de março de 2026 09:59,Luis Cuba | Sistemas,,PipeGO
+Fluxo Mariana 3.0,27 de fevereiro de 2026 09:00,27 de fevereiro de 2026 → 12 de março de 2026,4 - Em andamento,Importante,,"Raphael Janffer, Luis Cuba | Sistemas",Luis Cuba,Raphael Janffer,SISTEMAS,10 de março de 2026 10:21,Luis Cuba | Sistemas,,
+Auditoria de Produtividade | Hugo Tangerino,27 de fevereiro de 2026 12:59,27 de fevereiro de 2026 → 13 de março de 2026,8 - Aprovação,Urgente,"Análise minuciosa do histórico de chamados e Ordens de Serviço (OSs) vinculados ao Hugo e à 475. O objetivo é contabilizar o volume de resoluções e aberturas efetivamente realizadas por ele, isolando os casos que foram terceirizados ou repassados aos assistentes, para confirmar a hipótese de delegação excessiva de tarefas via WhatsApp.",Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,FACILITIES,10 de março de 2026 14:17,Gabriel Galdino da Silva | Assistente de Dados,,"Dashboard, NetworlGo"
+RELATÓRIO | SCANNER NETWORKGO,27 de fevereiro de 2026 15:55,27 de fevereiro de 2026 → 2 de março de 2026,9 - Concluído,Urgente,"O relatório Automação ""Dedo Duro"" (Facilities/TI) (https://www.notion.so/Automa-o-Dedo-Duro-Facilities-TI-313c3598383a80a0adc3cfd2b31fbe38?pvs=21) agora ganhou uma versão construida dentro do próprio portal",Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Gabriel Galdino da Silva | Assistente de Dados,SISTEMAS,6 de março de 2026 15:20,Luis Cuba | Sistemas,https://networkgo.com.br/admin/tickets-dashboard,"Dashboard, NetworlGo"
+Ajuste layout | ConectGO | Tarefas Notion,2 de março de 2026 11:53,4 de março de 2026 → 11 de março de 2026,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:17,Luis Cuba | Sistemas,,ConectGo
+Ajustar fluxo no n8n para salvar histórico de envios de pesquisas do CUSTOPS | NetworkGO,2 de março de 2026 15:33,2 de março de 2026 → 4 de março de 2026,9 - Concluído,Média,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:00,Luis Cuba | Sistemas,,"NetworlGo, n8n"
+LAYOUT MOBILE - AGENDAMENTO | NETWORKGO,2 de março de 2026 16:04,5 de março de 2026 → 13 de março de 2026,7 - Implantação,Baixa,O sistema de reserva de salas está confuso para os clientes no mobile o ajuste é necessário para melhor movimentação entre telas,Thiago Moura,Luis Cuba,Thiago Moura,SISTEMAS,10 de março de 2026 10:23,Thiago Moura,,"NetworlGo, RESERVAS"
+Job Descrição de atividades e sistemas que atuam,2 de março de 2026 18:25,2 de março de 2026 → 6 de março de 2026,9 - Concluído,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 14:55,Luis Cuba | Sistemas,https://www.notion.so/GGDS-Descri-o-de-Atividades-319c3598383a80c1b089ddac4f5b0bc4,JobDescription
+JobDescrição de atividades e sistemas que atuam,2 de março de 2026 18:26,,2 - Solicitação,Importante,,Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+JobDescrição de atividades e sistemas que atuam,2 de março de 2026 18:26,2 de março de 2026 → 12 de março de 2026,4 - Em andamento,Importante,,Raphael Janffer,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 10:21,Luis Cuba | Sistemas,,JobDescription
+Ocupação | Release,3 de março de 2026 08:57,,2 - Solicitação,Urgente,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Whatsapp Gowork,3 de março de 2026 09:09,2 de março de 2026 → 31 de março de 2026,4 - Em andamento,Importante,,Luis Cuba | Sistemas,Fernando Bottura,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 16:28,Luis Cuba | Sistemas,,
+Chamados | SLA fechamento automático por falta de interação do cliente,3 de março de 2026 11:34,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Suhaila Mourad,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Baixar cursos G4,3 de março de 2026 13:21,,2 - Solicitação,Importante,,Luis Cuba | Sistemas,Pietro,Luis Cuba | Sistemas,COMERCIAL,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+MÓDULO DE S&M | PIPEGO,4 de março de 2026 09:05,2 de março de 2026 → 4 de março de 2026,9 - Concluído,Importante,,Thiago Moura,Thiago Moura,Thiago Moura,SISTEMAS,4 de março de 2026 09:09,Thiago Moura,,
+Pesquisas | Logs,5 de março de 2026 17:22,,2 - Solicitação,Importante,,Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,https://networkgo.com.br/admin/satisfaction/0de1e5dd-5b7c-42fd-8bb3-3c773bcfdffc/responses,
+Revisão de segurança | Netwrkgo supabase,5 de março de 2026 17:28,,2 - Solicitação,Urgente,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 16:23,Gabriel Galdino da Silva | Assistente de Dados,,
+Refatorar tela de cliente externo | Networgo,5 de março de 2026 17:29,5 de março de 2026 → 13 de março de 2026,4 - Em andamento,Urgente,,Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 10:21,Luis Cuba | Sistemas,,
+Recriar fluxo da mariana | SDR 2.5,5 de março de 2026 17:37,16 de março de 2026,3 - Agendado,Importante,,"Raphael Janffer, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 10:22,Gabriel Galdino da Silva | Assistente de Dados,,
+Acesso temporário | Cliente Virtual,6 de março de 2026 11:43,,2 - Solicitação,Importante,,"Thiago Moura, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Aba de correspondência | Networkgo | Tela do cliente,6 de março de 2026 12:42,,2 - Solicitação,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,https://networkgo.gowork.com.br/my-company/management,
+Webhook | Networkgo <> Hubspot | Sala de reunião,6 de março de 2026 13:59,,2 - Solicitação,Importante,,"Thiago Moura, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,6 de março de 2026 15:49,Luis Cuba | Sistemas,,
+Gabi 2.0 - Suporte Expresso,9 de março de 2026 11:53,9 de março de 2026 → 31 de março de 2026,4 - Em andamento,Importante,Criar um fluxo de atendimento por IA humanizado para prestar suporte rapidos ao cliente,Raphael Janffer,Raphael Relacionamento,Raphael Janffer,SISTEMAS,9 de março de 2026 12:36,Raphael Janffer,,
+MELHORIAS JORNADAS | PÓS REUNIÃO FACILITIES | PIPEGO - PART 1,9 de março de 2026 12:21,9 de março de 2026 → 10 de março de 2026,9 - Concluído,Média,Reforçar com a equipe que o perfil CL terá permissão de inclusão e o assistente apenas visualização; validar exceções e comunicar formalmente.,Thiago Moura,Suhaila Mourad,Thiago Moura,SISTEMAS,10 de março de 2026 10:24,Luis Cuba | Sistemas,,PipeGO
+Integração | Possibilitar incluir as reunião na agenda e adicionar convidados,9 de março de 2026 14:24,16 de março de 2026,3 - Agendado,Importante,,"Thiago Moura, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 10:22,Gabriel Galdino da Silva | Assistente de Dados,,NetworlGo
+"Bug | Correção, cortesia sala de reunião Gowork | Verificar contaminação",9 de março de 2026 14:29,16 de março de 2026,3 - Agendado,Importante,,Gabriel Galdino da Silva | Assistente de Dados,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 10:22,Gabriel Galdino da Silva | Assistente de Dados,,NetworlGo
+Orçar Pentest | Networkgo,9 de março de 2026 17:12,9 de março de 2026 → 20 de março de 2026,2 - Solicitação,Urgente,,Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,9 de março de 2026 17:13,Luis Cuba | Sistemas,,"NetworlGo, Segurança"
+MELHORIAS JORNADAS | PÓS REUNIÃO FACILITIES | PIPEGO - PART 2,10 de março de 2026 10:22,13 de março de 2026,3 - Agendado,Média,Reforçar com a equipe que o perfil CL terá permissão de inclusão e o assistente apenas visualização; validar exceções e comunicar formalmente.,Thiago Moura,Suhaila Mourad,Thiago Moura,SISTEMAS,10 de março de 2026 10:25,Thiago Moura,,
+PIPEGO | MÓDULO DE JORNADAS CLIENTE,10 de março de 2026 10:31,9 de março de 2026 → 13 de março de 2026,4 - Em andamento,Importante,,Thiago Moura,Fernando Bottura,Thiago Moura,SISTEMAS,10 de março de 2026 11:21,Luis Cuba | Sistemas,,PipeGO
+Hubspot | Incluir no pipego a linha do tempo do hubspot | Objeto negócios,10 de março de 2026 10:46,17 de março de 2026 → 27 de março de 2026,2 - Solicitação,Média,,Thiago Moura,Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 10:47,Luis Cuba | Sistemas,,"Hubspot, PipeGO"
+Dexter | Sugestões e melhoria,10 de março de 2026 10:52,13 de março de 2026 → 20 de março de 2026,2 - Solicitação,Baixa,,"Thiago Moura, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 10:54,Luis Cuba | Sistemas,,Central de Sugestões
+,10 de março de 2026 12:05,,,,,,,Luis Cuba | Sistemas,,10 de março de 2026 12:05,Luis Cuba | Sistemas,,
+,10 de março de 2026 12:07,,,,,,,Luis Cuba | Sistemas,,10 de março de 2026 12:07,Luis Cuba | Sistemas,,
+CRONOGRAMA DE LANÇAMENTO | S&D,10 de março de 2026 12:25,,3 - Agendado,Importante,,Thiago Moura,Luis Cuba,Thiago Moura,SISTEMAS,10 de março de 2026 12:27,Thiago Moura,,Central de Sugestões
+Criação | Personalidade do Dexter,10 de março de 2026 14:45,16 de março de 2026 → 20 de março de 2026,2 - Solicitação,Média,,"Raphael Janffer, Thiago Moura, Gabriel Galdino da Silva | Assistente de Dados",Luis Cuba,Luis Cuba | Sistemas,SISTEMAS,10 de março de 2026 14:47,Luis Cuba | Sistemas,,Dexter

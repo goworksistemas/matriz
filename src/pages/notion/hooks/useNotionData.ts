@@ -1,15 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/hooks/AuthContext';
 import { fetchDadosNotion, type DadosNotionResult } from '../services/api';
-import type { TarefaProcessada } from '../services/api';
+import type { TarefaProcessada, ComentarioNotion } from '../services/api';
 import { supabase, isSupabaseConfigured, supabaseConfigErrorMessage } from '../services/supabase';
 
 interface UseNotionDataReturn {
   tarefas: TarefaProcessada[];
+  comentarios: ComentarioNotion[];
   statusUnicos: string[];
   prioridadesUnicas: string[];
   departamentosUnicos: string[];
   executoresUnicos: string[];
+  tagsUnicas: string[];
   ultimaAtualizacao: string | null;
   isLoading: boolean;
   error: string | null;
@@ -78,13 +80,16 @@ export function useNotionData(): UseNotionDataReturn {
     if (!isSupabaseConfigured) return;
 
     const channel = supabase
-      .channel(`notion_tasks_realtime_${user.id}`)
+      .channel(`notion_realtime_${user.id}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'notion_tasks' },
-        () => {
-          scheduleRealtimeRefresh();
-        },
+        () => { scheduleRealtimeRefresh(); },
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'notion_task_comments' },
+        () => { scheduleRealtimeRefresh(); },
       )
       .subscribe();
 
@@ -98,10 +103,12 @@ export function useNotionData(): UseNotionDataReturn {
 
   return {
     tarefas: data?.tarefas || [],
+    comentarios: data?.comentarios || [],
     statusUnicos: data?.statusUnicos || [],
     prioridadesUnicas: data?.prioridadesUnicas || [],
     departamentosUnicos: data?.departamentosUnicos || [],
     executoresUnicos: data?.executoresUnicos || [],
+    tagsUnicas: data?.tagsUnicas || [],
     ultimaAtualizacao: data?.ultimaAtualizacao || null,
     isLoading,
     error,

@@ -1,1 +1,1 @@
-export { fetchDadosNotion, type DadosNotionResult } from './api';
+export { fetchDadosNotion, type DadosNotionResult, type ComentarioNotion } from './api';

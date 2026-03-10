@@ -11,8 +11,11 @@ export interface NotionTask {
   requester: string;
   department: string;
   created_by: string;
+  last_edited_by: string;
   date_start: string | null;
   date_end: string | null;
+  tags: string;
+  links: string;
   notion_url: string | null;
   created_at: string | null;
   updated_at: string | null;
@@ -31,6 +34,9 @@ export interface TarefaProcessada {
   solicitante: string;
   departamento: string;
   criadoPor: string;
+  editadoPor: string;
+  tags: string[];
+  links: string;
   dataInicio: string | null;
   dataFim: string | null;
   notionUrl: string | null;
@@ -104,6 +110,10 @@ function processTasks(tasks: NotionTask[]): TarefaProcessada[] {
       ? t.executor.split(',').map(e => e.trim()).filter(Boolean)
       : [];
 
+    const tags = t.tags
+      ? t.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+      : [];
+
     return {
       id: t.id,
       notionId: t.notion_id,
@@ -116,6 +126,9 @@ function processTasks(tasks: NotionTask[]): TarefaProcessada[] {
       solicitante: t.requester || '',
       departamento: t.department || 'Sem departamento',
       criadoPor: t.created_by || '',
+      editadoPor: t.last_edited_by || '',
+      tags,
+      links: t.links || '',
       dataInicio: t.date_start,
       dataFim: t.date_end,
       notionUrl: t.notion_url,
@@ -140,18 +153,77 @@ async function fetchUltimaAtualizacao(): Promise<string | null> {
   return null;
 }
 
+export interface ComentarioNotion {
+  id: string;
+  commentId: string;
+  notionId: string;
+  texto: string;
+  autor: string;
+  comentadoEm: string | null;
+}
+
+interface RawComment {
+  id: string;
+  comment_id: string;
+  notion_id: string;
+  text: string;
+  author: string;
+  commented_at: string | null;
+}
+
+async function fetchComments(): Promise<ComentarioNotion[]> {
+  const allRows: RawComment[] = [];
+  const pageSize = 1000;
+  let lastId: string | null = null;
+
+  while (true) {
+    let query = supabase
+      .from('notion_task_comments')
+      .select('*')
+      .order('id', { ascending: true })
+      .limit(pageSize);
+
+    if (lastId) {
+      query = query.gt('id', lastId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Erro ao buscar comentarios do Notion:', error);
+      throw error;
+    }
+    if (!data || data.length === 0) break;
+    allRows.push(...(data as RawComment[]));
+    lastId = data[data.length - 1].id;
+    if (data.length < pageSize) break;
+  }
+
+  return allRows.map(c => ({
+    id: c.id,
+    commentId: c.comment_id,
+    notionId: c.notion_id,
+    texto: c.text || '',
+    autor: c.author || 'Desconhecido',
+    comentadoEm: c.commented_at,
+  }));
+}
+
 export interface DadosNotionResult {
   tarefas: TarefaProcessada[];
+  comentarios: ComentarioNotion[];
   statusUnicos: string[];
   prioridadesUnicas: string[];
   departamentosUnicos: string[];
   executoresUnicos: string[];
+  tagsUnicas: string[];
   ultimaAtualizacao: string | null;
 }
 
 export async function fetchDadosNotion(): Promise<DadosNotionResult> {
-  const [tasksRaw, ultimaAtualizacao] = await Promise.all([
+  const [tasksRaw, comentarios, ultimaAtualizacao] = await Promise.all([
     fetchTasks(),
+    fetchComments(),
     fetchUltimaAtualizacao(),
   ]);
 
@@ -165,12 +237,18 @@ export async function fetchDadosNotion(): Promise<DadosNotionResult> {
   tarefas.forEach(t => t.executores.forEach(e => executoresSet.add(e)));
   const executoresUnicos = [...executoresSet].sort();
 
+  const tagsSet = new Set<string>();
+  tarefas.forEach(t => t.tags.forEach(tag => tagsSet.add(tag)));
+  const tagsUnicas = [...tagsSet].sort();
+
   return {
     tarefas,
+    comentarios,
     statusUnicos,
     prioridadesUnicas,
     departamentosUnicos,
     executoresUnicos,
+    tagsUnicas,
     ultimaAtualizacao,
   };
 }

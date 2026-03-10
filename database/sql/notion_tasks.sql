@@ -14,14 +14,27 @@ CREATE TABLE IF NOT EXISTS public.notion_tasks (
   requester text,
   department text,
   created_by text,
+  last_edited_by text,
   date_start date,
   date_end date,
+  tags text,
+  links text,
   notion_url text,
   created_at timestamptz,
   updated_at timestamptz,
   _extracted_at timestamptz DEFAULT now(),
   _source_system text DEFAULT 'Notion'
 );
+
+-- ============================================
+-- MIGRAÇÃO: adicionar colunas faltantes e remover obsoletas
+-- ============================================
+
+ALTER TABLE public.notion_tasks ADD COLUMN IF NOT EXISTS tags text;
+ALTER TABLE public.notion_tasks ADD COLUMN IF NOT EXISTS links text;
+ALTER TABLE public.notion_tasks ADD COLUMN IF NOT EXISTS last_edited_by text;
+ALTER TABLE public.notion_tasks DROP COLUMN IF EXISTS thiago_atuacoes_ids;
+ALTER TABLE public.notion_tasks DROP COLUMN IF EXISTS thiago_atuacoes_count;
 
 ALTER TABLE public.notion_tasks ENABLE ROW LEVEL SECURITY;
 

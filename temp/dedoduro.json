@@ -1,0 +1,218 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 7 * * 1-5"
+              }
+            ]
+          }
+        },
+        "id": "a72ceae0-71b2-478f-b6b8-9da6aa235338",
+        "name": "Agendamento 07h",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -480,
+          320
+        ],
+        "notes": "Executa de segunda a sexta às 7h"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "tableId": "vw_scanner_enriched_tickets",
+          "returnAll": true
+        },
+        "id": "37714417-adde-4d24-87f5-a884cb8fa52e",
+        "name": "Buscar Dados Enriquecidos",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          -240,
+          320
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "w0cVfDxZhBtIQShW",
+            "name": "Networkgo ecommerce"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const tickets = $input.all().map(item => item.json);\nconst FIVE_DAYS = 5;\nconst TEN_DAYS = 10;\n\nconst abandonedByClient = [];\nconst abandonedByAgent = [];\nconst aging10Days = [];\n\nfor (const t of tickets) {\n  const ageDays = t.age_days || 0;\n  const daysSinceInteraction = t.days_since_interaction || 0;\n\n  const enriched = {\n    ticket_number: t.ticket_number,\n    title: t.title,\n    created_at: t.created_at,\n    ageDays,\n    agentName: t.agent_name,\n    agentEmail: t.agent_email,\n    clientName: t.client_name,\n    clientEmail: t.client_email,\n    buildingName: t.building_name,\n    departmentName: t.department_name,\n    statusName: t.status_name || '-',\n    ticketLink: `https://networkgo.com.br/admin/tickets/${t.ticket_number}`,\n    lastCommentAt: t.last_interaction_at || null,\n    daysSinceComment: 0,\n    lastCommentBy: 'nenhum'\n  };\n\n  if (ageDays > TEN_DAYS) {\n    aging10Days.push({ ...enriched });\n  }\n\n  if (t.last_interaction_at) {\n    if (daysSinceInteraction > FIVE_DAYS) {\n      enriched.daysSinceComment = daysSinceInteraction;\n      if (t.last_interaction_user_id !== t.user_id) {\n        enriched.lastCommentBy = 'agente';\n        abandonedByClient.push({ ...enriched });\n      } else {\n        enriched.lastCommentBy = 'cliente';\n        abandonedByAgent.push({ ...enriched });\n      }\n    }\n  } else if (ageDays > FIVE_DAYS) {\n    enriched.daysSinceComment = ageDays;\n    abandonedByAgent.push({ ...enriched });\n  }\n}\n\nconst allUnique = new Set();\nfor (const t of [...abandonedByClient, ...abandonedByAgent, ...aging10Days]) {\n  allUnique.add(t.ticket_number);\n}\n\naging10Days.sort((a, b) => b.ageDays - a.ageDays);\nabandonedByAgent.sort((a, b) => b.daysSinceComment - a.daysSinceComment);\nabandonedByClient.sort((a, b) => b.daysSinceComment - a.daysSinceComment);\n\nreturn [{\n  json: {\n    abandonedByClient,\n    abandonedByAgent,\n    aging10Days,\n    total_alertas: allUnique.size,\n    total_abandoned_client: abandonedByClient.length,\n    total_abandoned_agent: abandonedByAgent.length,\n    total_aging: aging10Days.length,\n    total_active_tickets: tickets.length\n  }\n}];"
+        },
+        "id": "239ad10c-3655-4ff8-a411-126da5241e12",
+        "name": "Classificar Tickets",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          16,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $input.first().json;\nconst { abandonedByClient, abandonedByAgent, aging10Days } = data;\nconst { total_alertas, total_abandoned_client, total_abandoned_agent, total_aging, total_active_tickets } = data;\n\nconst now = new Date();\n\nconst addToGroup = (group, name, cat) => {\n  if (!group[name]) group[name] = { abandonedClient: 0, abandonedAgent: 0, aging: 0, unique: new Set() };\n  group[name][cat]++;\n};\n\nconst byBuilding = {};\nfor (const t of abandonedByClient) { addToGroup(byBuilding, t.buildingName, 'abandonedClient'); byBuilding[t.buildingName].unique.add(t.ticket_number); }\nfor (const t of abandonedByAgent) { addToGroup(byBuilding, t.buildingName, 'abandonedAgent'); byBuilding[t.buildingName].unique.add(t.ticket_number); }\nfor (const t of aging10Days) { addToGroup(byBuilding, t.buildingName, 'aging'); byBuilding[t.buildingName].unique.add(t.ticket_number); }\n\nconst byAgent = {};\nfor (const t of abandonedByClient) { addToGroup(byAgent, t.agentName, 'abandonedClient'); byAgent[t.agentName].unique.add(t.ticket_number); }\nfor (const t of abandonedByAgent) { addToGroup(byAgent, t.agentName, 'abandonedAgent'); byAgent[t.agentName].unique.add(t.ticket_number); }\nfor (const t of aging10Days) { addToGroup(byAgent, t.agentName, 'aging'); byAgent[t.agentName].unique.add(t.ticket_number); }\n\nconst byDept = {};\nfor (const t of abandonedByClient) { addToGroup(byDept, t.departmentName, 'abandonedClient'); byDept[t.departmentName].unique.add(t.ticket_number); }\nfor (const t of abandonedByAgent) { addToGroup(byDept, t.departmentName, 'abandonedAgent'); byDept[t.departmentName].unique.add(t.ticket_number); }\nfor (const t of aging10Days) { addToGroup(byDept, t.departmentName, 'aging'); byDept[t.departmentName].unique.add(t.ticket_number); }\n\nconst agentRanking = Object.entries(byAgent).map(([name, d]) => ({ name, ...d, total: d.unique.size })).sort((a, b) => b.total - a.total);\nconst buildingEntries = Object.entries(byBuilding).sort((a, b) => b[1].unique.size - a[1].unique.size);\nconst deptEntries = Object.entries(byDept).sort((a, b) => b[1].unique.size - a[1].unique.size);\n\nconst dataGeracao = now.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });\nconst dataRelatorio = now.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });\nconst dataSubject = now.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });\nconst dataFile = dataSubject.split('/').join('-');\n\n// ===== Helpers comuns =====\nconst consolRows = (entries, style) => {\n  let r = '';\n  for (let i = 0; i < entries.length; i++) {\n    const [name, d] = entries[i];\n    const bg = i % 2 === 0 ? '#fff' : style === 'pdf' ? '#f8fafc' : '#f9fafb';\n    if (style === 'pdf') {\n      r += `<tr style=\"background:${bg}\"><td style=\"font-weight:600\">${name}</td><td style=\"text-align:center;color:#0369a1\">${d.abandonedClient}</td><td style=\"text-align:center;color:#dc2626;font-weight:600\">${d.abandonedAgent}</td><td style=\"text-align:center;color:#ca8a04\">${d.aging}</td><td style=\"text-align:center;font-weight:700\">${d.unique.size}</td></tr>`;\n    } else {\n      r += `<tr style=\"background:${bg};\"><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;font-weight:600;color:#111827;\">${name}</td><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;text-align:center;color:#0369a1;font-weight:600;\">${d.abandonedClient}</td><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;text-align:center;color:#ef4444;font-weight:600;\">${d.abandonedAgent}</td><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;text-align:center;color:#eab308;font-weight:600;\">${d.aging}</td><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;color:#111827;\">${d.unique.size}</td></tr>`;\n    }\n  }\n  return r;\n};\n\nconst agentRows = (ranking, style) => {\n  let r = '';\n  for (let i = 0; i < ranking.length; i++) {\n    const a = ranking[i];\n    const bg = i % 2 === 0 ? '#fff' : style === 'pdf' ? '#f8fafc' : '#f9fafb';\n    if (style === 'pdf') {\n      r += `<tr style=\"background:${bg}\"><td style=\"font-weight:600\">${a.name}</td><td style=\"text-align:center;color:#0369a1\">${a.abandonedClient}</td><td style=\"text-align:center;color:#dc2626;font-weight:600\">${a.abandonedAgent}</td><td style=\"text-align:center;color:#ca8a04\">${a.aging}</td><td style=\"text-align:center;font-weight:700\">${a.total}</td></tr>`;\n    } else {\n      r += `<tr style=\"background:${bg};\"><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;font-weight:600;color:#111827;\">${a.name}</td><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;text-align:center;color:#0369a1;\">${a.abandonedClient}</td><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;text-align:center;color:#ef4444;font-weight:600;\">${a.abandonedAgent}</td><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;text-align:center;color:#eab308;\">${a.aging}</td><td style=\"padding:12px 16px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;color:#111827;\">${a.total}</td></tr>`;\n    }\n  }\n  return r;\n};\n\n// ===== EMAIL HTML (resumo, sem detalhes) =====\nconst th = `padding:12px 16px;text-align:left;color:white;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;`;\nconst thC = `padding:12px 16px;text-align:center;color:white;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;`;\nconst mkT = (hdr, color, rows) => `<div style=\"margin-bottom:32px;\"><h2 style=\"color:#111827;font-size:18px;font-weight:700;margin:0 0 16px;border-bottom:2px solid ${color};padding-bottom:8px;\">${hdr}</h2><div style=\"overflow:hidden;border-radius:8px;border:1px solid #e5e7eb;\"><table style=\"width:100%;border-collapse:collapse;\"><thead><tr style=\"background:${color};\"><th style=\"${th}\">Nome</th><th style=\"${thC}\">Ag.Cli</th><th style=\"${thC}\">S/Resp</th><th style=\"${thC}\">Aging</th><th style=\"${thC}\">Total</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;\n\nconst emailHtml = `<!DOCTYPE html><html><head><meta charset=\"UTF-8\"></head><body style=\"font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background-color:#f3f4f6;padding:0;margin:0;\"><div style=\"max-width:900px;margin:0 auto;padding:24px;\"><div style=\"background-color:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);overflow:hidden;\"><div style=\"background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 50%,#0ea5e9 100%);padding:40px 32px;text-align:center;\"><h1 style=\"color:white;margin:0;font-size:28px;font-weight:700;\">Scanner Chamados</h1><p style=\"color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;\">Facilities — ${dataRelatorio}</p></div><div style=\"padding:32px 32px 0;\"><table width=\"100%\" cellpadding=\"0\" cellspacing=\"8\"><tr><td style=\"width:25%;text-align:center;\"><div style=\"background:#f0f9ff;border:1px solid #bae6fd;padding:20px 8px;border-radius:12px;\"><div style=\"font-size:36px;font-weight:700;color:#0369a1;\">${total_alertas}</div><div style=\"color:#075985;font-size:11px;margin-top:4px;font-weight:600;text-transform:uppercase;\">Total Alertas</div></div></td><td style=\"width:25%;text-align:center;\"><div style=\"background:#f0f9ff;border:1px solid #bae6fd;padding:20px 8px;border-radius:12px;\"><div style=\"font-size:36px;font-weight:700;color:#0284c7;\">${total_abandoned_client}</div><div style=\"color:#075985;font-size:11px;margin-top:4px;font-weight:600;text-transform:uppercase;\">Aguard. Cliente</div></div></td><td style=\"width:25%;text-align:center;\"><div style=\"background:#fef2f2;border:1px solid #fecaca;padding:20px 8px;border-radius:12px;\"><div style=\"font-size:36px;font-weight:700;color:#ef4444;\">${total_abandoned_agent}</div><div style=\"color:#991b1b;font-size:11px;margin-top:4px;font-weight:600;text-transform:uppercase;\">Sem Resp. Agente</div></div></td><td style=\"width:25%;text-align:center;\"><div style=\"background:#fffbeb;border:1px solid #fde68a;padding:20px 8px;border-radius:12px;\"><div style=\"font-size:36px;font-weight:700;color:#eab308;\">${total_aging}</div><div style=\"color:#92400e;font-size:11px;margin-top:4px;font-weight:600;text-transform:uppercase;\">Aging > 10d</div></div></td></tr></table></div><div style=\"padding:32px;\">${mkT('Por Unidade','#0369a1',consolRows(buildingEntries,'email'))}${mkT('Por Agente','#075985',agentRows(agentRanking,'email'))}${mkT('Por Departamento','#4b5563',consolRows(deptEntries,'email'))}<div style=\"background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px 20px;text-align:center;\"><p style=\"margin:0;color:#0369a1;font-size:14px;font-weight:600;\">Detalhes completos de todos os ${total_alertas} alertas no PDF em anexo.</p></div></div><div style=\"background:#f9fafb;padding:24px 32px;border-top:1px solid #e5e7eb;text-align:center;\"><p style=\"margin:0;color:#9ca3af;font-size:12px;\">Gerado em ${dataGeracao}</p><p style=\"margin:6px 0 0;color:#6b7280;font-size:13px;font-weight:600;\">NetworkGo — Scanner Chamados</p><p style=\"margin:4px 0 0;color:#9ca3af;font-size:11px;\">Analisados: ${total_active_tickets} | Alertas: ${total_alertas}</p></div></div></div></body></html>`;\n\n// ===== PDF HTML (auditoria completa, paisagem, compacto) =====\nconst pDetail = (arr, type) => {\n  let r = '';\n  for (let i = 0; i < arr.length; i++) {\n    const t = arr[i];\n    const bg = i % 2 === 0 ? '#fff' : '#f8fafc';\n    let ti = (t.title || '-').substring(0, 50);\n    if ((t.title || '').length > 50) ti += '...';\n    if (type === 'aging') {\n      const c = t.ageDays > 20 ? '#dc2626' : t.ageDays > 15 ? '#ca8a04' : '#0284c7';\n      r += `<tr style=\"background:${bg}\"><td><a href=\"${t.ticketLink}\" style=\"color:#0369a1;text-decoration:none;font-weight:600\">${t.ticket_number}</a></td><td>${ti}</td><td>${t.agentName}</td><td>${t.buildingName}</td><td style=\"text-align:center;color:${c};font-weight:700\">${t.ageDays}d</td></tr>`;\n    } else if (type === 'agent') {\n      r += `<tr style=\"background:${bg}\"><td><a href=\"${t.ticketLink}\" style=\"color:#0369a1;text-decoration:none;font-weight:600\">${t.ticket_number}</a></td><td>${ti}</td><td style=\"font-weight:600\">${t.agentName}</td><td style=\"text-align:center;color:#dc2626;font-weight:700\">${t.daysSinceComment}d</td><td style=\"color:#6b7280\">${t.lastCommentBy === 'cliente' ? 'Cliente falou' : 'Sem interação'}</td></tr>`;\n    } else {\n      r += `<tr style=\"background:${bg}\"><td><a href=\"${t.ticketLink}\" style=\"color:#0369a1;text-decoration:none;font-weight:600\">${t.ticket_number}</a></td><td>${ti}</td><td>${t.agentName}</td><td>${t.clientName}</td><td style=\"text-align:center;color:#0369a1;font-weight:700\">${t.daysSinceComment}d</td></tr>`;\n    }\n  }\n  return r;\n};\n\nconst pdfHtml = `<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;font-size:9px;color:#1f2937}table{width:100%;border-collapse:collapse}th{padding:4px 6px;text-align:left;color:#fff;font-weight:600;font-size:7px;text-transform:uppercase;letter-spacing:.3px}td{padding:3px 6px;border-bottom:1px solid #e5e7eb;font-size:8px}tr{page-break-inside:avoid}.hdr{background:#0c4a6e;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center}.hdr h1{font-size:16px;font-weight:700}.hdr span{font-size:9px;opacity:.8}.kpi{display:flex;gap:8px;padding:8px 20px;background:#f8fafc}.kpi>div{flex:1;text-align:center;padding:6px;border:1px solid #e5e7eb;border-radius:4px;background:#fff}.kpi .v{font-size:18px;font-weight:700}.kpi .l{font-size:6px;text-transform:uppercase;letter-spacing:.3px;color:#6b7280;margin-top:1px}.grid{display:flex;gap:10px;padding:6px 20px}.grid>div{flex:1}.sec{padding:6px 20px}.sec h2{font-size:10px;font-weight:700;margin-bottom:3px;padding-bottom:2px;border-bottom:2px solid}.pb{page-break-before:always}.ft{text-align:center;padding:6px;font-size:7px;color:#9ca3af;border-top:1px solid #e5e7eb;margin-top:6px}</style></head><body><div class=\"hdr\"><h1>Scanner Chamados — Facilities</h1><span>${dataRelatorio} | Gerado ${dataGeracao}</span></div><div class=\"kpi\"><div><div class=\"v\" style=\"color:#0369a1\">${total_alertas}</div><div class=\"l\">Total Alertas</div></div><div><div class=\"v\" style=\"color:#0284c7\">${total_abandoned_client}</div><div class=\"l\">Aguard. Cliente</div></div><div><div class=\"v\" style=\"color:#dc2626\">${total_abandoned_agent}</div><div class=\"l\">Sem Resp. Agente</div></div><div><div class=\"v\" style=\"color:#ca8a04\">${total_aging}</div><div class=\"l\">Aging > 10 dias</div></div><div><div class=\"v\" style=\"color:#374151\">${total_active_tickets}</div><div class=\"l\">Tickets Ativos</div></div></div><div class=\"grid\"><div><div class=\"sec\"><h2 style=\"border-color:#0369a1\">Por Unidade</h2><table><thead><tr style=\"background:#0369a1\"><th>Prédio</th><th style=\"text-align:center\">Ag.Cli</th><th style=\"text-align:center\">S/Resp</th><th style=\"text-align:center\">Aging</th><th style=\"text-align:center\">Total</th></tr></thead><tbody>${consolRows(buildingEntries,'pdf')}</tbody></table></div></div><div><div class=\"sec\"><h2 style=\"border-color:#075985\">Por Agente</h2><table><thead><tr style=\"background:#075985\"><th>Agente</th><th style=\"text-align:center\">Ag.Cli</th><th style=\"text-align:center\">S/Resp</th><th style=\"text-align:center\">Aging</th><th style=\"text-align:center\">Total</th></tr></thead><tbody>${agentRows(agentRanking,'pdf')}</tbody></table></div></div><div><div class=\"sec\"><h2 style=\"border-color:#4b5563\">Por Departamento</h2><table><thead><tr style=\"background:#4b5563\"><th>Depto</th><th style=\"text-align:center\">Ag.Cli</th><th style=\"text-align:center\">S/Resp</th><th style=\"text-align:center\">Aging</th><th style=\"text-align:center\">Total</th></tr></thead><tbody>${consolRows(deptEntries,'pdf')}</tbody></table></div></div></div><div class=\"pb\"></div><div class=\"sec\"><h2 style=\"border-color:#92400e;color:#92400e\">Chamados em Tratamento > 10 dias (${aging10Days.length} chamados)</h2><table><thead><tr style=\"background:#92400e\"><th>Nº</th><th>Título</th><th>Responsável</th><th>Prédio</th><th style=\"text-align:center\">Idade</th></tr></thead><tbody>${pDetail(aging10Days,'aging')}</tbody></table></div><div class=\"pb\"></div><div class=\"sec\"><h2 style=\"border-color:#dc2626;color:#dc2626\">Sem Resposta do Agente (${abandonedByAgent.length} chamados)</h2><table><thead><tr style=\"background:#dc2626\"><th>Nº</th><th>Título</th><th>Responsável</th><th style=\"text-align:center\">Parado</th><th>Situação</th></tr></thead><tbody>${pDetail(abandonedByAgent,'agent')}</tbody></table></div><div class=\"pb\"></div><div class=\"sec\"><h2 style=\"border-color:#0369a1;color:#0369a1\">Aguardando Resposta do Cliente (${abandonedByClient.length} chamados)</h2><table><thead><tr style=\"background:#0369a1\"><th>Nº</th><th>Título</th><th>Responsável</th><th>Cliente</th><th style=\"text-align:center\">Parado</th></tr></thead><tbody>${pDetail(abandonedByClient,'client')}</tbody></table></div><div class=\"ft\">NetworkGo — Scanner Chamados | Analisados: ${total_active_tickets} | Alertas: ${total_alertas} | ${dataGeracao}</div></body></html>`;\n\nreturn [{\n  json: {\n    assunto: `[Scanner Chamados] Resumo Diário - Facilities - ${dataSubject}`,\n    corpo_html_email: emailHtml,\n    corpo_html_pdf: pdfHtml,\n    pdfFileName: `Scanner_${dataFile}.pdf`\n  }\n}];"
+        },
+        "id": "58305931-6a91-4025-9cf1-a8acd4b949a4",
+        "name": "Agregar e Montar HTML",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          272,
+          320
+        ],
+        "notes": "Email: resumo (consolidações + nota sobre PDF). PDF: auditoria completa (todos os chamados)."
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.pdfshift.io/v3/convert/pdf",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBasicAuth",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "source",
+                "value": "={{ $json.corpo_html_pdf }}"
+              },
+              {
+                "name": "landscape",
+                "value": "true"
+              },
+              {
+                "name": "format",
+                "value": "A4"
+              },
+              {
+                "name": "margin",
+                "value": "8mm"
+              },
+              {
+                "name": "filename",
+                "value": "={{ $json.pdfFileName }}"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "id": "a133d85c-2d8e-4430-bb1c-f8035dbb7d64",
+        "name": "Converter HTML em PDF",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          512,
+          320
+        ],
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "LvI8zSMTiYxMeU9Z",
+            "name": "PDFShift API"
+          }
+        },
+        "notes": "PDFShift: A4 paisagem, todos os dados, nome Scanner_DD-MM-YYYY.pdf"
+      },
+      {
+        "parameters": {
+          "fromEmail": "noreply@gowork.com.br",
+          "toEmail": "bpm@gowork.com.br",
+          "subject": "={{ $('Agregar e Montar HTML').first().json.assunto }}",
+          "html": "={{ $('Agregar e Montar HTML').first().json.corpo_html_email }}",
+          "options": {
+            "appendAttribution": false,
+            "attachments": "data",
+            "replyTo": "suporte@networkgo.com.br"
+          }
+        },
+        "id": "2cf7f070-718f-462d-b750-50363ec3f228",
+        "name": "Enviar Relatório",
+        "type": "n8n-nodes-base.emailSend",
+        "typeVersion": 2.1,
+        "position": [
+          768,
+          320
+        ],
+        "webhookId": "sc-email-consolidated",
+        "credentials": {
+          "smtp": {
+            "id": "JiYty6LDKRxqiVCI",
+            "name": "AWS-SES-GoWork"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Agendamento 07h": {
+        "main": [
+          [
+            {
+              "node": "Buscar Dados Enriquecidos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Dados Enriquecidos": {
+        "main": [
+          [
+            {
+              "node": "Classificar Tickets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Classificar Tickets": {
+        "main": [
+          [
+            {
+              "node": "Agregar e Montar HTML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agregar e Montar HTML": {
+        "main": [
+          [
+            {
+              "node": "Converter HTML em PDF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Converter HTML em PDF": {
+        "main": [
+          [
+            {
+              "node": "Enviar Relatório",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "17be6445c9e23b9dd57a36ffe09f3fd049fe8d0da2b35a2a0af6dcad08595fbd"
+    }
+  }

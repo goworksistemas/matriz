@@ -16,6 +16,7 @@ export function NotionPage() {
 
   const {
     tarefas,
+    comentarios,
     statusUnicos,
     prioridadesUnicas,
     departamentosUnicos,
@@ -41,15 +42,17 @@ export function NotionPage() {
     kpis,
     dadosGraficoStatus,
     dadosGraficoPrioridade,
-    dadosGraficoPrazo,
     dadosGraficoExecutores,
+    dadosGraficoDepartamento,
     dadosGraficoDepartamentosCriticos,
     topTarefasCriticas,
     insights,
     serieDemandaCapacidade,
-    topSolicitantes,
     gargalosCriticos,
-  } = useNotionFilters(tarefas);
+    performancePorAgente,
+    interacoesPorUsuario,
+    insightsComentarios,
+  } = useNotionFilters(tarefas, comentarios);
 
   const handleExportExcel = useCallback(async () => {
     const dadosExport = tarefasFiltradas.map(t => ({
@@ -59,17 +62,20 @@ export function NotionPage() {
       'Executor': t.executor,
       'Solicitante': t.solicitante,
       'Departamento': t.departamento,
+      'Tags': t.tags.join(', '),
       'Data Inicio': t.dataInicio || '',
       'Data Fim': t.dataFim || '',
       'Dias Atraso': t.diasAtraso > 0 ? t.diasAtraso : '',
       'Status Prazo': t.statusPrazo,
+      'Editado Por': t.editadoPor,
+      'Links': t.links,
     }));
 
     await exportToExcel({
       data: dadosExport,
       sheetName: 'Tarefas Notion',
       fileName: `tarefas_notion_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`,
-      columnWidths: [40, 20, 15, 25, 25, 20, 12, 12, 12, 15],
+      columnWidths: [40, 20, 15, 25, 25, 20, 15, 12, 12, 12, 15, 25, 30],
     });
     log('export_excel', 'report', 'notion', { records: tarefasFiltradas.length });
   }, [tarefasFiltradas, log]);
@@ -113,10 +119,27 @@ export function NotionPage() {
                 Atualizado: {dataAtualizacaoFormatada}
               </span>
             )}
-            <div className="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-500/10 ring-1 ring-primary-200 dark:ring-primary-500/20">
-              <span className="text-[11px] font-medium text-primary-600 dark:text-primary-400">
-                {tarefasFiltradas.length} tarefas
-              </span>
+            <div className="hidden lg:flex items-center gap-2">
+              {filtros.filtroCard && (
+                <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[11px] font-medium">
+                  Filtrando: {{
+                    ativas: 'Ativas',
+                    vencidas: 'Atrasadas',
+                    vence_hoje: 'Vencem Hoje',
+                    conclusao: 'Concluídas',
+                    concluidas: 'Concluídas',
+                    canceladas: 'Canceladas',
+                    stand_by: 'Pausadas',
+                    sem_prazo: 'Sem Prazo',
+                    sem_dono: 'Sem Responsável',
+                  }[filtros.filtroCard]}
+                </span>
+              )}
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-500/10 ring-1 ring-primary-200 dark:ring-primary-500/20">
+                <span className="text-[11px] font-medium text-primary-600 dark:text-primary-400">
+                  {tarefasFiltradas.length} tarefas
+                </span>
+              </div>
             </div>
           </div>
 
@@ -212,13 +235,15 @@ export function NotionPage() {
             onFiltroChange={updateFiltro}
             dadosGraficoStatus={dadosGraficoStatus}
             dadosGraficoPrioridade={dadosGraficoPrioridade}
-            dadosGraficoPrazo={dadosGraficoPrazo}
             dadosGraficoExecutores={dadosGraficoExecutores}
+            dadosGraficoDepartamento={dadosGraficoDepartamento}
             dadosGraficoDepartamentosCriticos={dadosGraficoDepartamentosCriticos}
             topTarefasCriticas={topTarefasCriticas}
             serieDemandaCapacidade={serieDemandaCapacidade}
-            topSolicitantes={topSolicitantes}
             gargalosCriticos={gargalosCriticos}
+            performancePorAgente={performancePorAgente}
+            interacoesPorUsuario={interacoesPorUsuario}
+            insightsComentarios={insightsComentarios}
           />
           <ListagemTarefas tarefas={tarefasFiltradas} />
         </div>
