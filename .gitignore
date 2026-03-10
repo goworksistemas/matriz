@@ -63,6 +63,7 @@ ENV/
 .jupyter/
 
 # Temporários
+temp/
 *.tmp
 *.temp
 *.bak

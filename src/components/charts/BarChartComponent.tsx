@@ -114,7 +114,6 @@ export function BarChartComponent({
             fill="var(--chart-axis)"
             fontSize={13}
             fontWeight={600}
-            hide={false}
           />
           {colorByIndex &&
             data.map((item, index) => {
