@@ -69,18 +69,20 @@ export function SelectItem({ value, children, className }: SelectItemProps) {
     <SelectPrimitive.Item
       value={internalValue}
       className={cn(
-        'relative flex cursor-pointer select-none items-center gap-2',
-        'rounded-md px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none',
+        'relative flex cursor-pointer select-none items-center',
+        'rounded-md pl-8 pr-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none',
         'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100',
         'focus:bg-gray-100 dark:focus:bg-gray-700',
         'data-[state=checked]:bg-primary-50 dark:data-[state=checked]:bg-primary-500/20 data-[state=checked]:text-primary-600 dark:data-[state=checked]:text-primary-300',
         className
       )}
     >
-      <SelectPrimitive.ItemIndicator className="absolute left-1">
-        <Check className="h-3.5 w-3.5" />
-      </SelectPrimitive.ItemIndicator>
-      <SelectPrimitive.ItemText className="pl-5">{children}</SelectPrimitive.ItemText>
+      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+        <SelectPrimitive.ItemIndicator>
+          <Check className="h-3.5 w-3.5" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
     </SelectPrimitive.Item>
   );
 }

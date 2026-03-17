@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, type ImgHTMLAttributes } from 'react';
 import {
   Trophy,
   Medal,
@@ -25,11 +25,47 @@ import {
   LabelList,
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { formatNumber } from '@/lib/utils';
+import { cn, formatNumber } from '@/lib/utils';
 import type { VendedorCompeticao } from '@/types';
 
 interface DashboardCompeticaoProps {
   rankingCompeticao: VendedorCompeticao[];
+}
+
+function getAvatarUrl(name: string, size = 128, bg = '0ea5e9'): string {
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name.trim() || '?')}&size=${size}&background=${bg}&color=fff&bold=true&format=svg`;
+}
+
+const PODIUM_AVATAR_COLORS: Record<number, string> = {
+  1: 'f59e0b',
+  2: '9ca3af',
+  3: 'f97316',
+};
+
+function OwnerAvatar({ name, size = 32, className, rank, ...rest }: { name: string; size?: number; rank?: number; className?: string } & Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'className'>) {
+  const [errored, setErrored] = useState(false);
+  const bg = rank ? (PODIUM_AVATAR_COLORS[rank] || '0ea5e9') : '0ea5e9';
+  const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
+  if (errored) {
+    return (
+      <div className={cn('rounded-full flex items-center justify-center text-white font-bold', className)} style={{ width: size, height: size, backgroundColor: `#${bg}`, fontSize: size * 0.35 }}>
+        {initials}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={getAvatarUrl(name, size * 2, bg)}
+      alt={name}
+      className={cn('rounded-full object-cover', className)}
+      style={{ width: size, height: size }}
+      onError={() => setErrored(true)}
+      loading="lazy"
+      {...rest}
+    />
+  );
 }
 
 function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
@@ -48,25 +84,25 @@ function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
 
   const podiumConfig = [
     {
-      gradient: 'from-amber-400 to-amber-600',
       bg: 'bg-gradient-to-b from-amber-50 to-amber-100 dark:from-amber-500/10 dark:to-amber-600/5',
       border: 'border-amber-200 dark:border-amber-500/30',
-      icon: '1',
+      ring: 'ring-amber-400',
       height: 'h-28',
+      rank: 1,
     },
     {
-      gradient: 'from-gray-300 to-gray-500',
       bg: 'bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-500/10 dark:to-gray-600/5',
       border: 'border-gray-200 dark:border-gray-500/30',
-      icon: '2',
+      ring: 'ring-gray-400',
       height: 'h-20',
+      rank: 2,
     },
     {
-      gradient: 'from-orange-400 to-orange-600',
       bg: 'bg-gradient-to-b from-orange-50 to-orange-100 dark:from-orange-500/10 dark:to-orange-600/5',
       border: 'border-orange-200 dark:border-orange-500/30',
-      icon: '3',
+      ring: 'ring-orange-400',
       height: 'h-16',
+      rank: 3,
     },
   ];
 
@@ -80,8 +116,19 @@ function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
     <div className="flex items-end justify-center gap-4 py-6">
       {displayOrder.map(({ data: v, config }) => (
         <div key={v.ownerId} className="flex flex-col items-center">
-          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${config.gradient} flex items-center justify-center mb-2`}>
-            <span className="text-xs font-bold text-white">{config.icon}</span>
+          <div className="relative mb-2">
+            <OwnerAvatar
+              name={v.ownerNome}
+              size={config.rank === 1 ? 56 : 44}
+              rank={config.rank}
+              className={`ring-2 ${config.ring} ring-offset-2 ring-offset-white dark:ring-offset-gray-900`}
+            />
+            <span className={cn(
+              'absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-md',
+              config.rank === 1 ? 'bg-amber-500' : config.rank === 2 ? 'bg-gray-400' : 'bg-orange-500',
+            )}>
+              {config.rank}
+            </span>
           </div>
 
           <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 text-center max-w-[120px] truncate">
@@ -243,8 +290,9 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
         <div className="rounded-xl border border-amber-200/60 dark:border-amber-500/20 bg-gradient-to-r from-amber-50 to-white dark:from-amber-500/10 dark:to-gray-900/40 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-500/20">
-                <Crown className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              <div className="relative">
+                <OwnerAvatar name={kpis.melhorVendedor.ownerNome} size={44} rank={1} className="ring-2 ring-amber-400 ring-offset-2 ring-offset-white dark:ring-offset-gray-900" />
+                <Crown className="absolute -top-2 -right-2 h-4 w-4 text-amber-500 drop-shadow" />
               </div>
               <div>
                 <p className="text-xs uppercase tracking-wide text-amber-700 dark:text-amber-300">Lider do Periodo</p>
@@ -370,7 +418,10 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
                         </td>
 
                         <td className="py-3 px-3">
-                          <span className="font-medium text-gray-800 dark:text-gray-200">{v.ownerNome}</span>
+                          <div className="flex items-center gap-2.5">
+                            <OwnerAvatar name={v.ownerNome} size={28} className="flex-shrink-0" />
+                            <span className="font-medium text-gray-800 dark:text-gray-200">{v.ownerNome}</span>
+                          </div>
                         </td>
 
                         <td className="py-3 px-3">
