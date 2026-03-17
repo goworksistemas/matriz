@@ -638,8 +638,8 @@ function MetaLogsPanel({ logs, loading }: { logs: MetaLogEntry[]; loading: boole
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={cn('text-xs font-medium', config.color)}>{config.label}</span>
-                      {ano && <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-white/[0.06] px-1.5 py-0.5 rounded">{String(ano)}</span>}
-                      {tipo && <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-white/[0.06] px-1.5 py-0.5 rounded capitalize">{tipo}</span>}
+                      {ano != null && <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-white/[0.06] px-1.5 py-0.5 rounded">{String(ano)}</span>}
+                      {tipo != null && <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-white/[0.06] px-1.5 py-0.5 rounded capitalize">{String(tipo)}</span>}
                       {totalMesesAlterados > 0 && (
                         <span className="text-[10px] text-gray-400">
                           {totalMesesAlterados === 12
@@ -671,16 +671,16 @@ function MetaLogsPanel({ logs, loading }: { logs: MetaLogEntry[]; loading: boole
                 {isOpen && details && (
                   <div className="ml-8 mb-2.5 p-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.04] text-[10px] space-y-2">
                     {/* Alterações nas metas anuais */}
-                    {(details.metaAnualReceita || details.metaAnualSeats || details.metaAnualDeals) && (
+                    {(details.metaAnualReceita != null || details.metaAnualSeats != null || details.metaAnualDeals != null) && (
                       <div className="space-y-1">
                         <span className="font-semibold text-gray-500">Metas anuais alteradas:</span>
-                        {details.metaAnualReceita && (
+                        {details.metaAnualReceita != null && (
                           <LogDiffRow label="Receita" diff={details.metaAnualReceita as { de: number; para: number }} format="currency" />
                         )}
-                        {details.metaAnualSeats && (
+                        {details.metaAnualSeats != null && (
                           <LogDiffRow label="Seats" diff={details.metaAnualSeats as { de: number; para: number }} format="number" />
                         )}
-                        {details.metaAnualDeals && (
+                        {details.metaAnualDeals != null && (
                           <LogDiffRow label="Deals" diff={details.metaAnualDeals as { de: number; para: number }} format="number" />
                         )}
                       </div>
@@ -689,7 +689,7 @@ function MetaLogsPanel({ logs, loading }: { logs: MetaLogEntry[]; loading: boole
                     {/* Alterações nas metas mensais */}
                     {totalMesesAlterados > 0 && (
                       <div className="space-y-1">
-                        {(details.metaAnualReceita || details.metaAnualSeats || details.metaAnualDeals) && (
+                        {(details.metaAnualReceita != null || details.metaAnualSeats != null || details.metaAnualDeals != null) && (
                           <div className="border-t border-gray-100 dark:border-white/[0.04] pt-1.5" />
                         )}
                         <span className="font-semibold text-gray-500">Metas mensais alteradas:</span>
@@ -764,9 +764,9 @@ function MetaLogsPanel({ logs, loading }: { logs: MetaLogEntry[]; loading: boole
                     )}
 
                     {/* Fallback para log de fill */}
-                    {details.metaAnual && !resumo && (
+                    {details.metaAnual != null && !resumo && (
                       <div className="text-gray-500">
-                        Meta anual: {formatNumber(details.metaAnual as number)} → Mensal: {formatNumber(details.valorMensal as number)}
+                        Meta anual: {formatNumber(Number(details.metaAnual) || 0)} → Mensal: {formatNumber(Number(details.valorMensal) || 0)}
                       </div>
                     )}
                   </div>
