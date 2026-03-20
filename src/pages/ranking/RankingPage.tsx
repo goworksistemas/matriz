@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { Target, Trophy, Loader2, AlertCircle, RefreshCw, Download, Clock, CheckCircle, XCircle, Gauge, Settings2, RotateCcw } from 'lucide-react';
+import { Target, Trophy, Loader2, AlertCircle, RefreshCw, Download, Clock, CheckCircle, XCircle, Gauge, Settings2, RotateCcw, Laptop } from 'lucide-react';
 import { format } from 'date-fns';
 import { exportToExcel } from '@/lib/exportExcel';
 import { ptBR } from 'date-fns/locale';
@@ -7,7 +7,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
 import { Select, SelectItem } from '@/components/ui/Select';
 import { DashboardMetaGlobal } from './pages/DashboardMetaGlobal';
-import { DashboardCompeticao } from './pages/DashboardCompeticao';
+import { DashboardCompeticaoVarejo } from './pages/DashboardCompeticaoVarejo';
+import { DashboardCompeticaoMacbook } from './pages/DashboardCompeticaoMacbook';
 import { DashboardVelocimetro } from './pages/DashboardVelocimetro';
 import { PainelMetas } from './pages/PainelMetas';
 import { useRankingData } from './hooks/useRankingData';
@@ -73,6 +74,7 @@ export function RankingPage() {
     deals,
     lineItems,
     metas,
+    proprietarios,
     ultimaAtualizacao,
     isLoading,
     error,
@@ -128,7 +130,8 @@ export function RankingPage() {
     dadosGraficoMensalRevenue,
     dadosGraficoMensalSeats,
     dadosGraficoMensalDeals,
-    rankingCompeticao,
+    rankingVarejo,
+    rankingMacbook,
   } = useRankingFilters(deals, lineItems, metas);
 
   const hasActiveFilters = useMemo(() => {
@@ -156,29 +159,33 @@ export function RankingPage() {
   }, [dealsGanhosAno, log]);
 
   const handleExportExcelCompeticao = useCallback(async () => {
-    const dadosExport = rankingCompeticao.map(v => ({
+    const isVarejo = activeTab === 'competicao-varejo';
+    const dados = isVarejo ? rankingVarejo : rankingMacbook;
+    const nome = isVarejo ? 'Varejo' : 'Macbook';
+
+    const dadosExport = dados.map(v => ({
       'Posicao': v.ranking,
       'Vendedor': v.ownerNome,
       'Seats (c/ cap)': v.seatsCapped,
       'Seats (bruto)': v.seatsRaw,
-      'Deals': v.dealsCount,
+      'Contratos': v.dealsCount,
       'Meta Minima': v.metaMinima,
       'Status': v.status,
     }));
 
     await exportToExcel({
       data: dadosExport,
-      sheetName: 'Competicao',
-      fileName: `competicao_${filtrosGlobal.ano}_${filtrosGlobal.mes}_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`,
-      columnWidths: [8, 25, 15, 15, 8, 12, 30],
+      sheetName: `Competicao ${nome}`,
+      fileName: `competicao_${nome.toLowerCase()}_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`,
+      columnWidths: [8, 25, 15, 15, 12, 12, 30],
     });
-    log('export_excel', 'report', 'ranking', { tab: 'competicao', ano: filtrosGlobal.ano, mes: filtrosGlobal.mes, records: rankingCompeticao.length });
-  }, [rankingCompeticao, filtrosGlobal, log]);
+    log('export_excel', 'report', 'ranking', { tab: activeTab, records: dados.length });
+  }, [activeTab, rankingMacbook, rankingVarejo, log]);
 
   const handleExportExcel = useCallback(async () => {
     if (activeTab === 'meta-global') {
       await handleExportExcelMeta();
-    } else if (activeTab === 'competicao') {
+    } else if (activeTab === 'competicao-varejo' || activeTab === 'competicao-macbook') {
       await handleExportExcelCompeticao();
     }
   }, [activeTab, handleExportExcelMeta, handleExportExcelCompeticao]);
@@ -244,36 +251,40 @@ export function RankingPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Select
-              value={String(filtrosGlobal.ano)}
-              onValueChange={(v) => updateFiltroGlobal('ano', Number(v))}
-              placeholder="Ano"
-            >
-              {anosDisponiveis.map((a) => (
-                <SelectItem key={a} value={String(a)}>{a}</SelectItem>
-              ))}
-            </Select>
+            {activeTab !== 'competicao-varejo' && activeTab !== 'competicao-macbook' && (
+              <>
+                <Select
+                  value={String(filtrosGlobal.ano)}
+                  onValueChange={(v) => updateFiltroGlobal('ano', Number(v))}
+                  placeholder="Ano"
+                >
+                  {anosDisponiveis.map((a) => (
+                    <SelectItem key={a} value={String(a)}>{a}</SelectItem>
+                  ))}
+                </Select>
 
-            <Select
-              value={String(filtrosGlobal.mes)}
-              onValueChange={(v) => updateFiltroGlobal('mes', Number(v))}
-              placeholder="Mês"
-            >
-              <SelectItem value="0">Todos</SelectItem>
-              {MESES_CURTO.map((m, i) => (
-                <SelectItem key={i + 1} value={String(i + 1)}>{m}</SelectItem>
-              ))}
-            </Select>
+                <Select
+                  value={String(filtrosGlobal.mes)}
+                  onValueChange={(v) => updateFiltroGlobal('mes', Number(v))}
+                  placeholder="Mês"
+                >
+                  <SelectItem value="0">Todos</SelectItem>
+                  {MESES_CURTO.map((m, i) => (
+                    <SelectItem key={i + 1} value={String(i + 1)}>{m}</SelectItem>
+                  ))}
+                </Select>
 
-            {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={resetFiltrosGlobal}>
-                <RotateCcw className="h-3.5 w-3.5" />
-              </Button>
+                {hasActiveFilters && (
+                  <Button variant="ghost" size="sm" onClick={resetFiltrosGlobal}>
+                    <RotateCcw className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+
+                <div className="w-px h-5 bg-gray-200 dark:bg-white/[0.08]" />
+              </>
             )}
 
-            <div className="w-px h-5 bg-gray-200 dark:bg-white/[0.08]" />
-
-            {(activeTab === 'meta-global' || activeTab === 'competicao') && (
+            {(activeTab === 'meta-global' || activeTab === 'competicao-varejo' || activeTab === 'competicao-macbook') && (
               <Button
                 onClick={handleExportExcel}
                 variant="secondary"
@@ -313,9 +324,13 @@ export function RankingPage() {
               <Target className="h-4 w-4 mr-2" />
               Cultura e Meta Global
             </TabsTrigger>
-            <TabsTrigger value="competicao">
+            <TabsTrigger value="competicao-varejo">
               <Trophy className="h-4 w-4 mr-2" />
-              Competição Comercial
+              Competição Varejo
+            </TabsTrigger>
+            <TabsTrigger value="competicao-macbook">
+              <Laptop className="h-4 w-4 mr-2" />
+              Competição Macbook
             </TabsTrigger>
             <TabsTrigger value="velocimetro">
               <Gauge className="h-4 w-4 mr-2" />
@@ -337,9 +352,17 @@ export function RankingPage() {
             />
           </TabsContent>
 
-          <TabsContent value="competicao">
-            <DashboardCompeticao
-              rankingCompeticao={rankingCompeticao}
+          <TabsContent value="competicao-varejo">
+            <DashboardCompeticaoVarejo
+              rankingVarejo={rankingVarejo}
+              proprietarios={proprietarios}
+            />
+          </TabsContent>
+
+          <TabsContent value="competicao-macbook">
+            <DashboardCompeticaoMacbook
+              rankingMacbook={rankingMacbook}
+              proprietarios={proprietarios}
             />
           </TabsContent>
 

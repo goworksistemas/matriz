@@ -227,6 +227,155 @@ export function useRankingFilters(
   }, [lineItemsFiltrados]);
 
   // ============================================
+  // COMPETIÇÃO VAREJO - Ranking por deals de sala privativa
+  // Período fixo, sem dependência dos filtros globais
+  // ============================================
+
+  const VAREJO_INICIO = '2026-03-17';
+  const VAREJO_FIM = '2026-05-18';
+  const VAREJO_MAX_SEATS = 20;
+  const VAREJO_META_MINIMA = 60;
+
+  const rankingVarejo = useMemo<VendedorCompeticao[]>(() => {
+    const porVendedor = new Map<string, {
+      ownerNome: string;
+      seats: number;
+      dealsSet: Set<string>;
+    }>();
+
+    lineItems.forEach(li => {
+      if (!li.ownerId) return;
+      if (!li.closeDate) return;
+
+      const closeDate = li.closeDate.substring(0, 10);
+      if (closeDate < VAREJO_INICIO || closeDate > VAREJO_FIM) return;
+
+      const nomeLower = li.name.toLowerCase().trim();
+      if (!nomeLower.startsWith('sala privativ')) return;
+
+      if (li.quantity > VAREJO_MAX_SEATS) return;
+
+      const existing = porVendedor.get(li.ownerId) || {
+        ownerNome: li.ownerNome,
+        seats: 0,
+        dealsSet: new Set<string>(),
+      };
+
+      existing.seats += li.quantity;
+      existing.dealsSet.add(li.dealHubspotId);
+
+      porVendedor.set(li.ownerId, existing);
+    });
+
+    const vendedores: VendedorCompeticao[] = Array.from(porVendedor.entries())
+      .map(([ownerId, data]) => {
+        const seats = Math.round(data.seats * 100) / 100;
+        const faltam = VAREJO_META_MINIMA - seats;
+        return {
+          ownerId,
+          ownerNome: data.ownerNome,
+          seatsCapped: seats,
+          seatsRaw: seats,
+          dealsCount: data.dealsSet.size,
+          ranking: 0,
+          metaMinima: VAREJO_META_MINIMA,
+          status: faltam <= 0
+            ? 'Dentro da Competição'
+            : `Faltam ${Math.ceil(faltam)} seats`,
+        };
+      })
+      .sort((a, b) => b.dealsCount - a.dealsCount || b.seatsCapped - a.seatsCapped);
+
+    vendedores.forEach((v, i) => {
+      v.ranking = i + 1;
+    });
+
+    return vendedores;
+  }, [lineItems]);
+
+  // ============================================
+  // COMPETIÇÃO MACBOOK - Ranking por seats (todos os produtos da competição)
+  // Período fixo, sem dependência dos filtros globais
+  // ============================================
+
+  const MACBOOK_INICIO = '2026-03-17';
+  const MACBOOK_FIM = '2026-12-15';
+  const MACBOOK_CAP_SEATS = 20;
+  const MACBOOK_META_MINIMA = 250;
+
+  const MACBOOK_PRODUTOS = [
+    'btg',
+    'homeflex',
+    'home flex',
+    'homefrex',
+    'hotdesk',
+    'open space',
+    'openspace',
+    'open_space',
+    'sala privativ',
+  ];
+
+  const rankingMacbook = useMemo<VendedorCompeticao[]>(() => {
+    const porVendedor = new Map<string, {
+      ownerNome: string;
+      seatsCapped: number;
+      seatsRaw: number;
+      dealsSet: Set<string>;
+    }>();
+
+    lineItems.forEach(li => {
+      if (!li.ownerId) return;
+      if (!li.closeDate) return;
+
+      const closeDate = li.closeDate.substring(0, 10);
+      if (closeDate < MACBOOK_INICIO || closeDate > MACBOOK_FIM) return;
+
+      const nomeLower = li.name.toLowerCase().trim();
+      if (!MACBOOK_PRODUTOS.some(p => nomeLower.startsWith(p))) return;
+
+      const capped = Math.min(li.quantity, MACBOOK_CAP_SEATS);
+
+      const existing = porVendedor.get(li.ownerId) || {
+        ownerNome: li.ownerNome,
+        seatsCapped: 0,
+        seatsRaw: 0,
+        dealsSet: new Set<string>(),
+      };
+
+      existing.seatsCapped += capped;
+      existing.seatsRaw += li.quantity;
+      existing.dealsSet.add(li.dealHubspotId);
+
+      porVendedor.set(li.ownerId, existing);
+    });
+
+    const vendedores: VendedorCompeticao[] = Array.from(porVendedor.entries())
+      .map(([ownerId, data]) => {
+        const seatsCapped = Math.round(data.seatsCapped * 100) / 100;
+        const faltam = MACBOOK_META_MINIMA - seatsCapped;
+        return {
+          ownerId,
+          ownerNome: data.ownerNome,
+          seatsCapped,
+          seatsRaw: Math.round(data.seatsRaw * 100) / 100,
+          dealsCount: data.dealsSet.size,
+          ranking: 0,
+          metaMinima: MACBOOK_META_MINIMA,
+          status: faltam <= 0
+            ? 'Dentro da Competição'
+            : `Faltam ${Math.ceil(faltam)} seats`,
+        };
+      })
+      .sort((a, b) => b.seatsCapped - a.seatsCapped || b.dealsCount - a.dealsCount);
+
+    vendedores.forEach((v, i) => {
+      v.ranking = i + 1;
+    });
+
+    return vendedores;
+  }, [lineItems]);
+
+  // ============================================
   // ANOS DISPONÍVEIS
   // ============================================
 
@@ -264,5 +413,7 @@ export function useRankingFilters(
     dadosGraficoMensalSeats,
     dadosGraficoMensalDeals,
     rankingCompeticao,
+    rankingVarejo,
+    rankingMacbook,
   };
 }
