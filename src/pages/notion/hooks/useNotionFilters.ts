@@ -22,6 +22,8 @@ export interface FiltrosNotion {
   filtroCard: FiltroCard;
   granularidade: GranularidadeTempo;
   periodoSelecionado: string | null;
+  dataInicial: string | null;
+  dataFinal: string | null;
 }
 
 const FILTROS_INICIAL: FiltrosNotion = {
@@ -33,6 +35,8 @@ const FILTROS_INICIAL: FiltrosNotion = {
   filtroCard: null,
   granularidade: 'mes',
   periodoSelecionado: null,
+  dataInicial: null,
+  dataFinal: null,
 };
 
 export interface KPIsNotion {
@@ -47,14 +51,6 @@ export interface KPIsNotion {
   emStandBy: number;
   tarefasFechadas: number;
   percentConcluidas: number;
-}
-
-export interface ResumoExecutor {
-  nome: string;
-  total: number;
-  vencidas: number;
-  noPrazo: number;
-  hoje: number;
 }
 
 export interface InsightNotion {
@@ -76,12 +72,11 @@ export interface InsightNotion {
 
 export interface PerformanceAgente {
   nome: string;
+  total: number;
   tempoMedioDias: number;
   concluidas: number;
   ativas: number;
   totalComentarios: number;
-  percentInteracoes: number;
-  taxaNoPrazo: number;
 }
 
 export interface InteracaoUsuario {
@@ -169,12 +164,16 @@ function isStandBy(status: string): boolean {
   return status.toLowerCase().includes('stand');
 }
 
+function isSolicitacao(status: string): boolean {
+  return status.toLowerCase().includes('solicit');
+}
+
 function isStatusGlobal(status: string): boolean {
   return isConcluida(status) || isCancelada(status) || isStandBy(status);
 }
 
 function isOperacionalAtiva(status: string): boolean {
-  return !isStatusGlobal(status);
+  return !isStatusGlobal(status) && !isSolicitacao(status);
 }
 
 function normalizarStatus(status: string): string {
@@ -183,7 +182,7 @@ function normalizarStatus(status: string): string {
   if (s.includes('cancel')) return 'Cancelado';
   if (s.includes('stand')) return 'Stand by';
   if (s.includes('solicit')) return 'Solicitacao';
-  if (s.includes('andamento') || s.includes('andamento')) return 'Em andamento';
+  if (s.includes('andamento') || s.includes('progresso')) return 'Em andamento';
   if (s.includes('agend')) return 'Agendado';
   if (s.includes('aprov')) return 'Aprovado';
   if (s.includes('implant')) return 'Implantacao';
@@ -192,11 +191,19 @@ function normalizarStatus(status: string): string {
   return status;
 }
 
+function removerAcentos(str: string): string {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function nomeBase(nome: string): string {
+  return nome.split('|')[0].trim();
+}
+
 function normalizarPrioridade(prioridade: string): string {
-  const p = prioridade.trim().toLowerCase();
+  const p = removerAcentos(prioridade.trim().toLowerCase());
   if (p.includes('urg')) return 'Urgente';
   if (p.includes('import')) return 'Importante';
-  if (p.includes('media') || p === 'medio' || p === 'med') return 'Media';
+  if (p.includes('media') || p === 'medio' || p === 'med') return 'Média';
   if (p.includes('baix')) return 'Baixa';
   return 'Sem prioridade';
 }
@@ -215,10 +222,23 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
         if (!filtros.prioridade.includes(t.prioridade) && !filtros.prioridade.includes(prioridadeNorm)) return false;
       }
       if (filtros.departamento.length > 0 && !filtros.departamento.includes(t.departamento)) return false;
-      if (filtros.executor.length > 0 && !t.executores.some(e => filtros.executor.includes(e))) return false;
+      if (filtros.executor.length > 0) {
+        const match = t.executores.some(e =>
+          filtros.executor.includes(e) || filtros.executor.some(f => nomeBase(e) === f)
+        );
+        if (!match) return false;
+      }
       if (filtros.busca.trim()) {
         const termo = filtros.busca.toLowerCase();
         if (!t.titulo.toLowerCase().includes(termo)) return false;
+      }
+      if (filtros.dataInicial) {
+        const ref = t.criadoEm ?? t.dataInicio;
+        if (!ref || ref < filtros.dataInicial) return false;
+      }
+      if (filtros.dataFinal) {
+        const ref = t.criadoEm ?? t.dataInicio;
+        if (!ref || ref > filtros.dataFinal + 'T23:59:59') return false;
       }
       return true;
     });
@@ -252,7 +272,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
     if (filtros.periodoSelecionado) {
       resultado = resultado.filter(t => {
         const dataCriacao = parseDataEntrada(t.criadoEm ?? t.dataInicio);
-        const dataConclusao = isConcluida(t.status) ? parseDataEntrada(t.atualizadoEm ?? t.dataFim ?? t.criadoEm) : null;
+        const dataConclusao = isConcluida(t.status) ? parseDataEntrada(t.dataFim) : null;
         
         const chaveCriacao = dataCriacao ? chavePeriodo(dataCriacao, filtros.granularidade) : null;
         const chaveConclusao = dataConclusao ? chavePeriodo(dataConclusao, filtros.granularidade) : null;
@@ -269,7 +289,8 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
     const concluidas = tarefasFiltradas.filter(t => isConcluida(t.status)).length;
     const canceladas = tarefasFiltradas.filter(t => isCancelada(t.status)).length;
     const emStandBy = tarefasFiltradas.filter(t => isStandBy(t.status)).length;
-    const ativas = total - concluidas - canceladas - emStandBy;
+    const solicitacoes = tarefasFiltradas.filter(t => isSolicitacao(t.status)).length;
+    const ativas = total - concluidas - canceladas - emStandBy - solicitacoes;
     const tarefasFechadas = concluidas + canceladas;
     const vencidas = tarefasFiltradas.filter(t => t.statusPrazo === 'vencida' && isOperacionalAtiva(t.status)).length;
     const noPrazo = tarefasFiltradas.filter(t => t.statusPrazo === 'no_prazo' && isOperacionalAtiva(t.status)).length;
@@ -319,7 +340,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
     const ordem: Record<string, number> = {
       Urgente: 0,
       Importante: 1,
-      Media: 2,
+      'Média': 2,
       Baixa: 3,
       'Sem prioridade': 4,
     };
@@ -344,60 +365,80 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
       .sort((a, b) => b.value - a.value);
   }, [tarefasFiltradas]);
 
-  const dadosGraficoPrazo = useMemo(() => {
-    const ativas = tarefasFiltradas.filter(t => isOperacionalAtiva(t.status));
-    const mapa = new Map<string, number>([
-      ['Vencidas', 0],
-      ['Vence hoje', 0],
-      ['No prazo', 0],
-      ['Sem prazo', 0],
-    ]);
+  const nomeExibicao = useCallback((nome: string) => nomeBase(nome) || nome, []);
 
-    ativas.forEach(t => {
-      if (t.statusPrazo === 'vencida') mapa.set('Vencidas', (mapa.get('Vencidas') || 0) + 1);
-      else if (t.statusPrazo === 'hoje') mapa.set('Vence hoje', (mapa.get('Vence hoje') || 0) + 1);
-      else if (t.statusPrazo === 'no_prazo') mapa.set('No prazo', (mapa.get('No prazo') || 0) + 1);
-      else mapa.set('Sem prazo', (mapa.get('Sem prazo') || 0) + 1);
-    });
-
-    return Array.from(mapa.entries()).map(([name, value]) => ({ name, value }));
-  }, [tarefasFiltradas]);
-
-  const resumoPorExecutor = useMemo<ResumoExecutor[]>(() => {
-    const ativas = tarefasFiltradas.filter(t => isOperacionalAtiva(t.status));
-
-    const mapa = new Map<string, ResumoExecutor>();
+  const dadosGraficoExecutores = useMemo(() => {
+    const ativas = tarefasFiltradas.filter(t => isOperacionalAtiva(t.status) && t.executores.length > 0);
+    const mapa = new Map<string, number>();
 
     ativas.forEach(t => {
       t.executores.forEach(exec => {
-        const existing = mapa.get(exec) || { nome: exec, total: 0, vencidas: 0, noPrazo: 0, hoje: 0 };
-        existing.total++;
-        if (t.statusPrazo === 'vencida') existing.vencidas++;
-        else if (t.statusPrazo === 'hoje') existing.hoje++;
-        else if (t.statusPrazo === 'no_prazo') existing.noPrazo++;
-        else existing.noPrazo++;
-        mapa.set(exec, existing);
+        const nome = nomeExibicao(exec);
+        mapa.set(nome, (mapa.get(nome) || 0) + 1);
       });
-
-      if (t.executores.length === 0) {
-        const existing = mapa.get('Nao atribuido') || { nome: 'Nao atribuido', total: 0, vencidas: 0, noPrazo: 0, hoje: 0 };
-        existing.total++;
-        if (t.statusPrazo === 'vencida') existing.vencidas++;
-        else if (t.statusPrazo === 'hoje') existing.hoje++;
-        else existing.noPrazo++;
-        mapa.set('Nao atribuido', existing);
-      }
     });
 
-    return Array.from(mapa.values()).sort((a, b) => b.vencidas - a.vencidas || b.total - a.total);
-  }, [tarefasFiltradas]);
+    return Array.from(mapa.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10);
+  }, [tarefasFiltradas, nomeExibicao]);
 
-  const dadosGraficoExecutores = useMemo(() => {
-    return [...resumoPorExecutor]
-      .sort((a, b) => b.total - a.total || b.vencidas - a.vencidas)
-      .slice(0, 8)
-      .map(exec => ({ name: exec.nome, value: exec.total }));
-  }, [resumoPorExecutor]);
+  const serieConclucoesPorAgente = useMemo(() => {
+    const concluidas = tarefasFiltradas.filter(t => isConcluida(t.status) && t.dataFim && t.executores.length > 0);
+
+    const agentesSet = new Set<string>();
+    const mapa = new Map<string, Map<string, number>>();
+
+    concluidas.forEach(t => {
+      const data = parseDataEntrada(t.dataFim);
+      if (!data) return;
+      const chave = chavePeriodo(data, filtros.granularidade);
+
+      t.executores.forEach(exec => {
+        const nome = nomeExibicao(exec);
+        agentesSet.add(nome);
+        if (!mapa.has(chave)) mapa.set(chave, new Map());
+        const periodo = mapa.get(chave)!;
+        periodo.set(nome, (periodo.get(nome) || 0) + 1);
+      });
+    });
+
+    const totalPorAgente = new Map<string, number>();
+    for (const [, periodo] of mapa) {
+      for (const [agente, qtd] of periodo) {
+        totalPorAgente.set(agente, (totalPorAgente.get(agente) || 0) + qtd);
+      }
+    }
+    const topAgentes = Array.from(agentesSet)
+      .sort((a, b) => (totalPorAgente.get(b) || 0) - (totalPorAgente.get(a) || 0))
+      .slice(0, 5);
+
+    const ordenado = Array.from(mapa.entries()).sort(([a], [b]) => a.localeCompare(b)).slice(-12);
+
+    const serie = ordenado.map(([chave, periodo]) => {
+      const ponto: Record<string, string | number> = { label: labelPeriodo(chave, filtros.granularidade), chave };
+      let total = 0;
+      topAgentes.forEach(agente => {
+        const v = periodo.get(agente) || 0;
+        ponto[agente] = v;
+        total += v;
+      });
+      ponto._total = total;
+      return ponto;
+    });
+
+    const variacao = topAgentes.map(agente => {
+      const valores = ordenado.map(([, p]) => p.get(agente) || 0);
+      const ultimo = valores[valores.length - 1] ?? 0;
+      const penultimo = valores[valores.length - 2] ?? 0;
+      const totalAgente = totalPorAgente.get(agente) || 0;
+      const var_ = penultimo > 0 ? Math.round(((ultimo - penultimo) / penultimo) * 100) : (ultimo > 0 ? 100 : 0);
+      return { agente, total: totalAgente, ultimo, variacao: var_ };
+    });
+
+    return { serie, agentes: topAgentes, variacao };
+  }, [tarefasFiltradas, filtros.granularidade, nomeExibicao]);
 
   const dadosGraficoDepartamentosCriticos = useMemo(() => {
     const mapa = new Map<string, number>();
@@ -435,14 +476,14 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
       t.executores.length === 0 || t.executor.toLowerCase() === 'nao atribuido'
     ).length;
     const concluidasComData = tarefasFiltradas.filter((tarefa) => {
-      if (!isConcluida(tarefa.status) || !tarefa.criadoEm) return false;
+      if (!isConcluida(tarefa.status) || !tarefa.criadoEm || !tarefa.dataFim) return false;
       const dataCriacao = parseDataEntrada(tarefa.criadoEm);
-      const dataConclusao = parseDataEntrada(tarefa.dataFim ?? tarefa.dataInicio);
+      const dataConclusao = parseDataEntrada(tarefa.dataFim);
       return !!dataCriacao && !!dataConclusao;
     });
     const somaLeadTimeDias = concluidasComData.reduce((acc, tarefa) => {
       const dataCriacao = parseDataEntrada(tarefa.criadoEm);
-      const dataConclusao = parseDataEntrada(tarefa.dataFim ?? tarefa.dataInicio);
+      const dataConclusao = parseDataEntrada(tarefa.dataFim);
       if (!dataCriacao || !dataConclusao) return acc;
       const diffMs = dataConclusao.getTime() - dataCriacao.getTime();
       const diffDias = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
@@ -458,7 +499,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
     concluidasComData.forEach((tarefa) => {
       const prioridade = normalizarPrioridade(tarefa.prioridade);
       const dataCriacao = parseDataEntrada(tarefa.criadoEm);
-      const dataConclusao = parseDataEntrada(tarefa.dataFim ?? tarefa.dataInicio);
+      const dataConclusao = parseDataEntrada(tarefa.dataFim);
       if (!dataCriacao || !dataConclusao) return;
       const diffMs = dataConclusao.getTime() - dataCriacao.getTime();
       const diffDias = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
@@ -471,7 +512,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
     const ordemPrioridade: Record<string, number> = {
       Urgente: 0,
       Importante: 1,
-      Media: 2,
+      'Média': 2,
       Baixa: 3,
       'Sem prioridade': 4,
     };
@@ -524,10 +565,23 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
         if (!filtros.prioridade.includes(t.prioridade) && !filtros.prioridade.includes(prioridadeNorm)) return false;
       }
       if (filtros.departamento.length > 0 && !filtros.departamento.includes(t.departamento)) return false;
-      if (filtros.executor.length > 0 && !t.executores.some(e => filtros.executor.includes(e))) return false;
+      if (filtros.executor.length > 0) {
+        const match = t.executores.some(e =>
+          filtros.executor.includes(e) || filtros.executor.some(f => nomeBase(e) === f)
+        );
+        if (!match) return false;
+      }
       if (filtros.busca.trim()) {
         const termo = filtros.busca.toLowerCase();
         if (!t.titulo.toLowerCase().includes(termo)) return false;
+      }
+      if (filtros.dataInicial) {
+        const ref = t.criadoEm ?? t.dataInicio;
+        if (!ref || ref < filtros.dataInicial) return false;
+      }
+      if (filtros.dataFinal) {
+        const ref = t.criadoEm ?? t.dataInicio;
+        if (!ref || ref > filtros.dataFinal + 'T23:59:59') return false;
       }
       return true;
     });
@@ -542,7 +596,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
       }
 
       if (isConcluida(tarefa.status)) {
-        const dataConclusao = parseDataEntrada(tarefa.atualizadoEm ?? tarefa.dataFim ?? tarefa.criadoEm);
+        const dataConclusao = parseDataEntrada(tarefa.dataFim);
         if (dataConclusao) {
           const chave = chavePeriodo(dataConclusao, filtros.granularidade);
           const atual = mapa.get(chave) || { criadas: 0, concluidas: 0 };
@@ -572,23 +626,19 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
         variacaoConcluidas: anterior ? calcVariacao(values.concluidas, anterior.concluidas) : undefined,
       };
     }).slice(-15); // Mostramos os últimos 15 períodos para não poluir
-  }, [tarefas, filtros.status, filtros.prioridade, filtros.departamento, filtros.executor, filtros.busca, filtros.granularidade]);
+  }, [tarefas, filtros.status, filtros.prioridade, filtros.departamento, filtros.executor, filtros.busca, filtros.dataInicial, filtros.dataFinal, filtros.granularidade]);
 
-  const topSolicitantes = useMemo(() => {
-    const mapa = new Map<string, number>();
+  const anomaliasConcluidas = useMemo(() => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
 
-    tarefasFiltradas.forEach((tarefa) => {
-      const solicitante =
-        tarefa.solicitante?.trim() ||
-        tarefa.criadoPor?.trim() ||
-        'Nao informado';
-      mapa.set(solicitante, (mapa.get(solicitante) || 0) + 1);
+    return tarefasFiltradas.filter(t => {
+      if (!isConcluida(t.status) || !t.dataFim) return false;
+      const fim = parseDataEntrada(t.dataFim);
+      if (!fim) return false;
+      fim.setHours(0, 0, 0, 0);
+      return fim.getTime() > hoje.getTime();
     });
-
-    return Array.from(mapa.entries())
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 10);
   }, [tarefasFiltradas]);
 
   const gargalosCriticos = useMemo(() => {
@@ -600,20 +650,6 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
         return standBy && prioridadeCritica;
       })
       .sort((a, b) => b.diasAtraso - a.diasAtraso);
-  }, [tarefasFiltradas]);
-
-  const tarefasTimeline = useMemo(() => {
-    return tarefasFiltradas
-      .filter(t => isOperacionalAtiva(t.status))
-      .sort((a, b) => {
-        if (a.statusPrazo === 'vencida' && b.statusPrazo !== 'vencida') return -1;
-        if (a.statusPrazo !== 'vencida' && b.statusPrazo === 'vencida') return 1;
-        if (a.statusPrazo === 'hoje' && b.statusPrazo !== 'hoje') return -1;
-        if (a.statusPrazo !== 'hoje' && b.statusPrazo === 'hoje') return 1;
-        if (!a.dataFim) return 1;
-        if (!b.dataFim) return -1;
-        return a.dataFim.localeCompare(b.dataFim);
-      });
   }, [tarefasFiltradas]);
 
   const updateFiltro = useCallback(<K extends keyof FiltrosNotion>(
@@ -634,7 +670,9 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
       filtros.departamento.length > 0 ||
       filtros.executor.length > 0 ||
       filtros.busca.trim() !== '' ||
-      filtros.filtroCard !== null
+      filtros.filtroCard !== null ||
+      filtros.dataInicial !== null ||
+      filtros.dataFinal !== null
     );
   }, [filtros]);
 
@@ -652,10 +690,7 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
       mapaComentariosPorTarefa.set(c.notionId, arr);
     }
 
-    const mapaComentariosPorAutor = new Map<string, number>();
-    for (const c of comentariosFiltrados) {
-      mapaComentariosPorAutor.set(c.autor, (mapaComentariosPorAutor.get(c.autor) || 0) + 1);
-    }
+    const nomeBaseParaMatch = (nome: string) => removerAcentos(nome.split('|')[0].trim().toLowerCase());
 
     const agentes = new Map<string, {
       somaLeadTime: number;
@@ -663,7 +698,6 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
       concluidasComData: number;
       ativas: number;
       totalComentarios: number;
-      concluidasNoPrazo: number;
     }>();
 
     for (const tarefa of tarefasFiltradas) {
@@ -671,55 +705,51 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
       const comentariosDaTarefa = mapaComentariosPorTarefa.get(tarefa.notionId) || [];
 
       for (const exec of executores) {
-        const ag = agentes.get(exec) || { somaLeadTime: 0, concluidas: 0, concluidasComData: 0, ativas: 0, totalComentarios: 0, concluidasNoPrazo: 0 };
+        const nome = nomeExibicao(exec);
+        const ag = agentes.get(nome) || { somaLeadTime: 0, concluidas: 0, concluidasComData: 0, ativas: 0, totalComentarios: 0 };
 
-        const comentariosDoAgente = comentariosDaTarefa.filter(c => c.autor === exec).length;
+        const execBase = nomeBaseParaMatch(exec);
+        const comentariosDoAgente = comentariosDaTarefa.filter(c => {
+          const autorBase = nomeBaseParaMatch(c.autor);
+          return autorBase === execBase || autorBase.includes(execBase) || execBase.includes(autorBase);
+        }).length;
         ag.totalComentarios += comentariosDoAgente;
 
         if (isConcluida(tarefa.status)) {
           ag.concluidas++;
           const dataCriacao = parseDataEntrada(tarefa.criadoEm);
-          const dataConclusao = parseDataEntrada(tarefa.atualizadoEm ?? tarefa.dataFim);
+          const dataConclusao = parseDataEntrada(tarefa.dataFim);
           if (dataCriacao && dataConclusao) {
             const diffDias = Math.max(0, Math.floor((dataConclusao.getTime() - dataCriacao.getTime()) / (1000 * 60 * 60 * 24)));
             ag.somaLeadTime += diffDias;
             ag.concluidasComData++;
           }
-          if (tarefa.dataFim) {
-            const fim = parseDataEntrada(tarefa.dataFim);
-            const conclusao = parseDataEntrada(tarefa.atualizadoEm ?? tarefa.dataFim);
-            if (fim && conclusao && conclusao.getTime() <= fim.getTime() + 86400000) {
-              ag.concluidasNoPrazo++;
-            }
-          }
         } else if (isOperacionalAtiva(tarefa.status)) {
           ag.ativas++;
         }
 
-        agentes.set(exec, ag);
+        agentes.set(nome, ag);
       }
     }
-
-    const totalComentariosGeral = comentariosFiltrados.length;
 
     return Array.from(agentes.entries())
       .map(([nome, ag]) => ({
         nome,
+        total: ag.concluidas + ag.ativas,
         tempoMedioDias: ag.concluidasComData > 0 ? Math.round((ag.somaLeadTime / ag.concluidasComData) * 10) / 10 : 0,
         concluidas: ag.concluidas,
         ativas: ag.ativas,
         totalComentarios: ag.totalComentarios,
-        percentInteracoes: totalComentariosGeral > 0 ? Math.round((ag.totalComentarios / totalComentariosGeral) * 1000) / 10 : 0,
-        taxaNoPrazo: ag.concluidas > 0 ? Math.round((ag.concluidasNoPrazo / ag.concluidas) * 100) : 0,
       }))
-      .filter(a => a.concluidas > 0 || a.ativas > 0)
-      .sort((a, b) => b.concluidas - a.concluidas || a.tempoMedioDias - b.tempoMedioDias);
+      .filter(a => a.total > 0)
+      .sort((a, b) => b.total - a.total || b.concluidas - a.concluidas);
   }, [tarefasFiltradas, comentariosFiltrados]);
 
   const interacoesPorUsuario = useMemo<InteracaoUsuario[]>(() => {
     const mapa = new Map<string, number>();
     for (const c of comentariosFiltrados) {
-      mapa.set(c.autor, (mapa.get(c.autor) || 0) + 1);
+      const nome = nomeExibicao(c.autor);
+      mapa.set(nome, (mapa.get(nome) || 0) + 1);
     }
     const total = comentariosFiltrados.length;
     return Array.from(mapa.entries())
@@ -730,6 +760,55 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
       }))
       .sort((a, b) => b.totalComentarios - a.totalComentarios);
   }, [comentariosFiltrados]);
+
+  const serieComentariosPorAgente = useMemo(() => {
+    if (comentariosFiltrados.length === 0) return { serie: [] as Record<string, string | number>[], agentes: [] as string[], variacao: [] as Array<{ agente: string; total: number; ultimo: number; variacao: number }> };
+
+    const agentesSet = new Set<string>();
+    const mapa = new Map<string, Map<string, number>>();
+
+    comentariosFiltrados.forEach(c => {
+      if (!c.comentadoEm) return;
+      const dt = new Date(c.comentadoEm);
+      if (Number.isNaN(dt.getTime())) return;
+      const chave = chavePeriodo(dt, filtros.granularidade);
+      const nome = nomeExibicao(c.autor);
+      if (!nome) return;
+      agentesSet.add(nome);
+      if (!mapa.has(chave)) mapa.set(chave, new Map());
+      const periodo = mapa.get(chave)!;
+      periodo.set(nome, (periodo.get(nome) || 0) + 1);
+    });
+
+    const totalPorAgente = new Map<string, number>();
+    for (const [, periodo] of mapa) {
+      for (const [agente, qtd] of periodo) {
+        totalPorAgente.set(agente, (totalPorAgente.get(agente) || 0) + qtd);
+      }
+    }
+    const topAgentes = Array.from(agentesSet)
+      .sort((a, b) => (totalPorAgente.get(b) || 0) - (totalPorAgente.get(a) || 0))
+      .slice(0, 5);
+
+    const ordenado = Array.from(mapa.entries()).sort(([a], [b]) => a.localeCompare(b)).slice(-12);
+
+    const serie = ordenado.map(([chave, periodo]) => {
+      const ponto: Record<string, string | number> = { label: labelPeriodo(chave, filtros.granularidade), chave };
+      topAgentes.forEach(agente => { ponto[agente] = periodo.get(agente) || 0; });
+      return ponto;
+    });
+
+    const variacao = topAgentes.map(agente => {
+      const valores = ordenado.map(([, p]) => p.get(agente) || 0);
+      const ultimo = valores[valores.length - 1] ?? 0;
+      const penultimo = valores[valores.length - 2] ?? 0;
+      const totalAgente = totalPorAgente.get(agente) || 0;
+      const var_ = penultimo > 0 ? Math.round(((ultimo - penultimo) / penultimo) * 100) : (ultimo > 0 ? 100 : 0);
+      return { agente, total: totalAgente, ultimo, variacao: var_ };
+    });
+
+    return { serie, agentes: topAgentes, variacao };
+  }, [comentariosFiltrados, filtros.granularidade, nomeExibicao]);
 
   const insightsComentarios = useMemo(() => {
     const totalComentarios = comentariosFiltrados.length;
@@ -757,18 +836,17 @@ export function useNotionFilters(tarefas: TarefaProcessada[], comentarios: Comen
     dadosGraficoStatus,
     dadosGraficoPrioridade,
     dadosGraficoDepartamento,
-    dadosGraficoPrazo,
     dadosGraficoExecutores,
+    serieConclucoesPorAgente,
     dadosGraficoDepartamentosCriticos,
     topTarefasCriticas,
     insights,
-    resumoPorExecutor,
-    tarefasTimeline,
     serieDemandaCapacidade,
-    topSolicitantes,
+    anomaliasConcluidas,
     gargalosCriticos,
     performancePorAgente,
     interacoesPorUsuario,
+    serieComentariosPorAgente,
     insightsComentarios,
   };
 }

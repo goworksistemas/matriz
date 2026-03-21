@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { Clock, Loader2, AlertCircle, RefreshCw, Download, RotateCcw, Search } from 'lucide-react';
+import { Clock, Loader2, AlertCircle, RefreshCw, Download, RotateCcw, Search, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { exportToExcel } from '@/lib/exportExcel';
 import { ptBR } from 'date-fns/locale';
@@ -43,14 +43,17 @@ export function NotionPage() {
     dadosGraficoStatus,
     dadosGraficoPrioridade,
     dadosGraficoExecutores,
+    serieConclucoesPorAgente,
     dadosGraficoDepartamento,
     dadosGraficoDepartamentosCriticos,
     topTarefasCriticas,
     insights,
     serieDemandaCapacidade,
+    anomaliasConcluidas,
     gargalosCriticos,
     performancePorAgente,
     interacoesPorUsuario,
+    serieComentariosPorAgente,
     insightsComentarios,
   } = useNotionFilters(tarefas, comentarios);
 
@@ -217,6 +220,30 @@ export function NotionPage() {
                 />
               </div>
 
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <Calendar className="h-3 w-3" /> De
+                </label>
+                <input
+                  type="date"
+                  value={filtros.dataInicial || ''}
+                  onChange={(e) => updateFiltro('dataInicial', e.target.value || null)}
+                  className="h-9 px-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <Calendar className="h-3 w-3" /> Até
+                </label>
+                <input
+                  type="date"
+                  value={filtros.dataFinal || ''}
+                  onChange={(e) => updateFiltro('dataFinal', e.target.value || null)}
+                  className="h-9 px-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                />
+              </div>
+
               {hasActiveFilters && (
                 <Button variant="ghost" size="sm" onClick={resetFiltros} className="mb-0.5">
                   <RotateCcw className="h-4 w-4 mr-1.5" />
@@ -236,14 +263,18 @@ export function NotionPage() {
             dadosGraficoStatus={dadosGraficoStatus}
             dadosGraficoPrioridade={dadosGraficoPrioridade}
             dadosGraficoExecutores={dadosGraficoExecutores}
+            serieConclucoesPorAgente={serieConclucoesPorAgente}
             dadosGraficoDepartamento={dadosGraficoDepartamento}
             dadosGraficoDepartamentosCriticos={dadosGraficoDepartamentosCriticos}
             topTarefasCriticas={topTarefasCriticas}
             serieDemandaCapacidade={serieDemandaCapacidade}
+            anomaliasConcluidas={anomaliasConcluidas}
             gargalosCriticos={gargalosCriticos}
             performancePorAgente={performancePorAgente}
             interacoesPorUsuario={interacoesPorUsuario}
             insightsComentarios={insightsComentarios}
+            serieComentariosPorAgente={serieComentariosPorAgente}
+            tarefasFiltradas={tarefasFiltradas}
           />
           <ListagemTarefas tarefas={tarefasFiltradas} />
         </div>

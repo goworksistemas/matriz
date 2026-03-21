@@ -1,759 +1,758 @@
 {
-    "nodes": [
-      {
-        "parameters": {},
-        "type": "n8n-nodes-base.manualTrigger",
-        "typeVersion": 1,
-        "position": [
-          -1632,
-          288
-        ],
-        "id": "d4b259ec-c771-4dbb-bd31-594da6f94790",
-        "name": "When clicking 'Execute workflow'"
-      },
-      {
-        "parameters": {
-          "rule": {
-            "interval": [
-              {
-                "field": "minutes",
-                "minutesInterval": 30
-              }
-            ]
-          }
-        },
-        "name": "Schedule Trigger",
-        "type": "n8n-nodes-base.scheduleTrigger",
-        "typeVersion": 1.3,
-        "position": [
-          -1664,
-          800
-        ],
-        "id": "5d06d594-c7ab-48f4-bf65-4a0225e90033"
-      },
-      {
-        "parameters": {
-          "httpMethod": "POST",
-          "path": "atualizar-bd-notion",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.webhook",
-        "typeVersion": 2.1,
-        "position": [
-          -1584,
-          -464
-        ],
-        "id": "87e05a42-4ad1-41d0-8f88-dce4dd9e9197",
-        "name": "Webhook1",
-        "webhookId": "f82f05c5-7edb-4c2a-aaea-59f215417cfd"
-      },
-      {
-        "parameters": {
-          "resource": "databasePage",
-          "operation": "getAll",
-          "databaseId": {
-            "__rl": true,
-            "value": "208c3598-383a-8149-b401-dc7bd9224b5a",
-            "mode": "id"
-          },
-          "returnAll": true,
-          "simple": false,
-          "options": {}
-        },
-        "name": "Notion - Get All Tasks",
-        "type": "n8n-nodes-base.notion",
-        "typeVersion": 2.2,
-        "position": [
-          -560,
-          64
-        ],
-        "id": "84abb568-fb84-4032-b113-1da2c22ac06c",
-        "credentials": {
-          "notionApi": {
-            "id": "Ln8Z1P4xF2YhlSUt",
-            "name": "Notion GOWORK"
-          }
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1632,
+        256
+      ],
+      "id": "d4b259ec-c771-4dbb-bd31-594da6f94790",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
         }
       },
-      {
-        "parameters": {
-          "jsCode": "const items = $input.all();\nconst results = [];\n\nconst workflowData = $getWorkflowStaticData('global');\nconst lastSync = workflowData.notion_last_edited_time || null;\nconst lastSyncTs = lastSync ? new Date(lastSync).getTime() : null;\nlet maiorEditedTs = lastSyncTs || 0;\n\nfor (const item of items) {\n  const page = item.json;\n  const props = page.properties || {};\n\n  const editedAt = page.last_edited_time || null;\n  const editedTs = editedAt ? new Date(editedAt).getTime() : null;\n  if (editedTs && editedTs > maiorEditedTs) maiorEditedTs = editedTs;\n\n  if (lastSyncTs && editedTs && editedTs <= lastSyncTs) {\n    continue;\n  }\n\n  const titleProp = props['Nome da tarefa'];\n  const title = titleProp?.title?.[0]?.plain_text || '';\n\n  const status = props['Status']?.select?.name || '';\n  const priority = props['Prioridade']?.select?.name || '';\n\n  const descProp = props['Descrição'] || props['Descricao'];\n  const description = descProp?.rich_text?.[0]?.plain_text || '';\n\n  const executorProp = props['Executor'] || props['Executores'];\n  const executor = (executorProp?.people || []).map(p => p.name).filter(Boolean).join(', ');\n\n  const requesterProp = props['Solicitante'];\n  const requester = (requesterProp?.people || []).map(p => p.name).filter(Boolean).join(', ');\n\n  const deptProp = props['Departamento'];\n  let department = '';\n  if (deptProp?.select) {\n    department = deptProp.select.name || '';\n  } else if (deptProp?.multi_select) {\n    department = deptProp.multi_select.map(s => s.name).join(', ');\n  }\n\n  const createdByProp = props['Criado por'];\n  const created_by = createdByProp?.created_by?.name || '';\n\n  const last_edited_by = page.last_edited_by?.name || '';\n\n  const tagsProp = props['Tags'];\n  const tags = (tagsProp?.multi_select || []).map(t => t.name).filter(Boolean).join(', ');\n\n  const linksProp = props['Links'];\n  let links = '';\n  if (linksProp?.url) {\n    links = linksProp.url;\n  } else if (linksProp?.rich_text) {\n    links = (linksProp.rich_text || []).map(rt => rt.plain_text || '').join('');\n  }\n\n  const dataProp = props['Data'];\n  const date_start = dataProp?.date?.start || null;\n  const date_end = dataProp?.date?.end || null;\n\n  const notionId = (page.id || '').replace(/-/g, '');\n  const notion_url = notionId ? `https://www.notion.so/${notionId}` : null;\n\n  results.push({\n    json: {\n      notion_id: page.id || '',\n      title,\n      status,\n      priority,\n      description,\n      executor,\n      requester,\n      department,\n      created_by,\n      last_edited_by,\n      tags,\n      links,\n      date_start,\n      date_end,\n      notion_url,\n      created_at: page.created_time || null,\n      updated_at: editedAt,\n      _extracted_at: new Date().toISOString(),\n      _source_system: 'Notion'\n    }\n  });\n}\n\nif (maiorEditedTs > 0) {\n  workflowData.notion_last_edited_time = new Date(maiorEditedTs).toISOString();\n}\n\nreturn results;"
-        },
-        "name": "Transformar para Supabase",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          224,
-          80
-        ],
-        "id": "b87ff3ef-aa1c-435d-8c2d-268a9f8f8e94"
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1632,
+        448
+      ],
+      "id": "5d06d594-c7ab-48f4-bf65-4a0225e90033"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atualizar-bd-notion",
+        "options": {}
       },
-      {
-        "parameters": {
-          "jsCode": "const items = $input.all();\n\nconst porNotionId = new Map();\nfor (const item of items) {\n  const row = item.json || {};\n  const notionId = row.notion_id || '';\n  if (!notionId) continue;\n  porNotionId.set(notionId, row);\n}\n\nconst batch = Array.from(porNotionId.values());\nif (batch.length === 0) {\n  return [];\n}\n\nreturn [{ json: { batch } }];"
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1632,
+        64
+      ],
+      "id": "87e05a42-4ad1-41d0-8f88-dce4dd9e9197",
+      "name": "Webhook1",
+      "webhookId": "f82f05c5-7edb-4c2a-aaea-59f215417cfd"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "208c3598-383a-8149-b401-dc7bd9224b5a",
+          "mode": "id"
         },
-        "name": "Agrupar em batch1",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          448,
-          80
-        ],
-        "id": "74650b9d-0df7-4eed-877d-646c296627ce"
+        "returnAll": true,
+        "simple": false,
+        "options": {}
       },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_tasks?on_conflict=notion_id",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              },
-              {
-                "name": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              },
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "name": "Prefer",
-                "value": "resolution=merge-duplicates,return=minimal"
-              }
-            ]
-          },
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ JSON.stringify($json.batch) }}",
-          "options": {}
-        },
-        "name": "Supabase Upsert (HTTP)1",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          672,
-          80
-        ],
-        "id": "17c8b92c-18d2-46b5-9ca5-a994f8e77555"
-      },
-      {
-        "parameters": {
-          "url": "https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_tasks?select=notion_id,title,executor,requester,created_by,department",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              },
-              {
-                "name": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "name": "Supabase GET All Tasks",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          -576,
-          272
-        ],
-        "id": "4a2fcff7-44d0-4fbe-bb08-fc6d8cffb8b5"
-      },
-      {
-        "parameters": {},
-        "name": "Merge",
-        "type": "n8n-nodes-base.merge",
-        "typeVersion": 3,
-        "position": [
-          -32,
-          -80
-        ],
-        "id": "25d1c508-a71a-4e83-a153-49d952c5d753"
-      },
-      {
-        "parameters": {
-          "jsCode": "const notionItems = $('Notion - Get All Tasks').all();\nconst notionIds = new Set();\nfor (const item of notionItems) {\n  const id = (item.json?.id || '').replace(/-/g, '');\n  if (id) notionIds.add(id);\n}\n\nconst supabaseItems = $('Supabase GET All Tasks').all();\n\nconst removidas = [];\nfor (const item of supabaseItems) {\n  const t = item.json;\n  const nid = (t.notion_id || '').replace(/-/g, '');\n  if (!nid) continue;\n  if (!notionIds.has(nid)) {\n    removidas.push({\n      json: {\n        notion_id: t.notion_id,\n        title: t.title || '(sem titulo)',\n        executor: t.executor || '-',\n        requester: t.requester || '-',\n        created_by: t.created_by || '-',\n        department: t.department || '-'\n      }\n    });\n  }\n}\n\nreturn removidas;"
-        },
-        "name": "Detectar Tarefas Removidas",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          288,
-          -80
-        ],
-        "id": "2680542d-cf64-4429-85d9-0d7b93990c53"
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "strict"
-            },
-            "conditions": [
-              {
-                "id": "cond1",
-                "leftValue": "={{ $json.notion_id }}",
-                "rightValue": "",
-                "operator": {
-                  "type": "string",
-                  "operation": "notEmpty"
-                }
-              }
-            ],
-            "combinator": "and"
-          },
-          "options": {}
-        },
-        "name": "Se tem removidas",
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2,
-        "position": [
-          576,
-          -80
-        ],
-        "id": "76cc3149-4c4a-4cc4-b942-88f35890e51d"
-      },
-      {
-        "parameters": {
-          "method": "DELETE",
-          "url": "=https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_tasks?notion_id=eq.{{ encodeURIComponent($json.notion_id) }}",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              },
-              {
-                "name": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "name": "Supabase DELETE Tarefa",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          944,
-          -96
-        ],
-        "id": "62a9d7a5-0ca9-4f5c-a098-b13bd24ad656"
-      },
-      {
-        "parameters": {
-          "jsCode": "const items = $input.all();\nconst linhas = items.map((item, i) => {\n  const t = item.json;\n  return `*${i + 1}.* ${t.title}\\n   👤 Executor: ${t.executor}\\n   📋 Solicitante: ${t.requester}\\n   🏢 Depto: ${t.department}`;\n});\n\nconst msg = `⚠️ *${items.length} tarefa(s) removida(s) do Notion*\\n\\n${linhas.join('\\n\\n')}\\n\\nAs tarefas foram excluídas do banco.`;\n\nreturn [{ json: { text: msg } }];"
-        },
-        "name": "Agrupar Mensagem",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          944,
-          -272
-        ],
-        "id": "8e51000a-361f-45e7-b336-55c526477a98"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "https://gowork.uazapi.com/send/text",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "token",
-                "value": "66960289-16fa-4037-b375-ad2b17662ab8"
-              },
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              }
-            ]
-          },
-          "sendBody": true,
-          "bodyParameters": {
-            "parameters": [
-              {
-                "name": "number",
-                "value": "120363406729338315@g.us"
-              },
-              {
-                "name": "text",
-                "value": "={{ $json.text }}"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "id": "eb109ca3-9473-4e3d-9845-1291c77ea634",
-        "name": "Enviar para Grupo1",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          1168,
-          -272
-        ]
-      },
-      {
-        "parameters": {
-          "jsCode": "const items = $input.all();\nreturn items.map(item => ({\n  json: { page_id: item.json.id }\n}));"
-        },
-        "name": "Extrair Page IDs",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          208,
-          304
-        ],
-        "id": "870e635c-b159-4e1d-a367-55785d282c4f"
-      },
-      {
-        "parameters": {
-          "url": "=https://api.notion.com/v1/comments?block_id={{ $json.page_id }}",
-          "authentication": "predefinedCredentialType",
-          "nodeCredentialType": "notionApi",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "Notion-Version",
-                "value": "2022-06-28"
-              }
-            ]
-          },
-          "options": {
-            "batching": {
-              "batch": {
-                "batchSize": 3,
-                "batchInterval": 1100
-              }
-            }
-          }
-        },
-        "name": "Notion GET Comments",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          432,
-          304
-        ],
-        "id": "82c16fc5-1caa-4fca-85ee-42415d47d403",
-        "credentials": {
-          "notionApi": {
-            "id": "Ln8Z1P4xF2YhlSUt",
-            "name": "Notion GOWORK"
-          }
+      "name": "Notion - Get All Tasks",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -576,
+        64
+      ],
+      "id": "84abb568-fb84-4032-b113-1da2c22ac06c",
+      "credentials": {
+        "notionApi": {
+          "id": "Ln8Z1P4xF2YhlSUt",
+          "name": "Notion GOWORK"
         }
-      },
-      {
-        "parameters": {
-          "jsCode": "const items = $input.all();\nconst comments = [];\nfor (const item of items) {\n  const results = item.json.results || [];\n  for (const c of results) {\n    const richText = c.rich_text || [];\n    const text = richText.map(rt => rt.plain_text || '').join('');\n    comments.push({\n      json: {\n        comment_id: c.id || '',\n        notion_id: c.parent?.page_id || '',\n        text,\n        author: c.created_by?.name || '',\n        commented_at: c.created_time || null,\n        _extracted_at: new Date().toISOString()\n      }\n    });\n  }\n}\nif (comments.length === 0) return [];\nreturn comments;"
-        },
-        "name": "Transformar Comentarios",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          656,
-          304
-        ],
-        "id": "23e6bdd1-3aa3-4285-ba1a-3423c3d7bcec"
-      },
-      {
-        "parameters": {
-          "jsCode": "const items = $input.all();\nconst porId = new Map();\nfor (const item of items) {\n  const row = item.json || {};\n  const cid = row.comment_id || '';\n  if (!cid) continue;\n  porId.set(cid, row);\n}\nconst batch = Array.from(porId.values());\nif (batch.length === 0) return [];\nreturn [{ json: { batch } }];"
-        },
-        "name": "Batch Comentarios",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          880,
-          304
-        ],
-        "id": "d38d6835-6305-417c-8d2a-5c0add5a3bcf"
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_task_comments?on_conflict=comment_id",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              },
-              {
-                "name": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              },
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "name": "Prefer",
-                "value": "resolution=merge-duplicates,return=minimal"
-              }
-            ]
-          },
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{ JSON.stringify($json.batch) }}",
-          "options": {}
-        },
-        "name": "Supabase Upsert Comments",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          1104,
-          304
-        ],
-        "id": "6991079b-6b5c-4182-bdbd-577c2f9dd7cc"
-      },
-      {
-        "parameters": {
-          "url": "https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_task_comments?select=comment_id",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              },
-              {
-                "name": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "name": "Supabase GET All Comments",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          -576,
-          496
-        ],
-        "id": "fec4dd0b-2f6b-4b79-9b4b-7f9e68be411c"
-      },
-      {
-        "parameters": {},
-        "name": "Merge Comments",
-        "type": "n8n-nodes-base.merge",
-        "typeVersion": 3,
-        "position": [
-          1008,
-          624
-        ],
-        "id": "99619026-5b77-4050-a532-8aecf93753ca"
-      },
-      {
-        "parameters": {
-          "jsCode": "const notionComments = $('Transformar Comentarios').all();\nconst notionCommentIds = new Set();\nfor (const item of notionComments) {\n  const cid = (item.json?.comment_id || '').replace(/-/g, '');\n  if (cid) notionCommentIds.add(cid);\n}\n\nconst supabaseComments = $('Supabase GET All Comments').all();\nconst removidos = [];\nfor (const item of supabaseComments) {\n  const cid = (item.json.comment_id || '').replace(/-/g, '');\n  if (!cid) continue;\n  if (!notionCommentIds.has(cid)) {\n    removidos.push({\n      json: { comment_id: item.json.comment_id }\n    });\n  }\n}\nreturn removidos;"
-        },
-        "name": "Detectar Comentarios Removidos",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          1232,
-          624
-        ],
-        "id": "ebced29c-2412-4dad-b747-77b64a3d7731"
-      },
-      {
-        "parameters": {
-          "method": "DELETE",
-          "url": "=https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_task_comments?comment_id=eq.{{ encodeURIComponent($json.comment_id) }}",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              },
-              {
-                "name": "Authorization",
-                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "name": "Supabase DELETE Comment",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          1456,
-          624
-        ],
-        "id": "6b21c8d0-3347-453f-a80b-40dc41e71eb4"
-      }
-    ],
-    "connections": {
-      "When clicking 'Execute workflow'": {
-        "main": [
-          [
-            {
-              "node": "Notion - Get All Tasks",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Supabase GET All Tasks",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Supabase GET All Comments",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Schedule Trigger": {
-        "main": [
-          [
-            {
-              "node": "Notion - Get All Tasks",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Supabase GET All Tasks",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Supabase GET All Comments",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Webhook1": {
-        "main": [
-          [
-            {
-              "node": "Notion - Get All Tasks",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Supabase GET All Tasks",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Supabase GET All Comments",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Notion - Get All Tasks": {
-        "main": [
-          [
-            {
-              "node": "Transformar para Supabase",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Merge",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Extrair Page IDs",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Transformar para Supabase": {
-        "main": [
-          [
-            {
-              "node": "Agrupar em batch1",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Agrupar em batch1": {
-        "main": [
-          [
-            {
-              "node": "Supabase Upsert (HTTP)1",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Supabase GET All Tasks": {
-        "main": [
-          [
-            {
-              "node": "Merge",
-              "type": "main",
-              "index": 1
-            }
-          ]
-        ]
-      },
-      "Merge": {
-        "main": [
-          [
-            {
-              "node": "Detectar Tarefas Removidas",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Detectar Tarefas Removidas": {
-        "main": [
-          [
-            {
-              "node": "Se tem removidas",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Se tem removidas": {
-        "main": [
-          [
-            {
-              "node": "Supabase DELETE Tarefa",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Agrupar Mensagem",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Agrupar Mensagem": {
-        "main": [
-          [
-            {
-              "node": "Enviar para Grupo1",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Extrair Page IDs": {
-        "main": [
-          [
-            {
-              "node": "Notion GET Comments",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Notion GET Comments": {
-        "main": [
-          [
-            {
-              "node": "Transformar Comentarios",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Transformar Comentarios": {
-        "main": [
-          [
-            {
-              "node": "Batch Comentarios",
-              "type": "main",
-              "index": 0
-            },
-            {
-              "node": "Merge Comments",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Batch Comentarios": {
-        "main": [
-          [
-            {
-              "node": "Supabase Upsert Comments",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Supabase GET All Comments": {
-        "main": [
-          [
-            {
-              "node": "Merge Comments",
-              "type": "main",
-              "index": 1
-            }
-          ]
-        ]
-      },
-      "Merge Comments": {
-        "main": [
-          [
-            {
-              "node": "Detectar Comentarios Removidos",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Detectar Comentarios Removidos": {
-        "main": [
-          [
-            {
-              "node": "Supabase DELETE Comment",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
       }
     },
-    "pinData": {},
-    "meta": {
-      "templateCredsSetupCompleted": true,
-      "instanceId": "17be6445c9e23b9dd57a36ffe09f3fd049fe8d0da2b35a2a0af6dcad08595fbd"
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nconst workflowData = $getWorkflowStaticData('global');\nconst lastSync = workflowData.notion_last_edited_time || null;\nconst lastSyncTs = lastSync ? new Date(lastSync).getTime() : null;\nlet maiorEditedTs = lastSyncTs || 0;\n\nfor (const item of items) {\n  const page = item.json;\n  const props = page.properties || {};\n\n  const editedAt = page.last_edited_time || null;\n  const editedTs = editedAt ? new Date(editedAt).getTime() : null;\n  if (editedTs && editedTs > maiorEditedTs) maiorEditedTs = editedTs;\n\n  if (lastSyncTs && editedTs && editedTs <= lastSyncTs) {\n    continue;\n  }\n\n  const titleProp = props['Nome da tarefa'];\n  const title = titleProp?.title?.[0]?.plain_text || '';\n\n  const status = props['Status']?.status?.name || '';\n  const priority = props['Prioridade']?.select?.name || '';\n\n  const descProp = props['Descrição'] || props['Descricao'];\n  const description = descProp?.rich_text?.[0]?.plain_text || '';\n\n  const executorProp = props['Executor'] || props['Executores'];\n  const executor = (executorProp?.people || []).map(p => p.name).filter(Boolean).join(', ');\n\n  const requesterProp = props['Solicitante'];\n  const requester = (requesterProp?.people || []).map(p => p.name).filter(Boolean).join(', ');\n\n  const deptProp = props['Departamento'];\n  let department = '';\n  if (deptProp?.select) {\n    department = deptProp.select.name || '';\n  } else if (deptProp?.multi_select) {\n    department = deptProp.multi_select.map(s => s.name).join(', ');\n  }\n\n  const createdByProp = props['Criado por'];\n  const created_by = createdByProp?.created_by?.name || '';\n\n  const last_edited_by = page.last_edited_by?.name || '';\n\n  const tagsProp = props['Tags'];\n  const tags = (tagsProp?.multi_select || []).map(t => t.name).filter(Boolean).join(', ');\n\n  const linksProp = props['Links'];\n  let links = '';\n  if (linksProp?.url) {\n    links = linksProp.url;\n  } else if (linksProp?.rich_text) {\n    links = (linksProp.rich_text || []).map(rt => rt.plain_text || '').join('');\n  }\n\n  const dataProp = props['Data'];\n  const date_start = dataProp?.date?.start || null;\n  const date_end = dataProp?.date?.end || null;\n\n  const notionId = (page.id || '').replace(/-/g, '');\n  const notion_url = notionId ? `https://www.notion.so/${notionId}` : null;\n\n  results.push({\n    json: {\n      notion_id: page.id || '',\n      title,\n      status,\n      priority,\n      description,\n      executor,\n      requester,\n      department,\n      created_by,\n      last_edited_by,\n      tags,\n      links,\n      date_start,\n      date_end,\n      notion_url,\n      created_at: page.created_time || null,\n      updated_at: editedAt,\n      _extracted_at: new Date().toISOString(),\n      _source_system: 'Notion'\n    }\n  });\n}\n\nif (maiorEditedTs > 0) {\n  workflowData.notion_last_edited_time = new Date(maiorEditedTs).toISOString();\n}\n\nreturn results;"
+      },
+      "name": "Transformar para Supabase",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        80
+      ],
+      "id": "b87ff3ef-aa1c-435d-8c2d-268a9f8f8e94"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst porNotionId = new Map();\nfor (const item of items) {\n  const row = item.json || {};\n  const notionId = row.notion_id || '';\n  if (!notionId) continue;\n  porNotionId.set(notionId, row);\n}\n\nconst batch = Array.from(porNotionId.values());\nif (batch.length === 0) {\n  return [];\n}\n\nreturn [{ json: { batch } }];"
+      },
+      "name": "Agrupar em batch1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        80
+      ],
+      "id": "74650b9d-0df7-4eed-877d-646c296627ce"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_tasks?on_conflict=notion_id",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.batch) }}",
+        "options": {}
+      },
+      "name": "Supabase Upsert (HTTP)1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        80
+      ],
+      "id": "17c8b92c-18d2-46b5-9ca5-a994f8e77555"
+    },
+    {
+      "parameters": {
+        "url": "https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_tasks?select=notion_id,title,executor,requester,created_by,department",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Supabase GET All Tasks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        272
+      ],
+      "id": "4a2fcff7-44d0-4fbe-bb08-fc6d8cffb8b5"
+    },
+    {
+      "parameters": {},
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        224,
+        -80
+      ],
+      "id": "25d1c508-a71a-4e83-a153-49d952c5d753"
+    },
+    {
+      "parameters": {
+        "jsCode": "const notionItems = $('Notion - Get All Tasks').all();\nconst notionIds = new Set();\nfor (const item of notionItems) {\n  const id = (item.json?.id || '').replace(/-/g, '');\n  if (id) notionIds.add(id);\n}\n\nconst supabaseItems = $('Supabase GET All Tasks').all();\n\nconst removidas = [];\nfor (const item of supabaseItems) {\n  const t = item.json;\n  const nid = (t.notion_id || '').replace(/-/g, '');\n  if (!nid) continue;\n  if (!notionIds.has(nid)) {\n    removidas.push({\n      json: {\n        notion_id: t.notion_id,\n        title: t.title || '(sem titulo)',\n        executor: t.executor || '-',\n        requester: t.requester || '-',\n        created_by: t.created_by || '-',\n        department: t.department || '-'\n      }\n    });\n  }\n}\n\nreturn removidas;"
+      },
+      "name": "Detectar Tarefas Removidas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -80
+      ],
+      "id": "2680542d-cf64-4429-85d9-0d7b93990c53"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond1",
+              "leftValue": "={{ $json.notion_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Se tem removidas",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -80
+      ],
+      "id": "76cc3149-4c4a-4cc4-b942-88f35890e51d"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_tasks?notion_id=eq.{{ encodeURIComponent($json.notion_id) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Supabase DELETE Tarefa",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "62a9d7a5-0ca9-4f5c-a098-b13bd24ad656"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst linhas = items.map((item, i) => {\n  const t = item.json;\n  return `*${i + 1}.* ${t.title}\\n   👤 Executor: ${t.executor}\\n   📋 Solicitante: ${t.requester}\\n   🏢 Depto: ${t.department}`;\n});\n\nconst msg = `⚠️ *${items.length} tarefa(s) removida(s) do Notion*\\n\\n${linhas.join('\\n\\n')}\\n\\nAs tarefas foram excluídas do banco.`;\n\nreturn [{ json: { text: msg } }];"
+      },
+      "name": "Agrupar Mensagem",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        -272
+      ],
+      "id": "8e51000a-361f-45e7-b336-55c526477a98"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://gowork.uazapi.com/send/text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "66960289-16fa-4037-b375-ad2b17662ab8"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "120363406729338315@g.us"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eb109ca3-9473-4e3d-9845-1291c77ea634",
+      "name": "Enviar para Grupo1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nreturn items.map(item => ({\n  json: { page_id: item.json.id }\n}));"
+      },
+      "name": "Extrair Page IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        240
+      ],
+      "id": "870e635c-b159-4e1d-a367-55785d282c4f"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.notion.com/v1/comments?block_id={{ $json.page_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 3,
+              "batchInterval": 1100
+            }
+          }
+        }
+      },
+      "name": "Notion GET Comments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        240
+      ],
+      "id": "82c16fc5-1caa-4fca-85ee-42415d47d403",
+      "credentials": {
+        "notionApi": {
+          "id": "Ln8Z1P4xF2YhlSUt",
+          "name": "Notion GOWORK"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst taskItems = $('Notion - Get All Tasks').all();\nconst userMap = new Map();\nfor (const item of taskItems) {\n  const page = item.json || {};\n  const props = page.properties || {};\n  for (const key of Object.keys(props)) {\n    const prop = props[key];\n    if (prop?.people) {\n      for (const p of prop.people) {\n        if (p.id && p.name) userMap.set(p.id, p.name);\n      }\n    }\n    if (prop?.created_by?.id && prop?.created_by?.name) {\n      userMap.set(prop.created_by.id, prop.created_by.name);\n    }\n  }\n  if (page.created_by?.id && page.created_by?.name) {\n    userMap.set(page.created_by.id, page.created_by.name);\n  }\n  if (page.last_edited_by?.id && page.last_edited_by?.name) {\n    userMap.set(page.last_edited_by.id, page.last_edited_by.name);\n  }\n}\n\nconst comments = [];\nfor (const item of items) {\n  const results = item.json.results || [];\n  for (const c of results) {\n    const richText = c.rich_text || [];\n    const text = richText.map(rt => rt.plain_text || '').join('');\n    const authorId = c.created_by?.id || '';\n    const authorName = userMap.get(authorId) || '';\n    comments.push({\n      json: {\n        comment_id: c.id || '',\n        notion_id: c.parent?.page_id || '',\n        text,\n        author: authorName,\n        commented_at: c.created_time || null,\n        _extracted_at: new Date().toISOString()\n      }\n    });\n  }\n}\nif (comments.length === 0) return [];\nreturn comments;"
+      },
+      "name": "Transformar Comentarios",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        240
+      ],
+      "id": "23e6bdd1-3aa3-4285-ba1a-3423c3d7bcec"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst porId = new Map();\nfor (const item of items) {\n  const row = item.json || {};\n  const cid = row.comment_id || '';\n  if (!cid) continue;\n  porId.set(cid, row);\n}\nconst batch = Array.from(porId.values());\nif (batch.length === 0) return [];\nreturn [{ json: { batch } }];"
+      },
+      "name": "Batch Comentarios",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        240
+      ],
+      "id": "d38d6835-6305-417c-8d2a-5c0add5a3bcf"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_task_comments?on_conflict=comment_id",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.batch) }}",
+        "options": {}
+      },
+      "name": "Supabase Upsert Comments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        240
+      ],
+      "id": "6991079b-6b5c-4182-bdbd-577c2f9dd7cc"
+    },
+    {
+      "parameters": {
+        "url": "https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_task_comments?select=comment_id",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Supabase GET All Comments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        448
+      ],
+      "id": "fec4dd0b-2f6b-4b79-9b4b-7f9e68be411c"
+    },
+    {
+      "parameters": {},
+      "name": "Merge Comments",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        896,
+        432
+      ],
+      "id": "99619026-5b77-4050-a532-8aecf93753ca"
+    },
+    {
+      "parameters": {
+        "jsCode": "const notionComments = $('Transformar Comentarios').all();\nconst notionCommentIds = new Set();\nfor (const item of notionComments) {\n  const cid = (item.json?.comment_id || '').replace(/-/g, '');\n  if (cid) notionCommentIds.add(cid);\n}\n\nconst supabaseComments = $('Supabase GET All Comments').all();\nconst removidos = [];\nfor (const item of supabaseComments) {\n  const cid = (item.json.comment_id || '').replace(/-/g, '');\n  if (!cid) continue;\n  if (!notionCommentIds.has(cid)) {\n    removidos.push({\n      json: { comment_id: item.json.comment_id }\n    });\n  }\n}\nreturn removidos;"
+      },
+      "name": "Detectar Comentarios Removidos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        432
+      ],
+      "id": "ebced29c-2412-4dad-b747-77b64a3d7731"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_task_comments?comment_id=eq.{{ encodeURIComponent($json.comment_id) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhnZ3F6dWVlaGZ2YXV0a21hb2p5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTE5ODI0NSwiZXhwIjoyMDg0Nzc0MjQ1fQ.VfB3yazurvRfPNyfRZK3vYijUu3pPUebixpwAsni-ho"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Supabase DELETE Comment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        432
+      ],
+      "id": "6b21c8d0-3347-453f-a80b-40dc41e71eb4"
     }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Notion - Get All Tasks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase GET All Tasks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase GET All Comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Notion - Get All Tasks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase GET All Tasks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase GET All Comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Notion - Get All Tasks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase GET All Tasks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Supabase GET All Comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion - Get All Tasks": {
+      "main": [
+        [
+          {
+            "node": "Transformar para Supabase",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extrair Page IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transformar para Supabase": {
+      "main": [
+        [
+          {
+            "node": "Agrupar em batch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrupar em batch1": {
+      "main": [
+        [
+          {
+            "node": "Supabase Upsert (HTTP)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase GET All Tasks": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Detectar Tarefas Removidas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detectar Tarefas Removidas": {
+      "main": [
+        [
+          {
+            "node": "Se tem removidas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Se tem removidas": {
+      "main": [
+        [
+          {
+            "node": "Supabase DELETE Tarefa",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Agrupar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrupar Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Enviar para Grupo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Page IDs": {
+      "main": [
+        [
+          {
+            "node": "Notion GET Comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion GET Comments": {
+      "main": [
+        [
+          {
+            "node": "Transformar Comentarios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transformar Comentarios": {
+      "main": [
+        [
+          {
+            "node": "Batch Comentarios",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Comentarios": {
+      "main": [
+        [
+          {
+            "node": "Supabase Upsert Comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase GET All Comments": {
+      "main": [
+        [
+          {
+            "node": "Merge Comments",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Comments": {
+      "main": [
+        [
+          {
+            "node": "Detectar Comentarios Removidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detectar Comentarios Removidos": {
+      "main": [
+        [
+          {
+            "node": "Supabase DELETE Comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "17be6445c9e23b9dd57a36ffe09f3fd049fe8d0da2b35a2a0af6dcad08595fbd"
   }
+}

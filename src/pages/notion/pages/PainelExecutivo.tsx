@@ -1,4 +1,4 @@
-import { AlertTriangle, Clock3, CheckCircle2, ClipboardList, UserCog, CalendarX, Layers3, Building2, ExternalLink, XCircle, PauseCircle, TrendingUp, Users2, Activity, MessageSquare, Timer } from 'lucide-react';
+import { AlertTriangle, Clock3, CheckCircle2, ClipboardList, UserCog, CalendarX, Layers3, Building2, ExternalLink, XCircle, PauseCircle, TrendingUp, Users2, Activity, MessageSquare, Timer, ShieldAlert, Trophy, Info, ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { BarChartComponent } from '@/components/charts/BarChartComponent';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
@@ -7,7 +7,8 @@ import type { DadosGrafico } from '@/types';
 import { CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, LabelList, Cell, Legend, PieChart, Pie } from 'recharts';
 import type { FiltrosNotion, FiltroCard, InsightNotion, KPIsNotion, SerieDemandaCapacidade, PerformanceAgente, InteracaoUsuario, GranularidadeTempo } from '../hooks/useNotionFilters';
 import type { TarefaProcessada } from '../services/api';
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { Inbox, PauseOctagon, Ban } from 'lucide-react';
 
 interface PainelExecutivoProps {
   kpis: KPIsNotion;
@@ -17,9 +18,15 @@ interface PainelExecutivoProps {
   dadosGraficoStatus: DadosGrafico[];
   dadosGraficoPrioridade: DadosGrafico[];
   dadosGraficoExecutores: DadosGrafico[];
+  serieConclucoesPorAgente: {
+    serie: Record<string, string | number>[];
+    agentes: string[];
+    variacao: Array<{ agente: string; total: number; ultimo: number; variacao: number }>;
+  };
   dadosGraficoDepartamento: DadosGrafico[];
   dadosGraficoDepartamentosCriticos: DadosGrafico[];
   serieDemandaCapacidade: SerieDemandaCapacidade[];
+  anomaliasConcluidas: TarefaProcessada[];
   gargalosCriticos: TarefaProcessada[];
   topTarefasCriticas: TarefaProcessada[];
   performancePorAgente: PerformanceAgente[];
@@ -31,6 +38,12 @@ interface PainelExecutivoProps {
     percentTarefasSemComentario: number;
     mediaComentariosPorTarefa: number;
   };
+  serieComentariosPorAgente: {
+    serie: Record<string, string | number>[];
+    agentes: string[];
+    variacao: Array<{ agente: string; total: number; ultimo: number; variacao: number }>;
+  };
+  tarefasFiltradas: TarefaProcessada[];
 }
 
 
@@ -132,10 +145,12 @@ function KpiCard({ filtroCard, cardId, onClick, color, icon, label, value, value
 function corPrioridade(prioridade: string): string {
   if (prioridade === 'Urgente') return '#ef4444';
   if (prioridade === 'Importante') return '#f59e0b';
-  if (prioridade === 'Media') return '#06b6d4';
+  if (prioridade === 'Média') return '#06b6d4';
   if (prioridade === 'Baixa') return '#10b981';
   return '#6b7280';
 }
+
+const CORES_AGENTES = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899'];
 
 const tooltipStyle = {
   backgroundColor: 'var(--chart-tooltip-bg)',
@@ -153,6 +168,85 @@ function EmptyState({ children, height = 280 }: { children: string; height?: num
   );
 }
 
+function InfoBadge({ texto }: { texto: string }) {
+  return (
+    <span className="relative group/info ml-1">
+      <Info className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-help inline-block" />
+      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 px-3 py-2 rounded-lg bg-gray-900 dark:bg-gray-700 text-white text-[11px] leading-relaxed shadow-lg opacity-0 pointer-events-none group-hover/info:opacity-100 group-hover/info:pointer-events-auto transition-opacity z-50 text-left">
+        {texto}
+        <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
+      </span>
+    </span>
+  );
+}
+
+function GraficoTemporalCriacao({ tarefas, titulo, cor, info }: { tarefas: TarefaProcessada[]; titulo: string; cor: string; info?: string }) {
+  const mapa = new Map<string, number>();
+  tarefas.forEach(t => {
+    if (!t.criadoEm) return;
+    const dt = new Date(t.criadoEm);
+    if (Number.isNaN(dt.getTime())) return;
+    const chave = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
+    mapa.set(chave, (mapa.get(chave) || 0) + 1);
+  });
+  if (mapa.size < 2) return null;
+
+  const ordenado = Array.from(mapa.entries()).sort(([a], [b]) => a.localeCompare(b));
+  const serie = ordenado.map(([chave, qtd], idx) => {
+    const [ano, mes] = chave.split('-').map(Number);
+    const label = new Date(ano, (mes || 1) - 1, 1).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+    const anterior = idx > 0 ? ordenado[idx - 1][1] : null;
+    const variacao = anterior != null && anterior > 0 ? Math.round(((qtd - anterior) / anterior) * 100) : (anterior === 0 && qtd > 0 ? 100 : null);
+    return { label, value: qtd, variacao };
+  });
+
+  const corLabel = cor === '#3b82f6' ? '#1d4ed8' : cor === '#6366f1' ? '#4338ca' : cor === '#f43f5e' ? '#be123c' : cor;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <TrendingUp className="h-4 w-4" style={{ color: cor }} /> {titulo}
+          {info && <InfoBadge texto={info} />}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={serie} margin={{ top: 20, right: 12, left: 4, bottom: 40 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+            <XAxis
+              dataKey="label"
+              stroke="var(--chart-axis)"
+              fontSize={11}
+              tickLine={false}
+              axisLine={{ stroke: 'var(--chart-grid)' }}
+              tick={(tickProps: any) => {
+                const { x, y, payload } = tickProps;
+                const d = serie.find(s => s.label === payload.value);
+                const v = d?.variacao;
+                const fmtV = v == null ? '—' : `${v > 0 ? '▲ +' : v < 0 ? '▼ ' : ''}${v}%`;
+                const varCor = v == null ? '#9ca3af' : v > 0 ? '#16a34a' : v < 0 ? '#dc2626' : '#9ca3af';
+                return (
+                  <g transform={`translate(${x},${y})`}>
+                    <text x={0} y={0} dy={14} textAnchor="middle" fill="var(--chart-axis)" fontSize={11} fontWeight={600}>{payload.value}</text>
+                    <line x1={-18} y1={24} x2={18} y2={24} stroke="var(--chart-grid)" strokeWidth={1} />
+                    <text x={0} y={0} dy={37} textAnchor="middle" fill={varCor} fontSize={10} fontWeight={700}>{fmtV}</text>
+                  </g>
+                );
+              }}
+            />
+            <YAxis stroke="var(--chart-axis)" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Bar dataKey="value" name={titulo} fill={cor} fillOpacity={0.85} radius={[3, 3, 0, 0]} barSize={32}>
+              <LabelList dataKey="value" position="top" offset={6} fill={corLabel} fontSize={12} fontWeight={700} />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  PainelExecutivo                                                    */
 /* ------------------------------------------------------------------ */
@@ -165,17 +259,51 @@ export function PainelExecutivo({
   dadosGraficoStatus,
   dadosGraficoPrioridade,
   dadosGraficoExecutores,
+  serieConclucoesPorAgente,
   dadosGraficoDepartamento,
   dadosGraficoDepartamentosCriticos,
   serieDemandaCapacidade,
+  anomaliasConcluidas,
   gargalosCriticos,
   topTarefasCriticas,
   performancePorAgente,
   interacoesPorUsuario,
   insightsComentarios,
+  serieComentariosPorAgente,
+  tarefasFiltradas,
 }: PainelExecutivoProps) {
   const [tab, setTab] = useState('visao-geral');
   const [expandirDepartamentos, setExpandirDepartamentos] = useState(false);
+
+  const nomeExibicao = useCallback((nome: string) => nome.split('|')[0].trim() || nome, []);
+
+  const backlogTarefas = useMemo(() => {
+    const hoje = new Date();
+    return tarefasFiltradas
+      .filter(t => t.status.toLowerCase().includes('solicit'))
+      .map(t => {
+        const criado = t.criadoEm ? new Date(t.criadoEm) : null;
+        const diasEspera = criado ? Math.max(0, Math.floor((hoje.getTime() - criado.getTime()) / 86400000)) : 0;
+        return { ...t, diasEspera };
+      })
+      .sort((a, b) => b.diasEspera - a.diasEspera);
+  }, [tarefasFiltradas]);
+
+  const standbyTarefas = useMemo(() => {
+    const hoje = new Date();
+    return tarefasFiltradas
+      .filter(t => t.status.toLowerCase().includes('stand'))
+      .map(t => {
+        const criado = t.criadoEm ? new Date(t.criadoEm) : null;
+        const diasParada = criado ? Math.max(0, Math.floor((hoje.getTime() - criado.getTime()) / 86400000)) : 0;
+        return { ...t, diasParada };
+      })
+      .sort((a, b) => {
+        const prioA = a.prioridade.includes('Urgente') ? 0 : a.prioridade.includes('Importante') ? 1 : 2;
+        const prioB = b.prioridade.includes('Urgente') ? 0 : b.prioridade.includes('Importante') ? 1 : 2;
+        return prioA - prioB || b.diasParada - a.diasParada;
+      });
+  }, [tarefasFiltradas]);
 
   const toggleFiltro = useCallback(<K extends 'status' | 'prioridade' | 'departamento' | 'executor'>(key: K, value: string) => {
     const current = filtros[key] as string[];
@@ -296,7 +424,32 @@ export function PainelExecutivo({
         <TabsList>
           <TabsTrigger value="visao-geral">Visão Geral</TabsTrigger>
           <TabsTrigger value="equipe">Equipe</TabsTrigger>
-          <TabsTrigger value="prazos">Prazos e Alertas</TabsTrigger>
+          <TabsTrigger value="prazos" className="inline-flex items-center gap-1.5">
+            Prazos e Alertas
+            {anomaliasConcluidas.length > 0 && (
+              <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-amber-500 text-white text-[10px] font-bold leading-none">
+                {anomaliasConcluidas.length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="backlog" className="inline-flex items-center gap-1.5">
+            Backlog
+            {backlogTarefas.length > 0 && (
+              <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-blue-500 text-white text-[10px] font-bold leading-none">
+                {backlogTarefas.length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="standby" className="inline-flex items-center gap-1.5">
+            Stand-by
+            {standbyTarefas.length > 0 && (
+              <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-indigo-500 text-white text-[10px] font-bold leading-none">
+                {standbyTarefas.length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="canceladas">Canceladas</TabsTrigger>
+          <TabsTrigger value="qualidade">Qualidade</TabsTrigger>
         </TabsList>
 
         {/* -------------------------------------------------------------- */}
@@ -311,6 +464,7 @@ export function PainelExecutivo({
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <TrendingUp className="h-4 w-4 text-primary-500" /> Tarefas Criadas vs Finalizadas
+                    <InfoBadge texto="Criadas: data de criação no Notion (created_at). Finalizadas: data fim (date_end) de tarefas concluídas. Variação % compara com o período anterior." />
                     {filtros.periodoSelecionado && (
                       <span className="text-xs font-normal text-primary-600 bg-primary-50 dark:bg-primary-500/10 px-2 py-0.5 rounded-full">
                         Filtrando período: {serieDemandaCapacidade.find(s => s.chave === filtros.periodoSelecionado)?.label || filtros.periodoSelecionado}
@@ -569,7 +723,36 @@ export function PainelExecutivo({
         <TabsContent value="equipe">
           <div className="space-y-6">
 
-            {/* Tabela principal — toda a informação relevante por pessoa */}
+            {/* Resumo da equipe */}
+            {performancePorAgente.length > 0 && (() => {
+              const totalPessoas = performancePorAgente.filter(a => a.nome !== 'Nao atribuido').length;
+              const totalConcluidas = performancePorAgente.reduce((s, a) => s + a.concluidas, 0);
+              const totalAtivas = performancePorAgente.reduce((s, a) => s + a.ativas, 0);
+              const melhorAgente = performancePorAgente.reduce((best, a) => a.concluidas > best.concluidas ? a : best, performancePorAgente[0]);
+              return (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                    <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Membros</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-50 mt-1">{totalPessoas}</p>
+                  </div>
+                  <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                    <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Concluídas</p>
+                    <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{totalConcluidas}</p>
+                  </div>
+                  <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                    <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Em Andamento</p>
+                    <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{totalAtivas}</p>
+                  </div>
+                  <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                    <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Destaque</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-50 mt-1 truncate">{melhorAgente.nome}</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400">{melhorAgente.concluidas} concluídas</p>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Tabela com barras de progresso inline */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -579,53 +762,220 @@ export function PainelExecutivo({
               <CardContent>
                 {performancePorAgente.length === 0 ? (
                   <EmptyState height={80}>Sem dados no filtro atual.</EmptyState>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-gray-200 dark:border-white/[0.06] text-xs text-gray-500 dark:text-gray-400">
-                          <th className="text-left py-2.5 pr-4 font-medium">Responsável</th>
-                          <th className="text-right py-2.5 px-3 font-medium">Concluídas</th>
-                          <th className="text-right py-2.5 px-3 font-medium">Em Andamento</th>
-                          <th className="text-right py-2.5 px-3 font-medium">Tempo Médio</th>
-                          <th className="text-right py-2.5 px-3 font-medium">No Prazo</th>
-                          <th className="text-right py-2.5 px-3 font-medium">Comentários</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {performancePorAgente.map((ag) => (
-                          <tr key={ag.nome} className="border-b border-gray-100 dark:border-white/[0.04] hover:bg-gray-50 dark:hover:bg-gray-800/30">
-                            <td className="py-2.5 pr-4 font-medium text-gray-900 dark:text-gray-100 max-w-[260px] truncate">{ag.nome}</td>
-                            <td className="py-2.5 px-3 text-right text-emerald-600 dark:text-emerald-400 font-semibold">{ag.concluidas}</td>
-                            <td className="py-2.5 px-3 text-right text-amber-600 dark:text-amber-400">{ag.ativas}</td>
-                            <td className="py-2.5 px-3 text-right">{ag.tempoMedioDias > 0 ? `${ag.tempoMedioDias}d` : '--'}</td>
-                            <td className="py-2.5 px-3 text-right">
-                              <span className={cn(
-                                'font-medium',
-                                ag.taxaNoPrazo >= 80 ? 'text-emerald-600 dark:text-emerald-400' :
-                                ag.taxaNoPrazo >= 50 ? 'text-amber-600 dark:text-amber-400' :
-                                'text-red-600 dark:text-red-400',
-                              )}>
-                                {ag.concluidas > 0 ? `${ag.taxaNoPrazo}%` : '--'}
-                              </span>
-                            </td>
-                            <td className="py-2.5 px-3 text-right">{ag.totalComentarios}</td>
+                ) : (() => {
+                  const maxTotal = Math.max(...performancePorAgente.map(a => a.total), 1);
+                  return (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-200 dark:border-white/[0.06] text-xs text-gray-500 dark:text-gray-400">
+                            <th className="text-left py-2.5 pr-4 font-medium w-[200px]">Responsável</th>
+                            <th className="text-left py-2.5 px-3 font-medium">Progresso</th>
+                            <th className="text-right py-2.5 px-3 font-medium w-[80px]">Concluídas</th>
+                            <th className="text-right py-2.5 px-3 font-medium w-[80px]">Ativas</th>
+                            <th className="text-right py-2.5 px-3 font-medium w-[80px]">Tempo Médio</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                        </thead>
+                        <tbody>
+                          {performancePorAgente.map((ag) => {
+                            const pctConcluidas = ag.total > 0 ? (ag.concluidas / ag.total) * 100 : 0;
+                            const barWidth = (ag.total / maxTotal) * 100;
+                            return (
+                              <tr key={ag.nome} className="border-b border-gray-100 dark:border-white/[0.04] hover:bg-gray-50 dark:hover:bg-gray-800/30">
+                                <td className="py-3 pr-4">
+                                  <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{ag.nome}</p>
+                                  <p className="text-[10px] text-gray-400">{ag.total} tarefas · {ag.totalComentarios} comentários</p>
+                                </td>
+                                <td className="py-3 px-3">
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden" style={{ width: `${barWidth}%`, minWidth: '40px' }}>
+                                      <div
+                                        className="h-full bg-emerald-500/80 rounded-full transition-all"
+                                        style={{ width: `${pctConcluidas}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 w-[32px] text-right shrink-0">
+                                      {Math.round(pctConcluidas)}%
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="py-3 px-3 text-right text-emerald-600 dark:text-emerald-400 font-semibold tabular-nums">{ag.concluidas}</td>
+                                <td className="py-3 px-3 text-right text-amber-600 dark:text-amber-400 tabular-nums">{ag.ativas}</td>
+                                <td className="py-3 px-3 text-right tabular-nums">{ag.tempoMedioDias > 0 ? `${ag.tempoMedioDias}d` : '--'}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
 
-            {/* Carga de trabalho + Quem mais comenta */}
+            {/* Conclusões por Agente — mesmo modelo de Criadas vs Finalizadas */}
+            {serieConclucoesPorAgente.serie.length > 0 && (() => {
+              const { serie, agentes, variacao: variacaoAgentes } = serieConclucoesPorAgente;
+              const varPorPeriodoPorAgente = new Map<string, Map<string, number | null>>();
+              for (let idx = 0; idx < serie.length; idx++) {
+                const ponto = serie[idx];
+                const label = ponto.label as string;
+                const m = new Map<string, number | null>();
+                agentes.forEach(ag => {
+                  const atual = (ponto[ag] as number) || 0;
+                  const anterior = idx > 0 ? ((serie[idx - 1][ag] as number) || 0) : null;
+                  if (anterior === null) { m.set(ag, null); return; }
+                  if (anterior === 0) { m.set(ag, atual > 0 ? 100 : 0); return; }
+                  m.set(ag, Math.round(((atual - anterior) / anterior) * 100));
+                });
+                varPorPeriodoPorAgente.set(label, m);
+              }
+
+              const fmtVar = (v: number | null | undefined) => {
+                if (v == null) return '—';
+                const arrow = v > 0 ? '▲' : v < 0 ? '▼' : '';
+                return `${arrow} ${v > 0 ? '+' : ''}${v}%`;
+              };
+              const varColor = (v: number | null | undefined) => {
+                if (v == null) return '#9ca3af';
+                return v > 0 ? '#16a34a' : v < 0 ? '#dc2626' : '#9ca3af';
+              };
+              const bottomMargin = 16 + agentes.length * 15;
+
+              return (
+                <Card>
+                  <CardHeader>
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <Trophy className="h-4 w-4 text-amber-500" /> Conclusões por Agente
+                        <InfoBadge texto="Base: data fim (date_end) de tarefas concluídas. Cada barra representa o total de conclusões do agente no período. Top 5 executores por volume." />
+                      </CardTitle>
+                      <div className="flex items-center bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                        {(['dia', 'semana', 'mes', 'trimestre', 'ano'] as GranularidadeTempo[]).map((g) => (
+                          <button
+                            key={g}
+                            onClick={() => onFiltroChange('granularidade', g)}
+                            className={cn(
+                              'px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all',
+                              filtros.granularidade === g
+                                ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                            )}
+                          >
+                            {g}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={340 + bottomMargin}>
+                      <BarChart data={serie} margin={{ top: 20, right: 12, left: 4, bottom: bottomMargin }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                        <XAxis
+                          dataKey="label"
+                          stroke="var(--chart-axis)"
+                          fontSize={11}
+                          tickLine={false}
+                          axisLine={{ stroke: 'var(--chart-grid)' }}
+                          tick={(tickProps: any) => {
+                            const { x, y, payload, index: tickIndex } = tickProps;
+                            const vars = varPorPeriodoPorAgente.get(payload.value);
+                            return (
+                              <g transform={`translate(${x},${y})`}>
+                                <text x={0} y={0} dy={14} textAnchor="middle" fill="var(--chart-axis)" fontSize={11} fontWeight={600}>{payload.value}</text>
+                                <line x1={-22} y1={24} x2={22} y2={24} stroke="var(--chart-grid)" strokeWidth={1} />
+                                {agentes.map((ag, ai) => {
+                                  const v = vars?.get(ag) ?? null;
+                                  return (
+                                    <text key={ag} x={0} y={0} dy={37 + ai * 15} textAnchor="middle" fill={varColor(v)} fontSize={10} fontWeight={700}>
+                                      {fmtVar(v)}
+                                    </text>
+                                  );
+                                })}
+                                {tickIndex === 0 && agentes.map((ag, ai) => (
+                                  <text key={`lbl-${ag}`} x={-x + 4} y={0} dy={37 + ai * 15} textAnchor="start" fill={CORES_AGENTES[ai % CORES_AGENTES.length]} fontSize={9} fontWeight={700}>
+                                    {ag.length > 12 ? ag.slice(0, 12) + '..' : ag}
+                                  </text>
+                                ))}
+                              </g>
+                            );
+                          }}
+                        />
+                        <YAxis stroke="var(--chart-axis)" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
+                        <Tooltip
+                          cursor={{ fill: 'var(--chart-cursor)' }}
+                          content={({ active, payload, label }) => {
+                            if (!active || !payload?.length) return null;
+                            const vars = varPorPeriodoPorAgente.get(label as string);
+                            return (
+                              <div style={{ ...tooltipStyle, padding: '8px 12px', fontSize: 12 }}>
+                                <p style={{ fontWeight: 700, marginBottom: 4 }}>{label}</p>
+                                {payload.map((p: any) => (
+                                  <p key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+                                    <span style={{ color: p.color }}>{p.name}</span>
+                                    <strong>{p.value}</strong>
+                                  </p>
+                                ))}
+                                {vars && (
+                                  <div style={{ borderTop: '1px dashed #e5e7eb', marginTop: 4, paddingTop: 4, fontSize: 11 }}>
+                                    {agentes.map((ag, ai) => {
+                                      const v = vars.get(ag);
+                                      if (v == null) return null;
+                                      const sinal = v > 0 ? '+' : '';
+                                      const cor = v > 0 ? '#16a34a' : v < 0 ? '#dc2626' : '#6b7280';
+                                      return (
+                                        <p key={ag} style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+                                          <span style={{ color: CORES_AGENTES[ai % CORES_AGENTES.length] }}>Var. {ag.split(' ')[0]}</span>
+                                          <span style={{ color: cor, fontWeight: 600 }}>{sinal}{v}%</span>
+                                        </p>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }}
+                        />
+                        <Legend verticalAlign="top" align="right" iconType="rect" wrapperStyle={{ paddingBottom: 8, fontSize: '11px' }} />
+                        {agentes.map((agente, i) => (
+                          <Bar
+                            key={agente}
+                            dataKey={agente}
+                            name={agente}
+                            fill={CORES_AGENTES[i % CORES_AGENTES.length]}
+                            fillOpacity={0.85}
+                            radius={[3, 3, 0, 0]}
+                            barSize={22}
+                          >
+                            <LabelList dataKey={agente} position="top" offset={6} fill={CORES_AGENTES[i % CORES_AGENTES.length]} fontSize={11} fontWeight={700} formatter={(v: number) => v > 0 ? v : ''} />
+                          </Bar>
+                        ))}
+                      </BarChart>
+                    </ResponsiveContainer>
+
+                    {variacaoAgentes.length > 0 && (
+                      <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-x-6 gap-y-1">
+                        {variacaoAgentes.map((v, i) => (
+                          <span key={v.agente} className="inline-flex items-center gap-1">
+                            <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: CORES_AGENTES[i % CORES_AGENTES.length] }} />
+                            <span className="font-medium">{v.agente}</span>:
+                            <span className="font-semibold text-gray-900 dark:text-gray-100">{v.total}</span> total
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
+            {/* Carga de trabalho + Interações */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <UserCog className="h-4 w-4 text-primary-500" /> Carga de Trabalho
-                    {filtros.executor.length > 0 && <span className="ml-2 text-xs font-normal text-primary-500">({filtros.executor.join(', ')})</span>}
+                    <UserCog className="h-4 w-4 text-primary-500" /> Carga de Trabalho (Ativas)
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -633,8 +983,8 @@ export function PainelExecutivo({
                     data={dadosGraficoExecutores}
                     height={Math.max(260, Math.min(500, dadosGraficoExecutores.length * 38))}
                     layout="vertical"
-                    categoryAxisWidth={180}
-                    categoryLabelMaxChars={24}
+                    categoryAxisWidth={160}
+                    categoryLabelMaxChars={22}
                     onItemClick={(name) => toggleFiltro('executor', name)}
                     activeItems={filtros.executor.length > 0 ? filtros.executor : undefined}
                   />
@@ -655,7 +1005,7 @@ export function PainelExecutivo({
                     <div className="space-y-2 max-h-[360px] overflow-auto pr-1">
                       {interacoesPorUsuario.map((user) => (
                         <div key={user.nome} className="flex items-center gap-3">
-                          <span className="text-xs text-gray-700 dark:text-gray-300 w-[160px] truncate shrink-0 font-medium">{user.nome}</span>
+                          <span className="text-xs text-gray-700 dark:text-gray-300 w-[140px] truncate shrink-0 font-medium">{user.nome}</span>
                           <div className="flex-1 h-5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-primary-500/80 rounded-full transition-all flex items-center justify-end pr-2"
@@ -675,6 +1025,163 @@ export function PainelExecutivo({
               )}
             </div>
 
+            {/* Comentários por Agente ao longo do tempo */}
+            {serieComentariosPorAgente.serie.length > 0 && (() => {
+              const { serie, agentes, variacao: variacaoAgentes } = serieComentariosPorAgente;
+              const varPorPeriodo = new Map<string, Map<string, number | null>>();
+              for (let idx = 0; idx < serie.length; idx++) {
+                const ponto = serie[idx];
+                const label = ponto.label as string;
+                const m = new Map<string, number | null>();
+                agentes.forEach(ag => {
+                  const atual = (ponto[ag] as number) || 0;
+                  const anterior = idx > 0 ? ((serie[idx - 1][ag] as number) || 0) : null;
+                  if (anterior === null) { m.set(ag, null); return; }
+                  if (anterior === 0) { m.set(ag, atual > 0 ? 100 : 0); return; }
+                  m.set(ag, Math.round(((atual - anterior) / anterior) * 100));
+                });
+                varPorPeriodo.set(label, m);
+              }
+
+              const fmtVar = (v: number | null | undefined) => {
+                if (v == null) return '—';
+                const arrow = v > 0 ? '▲' : v < 0 ? '▼' : '';
+                return `${arrow} ${v > 0 ? '+' : ''}${v}%`;
+              };
+              const varColor = (v: number | null | undefined) => {
+                if (v == null) return '#9ca3af';
+                return v > 0 ? '#16a34a' : v < 0 ? '#dc2626' : '#9ca3af';
+              };
+              const bottomMargin = 16 + agentes.length * 15;
+
+              return (
+                <Card>
+                  <CardHeader>
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <MessageSquare className="h-4 w-4 text-primary-500" /> Comentários por Agente
+                        <InfoBadge texto="Base: data do comentário (commented_at) no Notion. Cada barra representa o total de comentários do agente no período. Top 5 autores por volume." />
+                      </CardTitle>
+                      <div className="flex items-center bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                        {(['dia', 'semana', 'mes', 'trimestre', 'ano'] as GranularidadeTempo[]).map((g) => (
+                          <button
+                            key={g}
+                            onClick={() => onFiltroChange('granularidade', g)}
+                            className={cn(
+                              'px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all',
+                              filtros.granularidade === g
+                                ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                            )}
+                          >
+                            {g}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={340 + bottomMargin}>
+                      <BarChart data={serie} margin={{ top: 20, right: 12, left: 4, bottom: bottomMargin }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                        <XAxis
+                          dataKey="label"
+                          stroke="var(--chart-axis)"
+                          fontSize={11}
+                          tickLine={false}
+                          axisLine={{ stroke: 'var(--chart-grid)' }}
+                          tick={(tickProps: any) => {
+                            const { x, y, payload, index: tickIndex } = tickProps;
+                            const vars = varPorPeriodo.get(payload.value);
+                            return (
+                              <g transform={`translate(${x},${y})`}>
+                                <text x={0} y={0} dy={14} textAnchor="middle" fill="var(--chart-axis)" fontSize={11} fontWeight={600}>{payload.value}</text>
+                                <line x1={-22} y1={24} x2={22} y2={24} stroke="var(--chart-grid)" strokeWidth={1} />
+                                {agentes.map((ag, ai) => {
+                                  const v = vars?.get(ag) ?? null;
+                                  return (
+                                    <text key={ag} x={0} y={0} dy={37 + ai * 15} textAnchor="middle" fill={varColor(v)} fontSize={10} fontWeight={700}>
+                                      {fmtVar(v)}
+                                    </text>
+                                  );
+                                })}
+                                {tickIndex === 0 && agentes.map((ag, ai) => (
+                                  <text key={`lbl-${ag}`} x={-x + 4} y={0} dy={37 + ai * 15} textAnchor="start" fill={CORES_AGENTES[ai % CORES_AGENTES.length]} fontSize={9} fontWeight={700}>
+                                    {ag.length > 12 ? ag.slice(0, 12) + '..' : ag}
+                                  </text>
+                                ))}
+                              </g>
+                            );
+                          }}
+                        />
+                        <YAxis stroke="var(--chart-axis)" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
+                        <Tooltip
+                          cursor={{ fill: 'var(--chart-cursor)' }}
+                          content={({ active, payload, label }) => {
+                            if (!active || !payload?.length) return null;
+                            const vars = varPorPeriodo.get(label as string);
+                            return (
+                              <div style={{ ...tooltipStyle, padding: '8px 12px', fontSize: 12 }}>
+                                <p style={{ fontWeight: 700, marginBottom: 4 }}>{label}</p>
+                                {payload.map((p: any) => (
+                                  <p key={p.name} style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+                                    <span style={{ color: p.color }}>{p.name}</span>
+                                    <strong>{p.value}</strong>
+                                  </p>
+                                ))}
+                                {vars && (
+                                  <div style={{ borderTop: '1px dashed #e5e7eb', marginTop: 4, paddingTop: 4, fontSize: 11 }}>
+                                    {agentes.map((ag, ai) => {
+                                      const v = vars.get(ag);
+                                      if (v == null) return null;
+                                      const sinal = v > 0 ? '+' : '';
+                                      const cor = v > 0 ? '#16a34a' : v < 0 ? '#dc2626' : '#6b7280';
+                                      return (
+                                        <p key={ag} style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+                                          <span style={{ color: CORES_AGENTES[ai % CORES_AGENTES.length] }}>Var. {ag.split(' ')[0]}</span>
+                                          <span style={{ color: cor, fontWeight: 600 }}>{sinal}{v}%</span>
+                                        </p>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }}
+                        />
+                        <Legend verticalAlign="top" align="right" iconType="rect" wrapperStyle={{ paddingBottom: 8, fontSize: '11px' }} />
+                        {agentes.map((agente, i) => (
+                          <Bar
+                            key={agente}
+                            dataKey={agente}
+                            name={agente}
+                            fill={CORES_AGENTES[i % CORES_AGENTES.length]}
+                            fillOpacity={0.85}
+                            radius={[3, 3, 0, 0]}
+                            barSize={22}
+                          >
+                            <LabelList dataKey={agente} position="top" offset={6} fill={CORES_AGENTES[i % CORES_AGENTES.length]} fontSize={11} fontWeight={700} formatter={(v: number) => v > 0 ? v : ''} />
+                          </Bar>
+                        ))}
+                      </BarChart>
+                    </ResponsiveContainer>
+
+                    {variacaoAgentes.length > 0 && (
+                      <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-x-6 gap-y-1">
+                        {variacaoAgentes.map((v, i) => (
+                          <span key={v.agente} className="inline-flex items-center gap-1">
+                            <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: CORES_AGENTES[i % CORES_AGENTES.length] }} />
+                            <span className="font-medium">{v.agente}</span>:
+                            <span className="font-semibold text-gray-900 dark:text-gray-100">{v.total}</span> total
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
           </div>
         </TabsContent>
 
@@ -684,11 +1191,55 @@ export function PainelExecutivo({
         <TabsContent value="prazos">
           <div className="space-y-6">
 
+            {anomaliasConcluidas.length > 0 && (
+              <Card className="border-amber-300 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between gap-2 text-base">
+                    <span className="inline-flex items-center gap-2">
+                      <ShieldAlert className="h-4 w-4 text-amber-600" /> Anomalia: Concluídas com prazo no futuro
+                      <InfoBadge texto="Tarefas com status 'Concluído' mas data fim (date_end) posterior à data de hoje. Indica inconsistência no preenchimento." />
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-bold">
+                      {anomaliasConcluidas.length}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-amber-700 dark:text-amber-400 mb-3">
+                    Estas tarefas estão marcadas como concluídas mas possuem data de finalização no futuro. Verifique se o status ou a data está incorreta.
+                  </p>
+                  <div className="space-y-2 max-h-[300px] overflow-auto pr-1">
+                    {anomaliasConcluidas.map(tarefa => (
+                      <div key={tarefa.id} className="flex items-center justify-between gap-3 p-2.5 rounded-lg border border-amber-200/80 dark:border-amber-500/20 bg-white/60 dark:bg-gray-900/40">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tarefa.titulo}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {tarefa.executor} · Prazo: {tarefa.dataFim?.split('-').reverse().join('/')}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300">
+                            {tarefa.status}
+                          </span>
+                          {tarefa.notionUrl && (
+                            <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline">
+                              Notion <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Tempo médio por prioridade */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Timer className="h-4 w-4 text-primary-500" /> Tempo Médio de Conclusão por Prioridade
+                  <InfoBadge texto="Calcula a diferença em dias entre a data de criação (created_at) e a data fim (date_end). Apenas tarefas concluídas com ambas as datas preenchidas." />
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -810,6 +1361,539 @@ export function PainelExecutivo({
 
           </div>
         </TabsContent>
+
+        {/* -------------------------------------------------------------- */}
+        {/*  Tab: Backlog (Solicitações)                                    */}
+        {/* -------------------------------------------------------------- */}
+        <TabsContent value="backlog">
+          <div className="space-y-6">
+            {(() => {
+              const total = backlogTarefas.length;
+              const urgentes = backlogTarefas.filter(t => t.prioridade.toLowerCase().includes('urg')).length;
+              const importantes = backlogTarefas.filter(t => t.prioridade.toLowerCase().includes('import')).length;
+              const tempoMedioEspera = total > 0 ? Math.round(backlogTarefas.reduce((s, t) => s + t.diasEspera, 0) / total) : 0;
+              const porDepto = new Map<string, number>();
+              backlogTarefas.forEach(t => { porDepto.set(t.departamento || 'Sem depto', (porDepto.get(t.departamento || 'Sem depto') || 0) + 1); });
+              const deptoData = Array.from(porDepto.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+              const porPrioridade = new Map<string, number>();
+              backlogTarefas.forEach(t => { porPrioridade.set(t.prioridade || 'Sem prioridade', (porPrioridade.get(t.prioridade || 'Sem prioridade') || 0) + 1); });
+              const prioData = Array.from(porPrioridade.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+
+              return (
+                <>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div className="rounded-xl border border-blue-200 dark:border-blue-500/20 bg-blue-50/50 dark:bg-blue-500/5 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Na Fila</p>
+                      <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-1">{total}</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">aguardando triagem</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Tempo Médio Espera</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">{tempoMedioEspera}d</p>
+                    </div>
+                    <div className="rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Urgentes</p>
+                      <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-1">{urgentes}</p>
+                    </div>
+                    <div className="rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50/30 dark:bg-amber-500/5 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Importantes</p>
+                      <p className="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1">{importantes}</p>
+                    </div>
+                  </div>
+
+                  <GraficoTemporalCriacao tarefas={backlogTarefas} titulo="Solicitações ao Longo do Tempo" cor="#3b82f6" info="Base: data de criação (created_at) das tarefas em status Solicitação. Mostra o volume de novas demandas entrando na fila por mês." />
+
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    {deptoData.length > 0 && (
+                      <Card>
+                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Building2 className="h-4 w-4 text-blue-500" /> Por Departamento</CardTitle></CardHeader>
+                        <CardContent>
+                          <BarChartComponent data={deptoData} height={Math.max(200, deptoData.length * 36)} layout="vertical" categoryAxisWidth={160} categoryLabelMaxChars={22} />
+                        </CardContent>
+                      </Card>
+                    )}
+                    {prioData.length > 0 && (
+                      <Card>
+                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><AlertTriangle className="h-4 w-4 text-amber-500" /> Por Prioridade</CardTitle></CardHeader>
+                        <CardContent>
+                          <BarChartComponent data={prioData} height={Math.max(160, prioData.length * 36)} layout="vertical" categoryAxisWidth={120} categoryLabelMaxChars={18} />
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <Inbox className="h-4 w-4 text-blue-500" /> Fila de Solicitações
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {total === 0 ? (
+                        <EmptyState height={80}>Nenhuma solicitação pendente.</EmptyState>
+                      ) : (
+                        <div className="space-y-2 max-h-[500px] overflow-auto pr-1">
+                          {backlogTarefas.map(tarefa => (
+                            <div key={tarefa.id} className={cn(
+                              'flex items-center justify-between gap-3 p-3 rounded-lg border',
+                              tarefa.diasEspera > 14 ? 'border-red-200/60 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5' :
+                              tarefa.diasEspera > 7 ? 'border-amber-200/60 dark:border-amber-500/20 bg-amber-50/30 dark:bg-amber-500/5' :
+                              'border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50',
+                            )}>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tarefa.titulo}</p>
+                                <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
+                                  <span>{tarefa.departamento || 'Sem depto'}</span>
+                                  <span>·</span>
+                                  <span>{tarefa.prioridade || 'Sem prioridade'}</span>
+                                  {tarefa.criadoPor && <><span>·</span><span>por {nomeExibicao(tarefa.criadoPor)}</span></>}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 shrink-0">
+                                <span className={cn(
+                                  'text-xs font-semibold',
+                                  tarefa.diasEspera > 14 ? 'text-red-600 dark:text-red-400' :
+                                  tarefa.diasEspera > 7 ? 'text-amber-600 dark:text-amber-400' :
+                                  'text-gray-500',
+                                )}>{tarefa.diasEspera}d</span>
+                                {tarefa.notionUrl && (
+                                  <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1">
+                                    Notion <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </>
+              );
+            })()}
+          </div>
+        </TabsContent>
+
+        {/* -------------------------------------------------------------- */}
+        {/*  Tab: Stand-by                                                  */}
+        {/* -------------------------------------------------------------- */}
+        <TabsContent value="standby">
+          <div className="space-y-6">
+            {(() => {
+              const total = standbyTarefas.length;
+              const criticas = standbyTarefas.filter(t => t.prioridade.toLowerCase().includes('urg') || t.prioridade.toLowerCase().includes('import')).length;
+              const porDepto = new Map<string, number>();
+              standbyTarefas.forEach(t => { porDepto.set(t.departamento || 'Sem depto', (porDepto.get(t.departamento || 'Sem depto') || 0) + 1); });
+              const deptoData = Array.from(porDepto.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+
+              return (
+                <>
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="rounded-xl border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-500/5 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Pausadas</p>
+                      <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{total}</p>
+                    </div>
+                    {criticas > 0 && (
+                      <div className="rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5 p-4">
+                        <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Urgentes/Importantes</p>
+                        <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-1">{criticas}</p>
+                        <p className="text-[10px] text-red-500 mt-0.5">requer atenção</p>
+                      </div>
+                    )}
+                    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Departamentos</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">{porDepto.size}</p>
+                    </div>
+                  </div>
+
+                  <GraficoTemporalCriacao tarefas={standbyTarefas} titulo="Stand-by ao Longo do Tempo" cor="#6366f1" info="Base: data de criação (created_at) das tarefas em status Stand-by. Mostra quando as tarefas pausadas foram originalmente criadas." />
+
+                  {deptoData.length > 1 && (
+                    <Card>
+                      <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Building2 className="h-4 w-4 text-indigo-500" /> Stand-by por Departamento</CardTitle></CardHeader>
+                      <CardContent>
+                        <BarChartComponent data={deptoData} height={Math.max(180, deptoData.length * 36)} layout="vertical" categoryAxisWidth={160} categoryLabelMaxChars={22} />
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <PauseOctagon className="h-4 w-4 text-indigo-500" /> Tarefas Pausadas
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {total === 0 ? (
+                        <EmptyState height={80}>Nenhuma tarefa em stand-by.</EmptyState>
+                      ) : (
+                        <div className="space-y-2 max-h-[500px] overflow-auto pr-1">
+                          {standbyTarefas.map(tarefa => {
+                            const isCritica = tarefa.prioridade.toLowerCase().includes('urg') || tarefa.prioridade.toLowerCase().includes('import');
+                            return (
+                              <div key={tarefa.id} className={cn(
+                                'flex items-center justify-between gap-3 p-3 rounded-lg border',
+                                isCritica ? 'border-red-200/60 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5' :
+                                'border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50',
+                              )}>
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tarefa.titulo}</p>
+                                  <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
+                                    <span className={cn(
+                                      'px-1.5 py-0.5 rounded text-[10px] font-medium',
+                                      isCritica ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300',
+                                    )}>{tarefa.prioridade || 'Sem prioridade'}</span>
+                                    <span>{tarefa.departamento || 'Sem depto'}</span>
+                                    {tarefa.executor && tarefa.executor !== 'Nao atribuido' && <><span>·</span><span>{nomeExibicao(tarefa.executor)}</span></>}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3 shrink-0">
+                                  <span className="text-xs text-gray-500">{tarefa.diasParada}d parada</span>
+                                  {tarefa.notionUrl && (
+                                    <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1">
+                                      Notion <ExternalLink className="h-3 w-3" />
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </>
+              );
+            })()}
+          </div>
+        </TabsContent>
+
+        {/* -------------------------------------------------------------- */}
+        {/*  Tab: Canceladas                                                */}
+        {/* -------------------------------------------------------------- */}
+        <TabsContent value="canceladas">
+          <div className="space-y-6">
+            {(() => {
+              const canceladas = tarefasFiltradas.filter(t => t.status.toLowerCase().includes('cancel'));
+              const total = canceladas.length;
+              const totalGeral = tarefasFiltradas.length;
+              const taxa = totalGeral > 0 ? Math.round((total / totalGeral) * 100) : 0;
+              const porDepto = new Map<string, number>();
+              canceladas.forEach(t => { porDepto.set(t.departamento || 'Sem depto', (porDepto.get(t.departamento || 'Sem depto') || 0) + 1); });
+              const deptoData = Array.from(porDepto.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+              const porPrioridade = new Map<string, number>();
+              canceladas.forEach(t => { porPrioridade.set(t.prioridade || 'Sem prioridade', (porPrioridade.get(t.prioridade || 'Sem prioridade') || 0) + 1); });
+              const prioData = Array.from(porPrioridade.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+
+              return (
+                <>
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="rounded-xl border border-rose-200 dark:border-rose-500/20 bg-rose-50/50 dark:bg-rose-500/5 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Canceladas</p>
+                      <p className="text-3xl font-bold text-rose-600 dark:text-rose-400 mt-1">{total}</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Taxa de Cancelamento</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">{taxa}%</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">do total de {totalGeral} tarefas</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Departamentos</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">{porDepto.size}</p>
+                    </div>
+                  </div>
+
+                  <GraficoTemporalCriacao tarefas={canceladas} titulo="Cancelamentos ao Longo do Tempo" cor="#f43f5e" info="Base: data de criação (created_at) das tarefas canceladas. Mostra quando as tarefas que foram canceladas entraram originalmente na esteira." />
+
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    {deptoData.length > 0 && (
+                      <Card>
+                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Building2 className="h-4 w-4 text-rose-500" /> Canceladas por Departamento</CardTitle></CardHeader>
+                        <CardContent>
+                          <BarChartComponent data={deptoData} height={Math.max(180, deptoData.length * 36)} layout="vertical" categoryAxisWidth={160} categoryLabelMaxChars={22} />
+                        </CardContent>
+                      </Card>
+                    )}
+                    {prioData.length > 0 && (
+                      <Card>
+                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><AlertTriangle className="h-4 w-4 text-rose-500" /> Canceladas por Prioridade</CardTitle></CardHeader>
+                        <CardContent>
+                          <BarChartComponent data={prioData} height={Math.max(160, prioData.length * 36)} layout="vertical" categoryAxisWidth={120} categoryLabelMaxChars={18} />
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <Ban className="h-4 w-4 text-rose-500" /> Tarefas Canceladas
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {total === 0 ? (
+                        <EmptyState height={80}>Nenhuma tarefa cancelada.</EmptyState>
+                      ) : (
+                        <div className="space-y-2 max-h-[500px] overflow-auto pr-1">
+                          {canceladas.map(tarefa => (
+                            <div key={tarefa.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50">
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate line-through">{tarefa.titulo}</p>
+                                <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+                                  <span>{tarefa.departamento || 'Sem depto'}</span>
+                                  <span>·</span>
+                                  <span>{tarefa.prioridade || 'Sem prioridade'}</span>
+                                  {tarefa.executor && tarefa.executor !== 'Nao atribuido' && <><span>·</span><span>{nomeExibicao(tarefa.executor)}</span></>}
+                                </div>
+                              </div>
+                              {tarefa.notionUrl && (
+                                <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1 shrink-0">
+                                  Notion <ExternalLink className="h-3 w-3" />
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </>
+              );
+            })()}
+          </div>
+        </TabsContent>
+
+        {/* -------------------------------------------------------------- */}
+        {/*  Tab: Qualidade (Compliance com regras da esteira)              */}
+        {/* -------------------------------------------------------------- */}
+        <TabsContent value="qualidade">
+          <div className="space-y-6">
+            {(() => {
+              type Violacao = { campo: string; regra: string; tipo: 'faltando' | 'proibido' };
+              type TarefaAuditada = TarefaProcessada & { violacoes: Violacao[]; statusCategoria: string };
+
+              const categorizar = (status: string): string => {
+                const s = status.toLowerCase();
+                if (s.includes('solicit')) return 'solicitacao';
+                if (s.includes('agend')) return 'agendado';
+                if (s.includes('andamento') || s.includes('aguard') || s.includes('implant') || s.includes('aprov')) return 'execucao';
+                if (s.includes('conclu')) return 'concluido';
+                if (s.includes('cancel') || s.includes('stand')) return 'encerrado';
+                return 'outro';
+              };
+
+              const auditar = (t: TarefaProcessada): Violacao[] => {
+                const v: Violacao[] = [];
+                const cat = categorizar(t.status);
+                const semTitulo = !t.titulo || t.titulo === 'Sem titulo';
+                const semDepto = !t.departamento || t.departamento === 'Sem departamento';
+                const semPrioridade = !t.prioridade || t.prioridade === 'Sem prioridade';
+                const semDescricao = !t.descricao?.trim();
+                const temExecutor = t.executores.length > 0 && t.executor.toLowerCase() !== 'nao atribuido';
+                const temDataInicio = !!t.dataInicio;
+                const temDataFim = !!t.dataFim;
+                const temTags = t.tags.length > 0;
+
+                if (cat === 'solicitacao') {
+                  if (semTitulo) v.push({ campo: 'Nome', regra: 'Obrigatório em Solicitação', tipo: 'faltando' });
+                  if (semDepto) v.push({ campo: 'Departamento', regra: 'Obrigatório em Solicitação', tipo: 'faltando' });
+                  if (semPrioridade) v.push({ campo: 'Prioridade', regra: 'Obrigatório em Solicitação', tipo: 'faltando' });
+                  if (semDescricao) v.push({ campo: 'Descrição', regra: 'Obrigatório em Solicitação', tipo: 'faltando' });
+                  if (temExecutor) v.push({ campo: 'Executor', regra: 'Proibido em Solicitação', tipo: 'proibido' });
+                  if (temDataInicio) v.push({ campo: 'Data início', regra: 'Proibido em Solicitação', tipo: 'proibido' });
+                  if (temDataFim) v.push({ campo: 'Data fim', regra: 'Proibido em Solicitação', tipo: 'proibido' });
+                }
+                if (cat === 'agendado') {
+                  if (semDepto) v.push({ campo: 'Departamento', regra: 'Obrigatório em Agendado', tipo: 'faltando' });
+                  if (semPrioridade) v.push({ campo: 'Prioridade', regra: 'Obrigatório em Agendado', tipo: 'faltando' });
+                  if (!temExecutor) v.push({ campo: 'Executor', regra: 'Obrigatório em Agendado', tipo: 'faltando' });
+                  if (!temDataInicio) v.push({ campo: 'Data início', regra: 'Obrigatório em Agendado', tipo: 'faltando' });
+                  if (!temTags) v.push({ campo: 'Tags', regra: 'Obrigatório em Agendado', tipo: 'faltando' });
+                  if (temDataFim) v.push({ campo: 'Data fim', regra: 'Não preencher em Agendado', tipo: 'proibido' });
+                }
+                if (cat === 'execucao') {
+                  if (semDepto) v.push({ campo: 'Departamento', regra: 'Obrigatório em Execução', tipo: 'faltando' });
+                  if (semPrioridade) v.push({ campo: 'Prioridade', regra: 'Obrigatório em Execução', tipo: 'faltando' });
+                  if (!temExecutor) v.push({ campo: 'Executor', regra: 'Obrigatório em Execução', tipo: 'faltando' });
+                  if (!temDataInicio) v.push({ campo: 'Data início', regra: 'Obrigatório em Execução', tipo: 'faltando' });
+                  if (!temDataFim) v.push({ campo: 'Data fim', regra: 'Previsão obrigatória em Execução', tipo: 'faltando' });
+                  if (!temTags) v.push({ campo: 'Tags', regra: 'Obrigatório em Execução', tipo: 'faltando' });
+                }
+                if (cat === 'concluido') {
+                  if (semDepto) v.push({ campo: 'Departamento', regra: 'Obrigatório em Concluído', tipo: 'faltando' });
+                  if (semPrioridade) v.push({ campo: 'Prioridade', regra: 'Obrigatório em Concluído', tipo: 'faltando' });
+                  if (!temExecutor) v.push({ campo: 'Executor', regra: 'Obrigatório em Concluído', tipo: 'faltando' });
+                  if (!temDataInicio) v.push({ campo: 'Data início', regra: 'Obrigatório em Concluído', tipo: 'faltando' });
+                  if (!temDataFim) v.push({ campo: 'Data fim', regra: 'Data real obrigatória em Concluído', tipo: 'faltando' });
+                  if (!temTags) v.push({ campo: 'Tags', regra: 'Obrigatório em Concluído', tipo: 'faltando' });
+                }
+                return v;
+              };
+
+              const auditadas: TarefaAuditada[] = tarefasFiltradas.map(t => ({
+                ...t,
+                violacoes: auditar(t),
+                statusCategoria: categorizar(t.status),
+              }));
+
+              const comViolacao = auditadas.filter(t => t.violacoes.length > 0);
+              const semViolacao = auditadas.filter(t => t.violacoes.length === 0);
+              const totalAuditadas = auditadas.length;
+              const pctConforme = totalAuditadas > 0 ? Math.round((semViolacao.length / totalAuditadas) * 100) : 0;
+              const totalViolacoes = comViolacao.reduce((s, t) => s + t.violacoes.length, 0);
+
+              const porCategoria = new Map<string, { total: number; violacoes: number }>();
+              auditadas.forEach(t => {
+                const cat = t.statusCategoria;
+                const e = porCategoria.get(cat) || { total: 0, violacoes: 0 };
+                e.total++;
+                if (t.violacoes.length > 0) e.violacoes++;
+                porCategoria.set(cat, e);
+              });
+
+              const porCampo = new Map<string, number>();
+              comViolacao.forEach(t => t.violacoes.forEach(v => {
+                porCampo.set(v.campo, (porCampo.get(v.campo) || 0) + 1);
+              }));
+              const campoData = Array.from(porCampo.entries())
+                .map(([name, value]) => ({ name, value }))
+                .sort((a, b) => b.value - a.value);
+
+              const nomesCat: Record<string, string> = {
+                solicitacao: 'Solicitação',
+                agendado: 'Agendado',
+                execucao: 'Em Execução',
+                concluido: 'Concluído',
+                encerrado: 'Cancel./Stand-by',
+                outro: 'Outro',
+              };
+              const coresCat: Record<string, string> = {
+                solicitacao: 'text-blue-600 dark:text-blue-400',
+                agendado: 'text-cyan-600 dark:text-cyan-400',
+                execucao: 'text-amber-600 dark:text-amber-400',
+                concluido: 'text-emerald-600 dark:text-emerald-400',
+                encerrado: 'text-gray-500',
+                outro: 'text-gray-400',
+              };
+
+              return (
+                <>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div className={cn(
+                      'rounded-xl border p-4',
+                      pctConforme >= 80 ? 'border-emerald-200 dark:border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-500/5' :
+                      pctConforme >= 50 ? 'border-amber-200 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-500/5' :
+                      'border-red-200 dark:border-red-500/20 bg-red-50/50 dark:bg-red-500/5',
+                    )}>
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Conformidade</p>
+                      <p className={cn(
+                        'text-3xl font-bold mt-1',
+                        pctConforme >= 80 ? 'text-emerald-600 dark:text-emerald-400' :
+                        pctConforme >= 50 ? 'text-amber-600 dark:text-amber-400' :
+                        'text-red-600 dark:text-red-400',
+                      )}>{pctConforme}%</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">{semViolacao.length} de {totalAuditadas} OK</p>
+                    </div>
+                    <div className="rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Com Violações</p>
+                      <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-1">{comViolacao.length}</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">{totalViolacoes} problemas encontrados</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Auditadas</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-50 mt-1">{totalAuditadas}</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50 p-4">
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Conformidade por Etapa</p>
+                      <div className="mt-2 space-y-1">
+                        {Array.from(porCategoria.entries()).filter(([c]) => c !== 'encerrado' && c !== 'outro').map(([cat, d]) => {
+                          const pct = d.total > 0 ? Math.round(((d.total - d.violacoes) / d.total) * 100) : 100;
+                          return (
+                            <div key={cat} className="flex items-center justify-between text-[10px]">
+                              <span className={cn('font-medium', coresCat[cat])}>{nomesCat[cat]}</span>
+                              <span className={cn('font-bold', pct >= 80 ? 'text-emerald-600' : pct >= 50 ? 'text-amber-600' : 'text-red-600')}>{pct}%</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {campoData.length > 0 && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <ShieldCheck className="h-4 w-4 text-red-500" /> Violações por Campo
+                          <InfoBadge texto="Campos obrigatórios ou proibidos conforme a regra de cada status da esteira. Baseado nas regras do documento de processo S&D." />
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <BarChartComponent data={campoData} height={Math.max(200, campoData.length * 36)} layout="vertical" categoryAxisWidth={120} categoryLabelMaxChars={18} />
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between gap-2 text-base">
+                        <span className="inline-flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 text-red-500" /> Tarefas com Violações
+                        </span>
+                        <span className="text-[11px] text-gray-500 font-normal">{comViolacao.length} tarefas</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {comViolacao.length === 0 ? (
+                        <EmptyState height={80}>Todas as tarefas estão em conformidade com as regras da esteira.</EmptyState>
+                      ) : (
+                        <div className="space-y-3 max-h-[600px] overflow-auto pr-1">
+                          {comViolacao
+                            .sort((a, b) => b.violacoes.length - a.violacoes.length)
+                            .map(tarefa => (
+                            <div key={tarefa.id} className="p-3 rounded-lg border border-red-200/60 dark:border-red-500/15 bg-red-50/20 dark:bg-red-500/5">
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tarefa.titulo}</p>
+                                  <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500">
+                                    <span className={cn('font-medium', coresCat[tarefa.statusCategoria])}>{tarefa.status}</span>
+                                    <span>·</span>
+                                    <span>{tarefa.departamento || 'Sem depto'}</span>
+                                    {tarefa.executor && tarefa.executor !== 'Nao atribuido' && <><span>·</span><span>{nomeExibicao(tarefa.executor)}</span></>}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <span className="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 text-[10px] font-bold">{tarefa.violacoes.length}</span>
+                                  {tarefa.notionUrl && (
+                                    <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1">
+                                      Notion <ExternalLink className="h-3 w-3" />
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                {tarefa.violacoes.map((v, i) => (
+                                  <span key={i} className={cn(
+                                    'inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium',
+                                    v.tipo === 'proibido'
+                                      ? 'bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300'
+                                      : 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300',
+                                  )}>
+                                    {v.tipo === 'proibido' ? '⚠' : '✕'} {v.campo}: {v.regra}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </>
+              );
+            })()}
+          </div>
+        </TabsContent>
+
       </Tabs>
 
     </div>
