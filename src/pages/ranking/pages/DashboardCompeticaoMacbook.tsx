@@ -1,7 +1,6 @@
 import { useMemo, useState, useEffect, useRef, type ImgHTMLAttributes } from 'react';
 import {
   Trophy,
-  Medal,
   Users,
   Info,
   CheckCircle,
@@ -12,7 +11,6 @@ import {
   Briefcase,
   CalendarDays,
   Clock,
-  Award,
   ShieldCheck,
   Ban,
   TrendingUp,

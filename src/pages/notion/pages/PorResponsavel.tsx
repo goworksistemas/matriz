@@ -1,7 +1,13 @@
 import { Users, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { BarChartComponent } from '@/components/charts/BarChartComponent';
-import type { ResumoExecutor } from '../hooks/useNotionFilters';
+interface ResumoExecutor {
+  nome: string;
+  total: number;
+  vencidas: number;
+  noPrazo: number;
+  hoje: number;
+}
 
 interface PorResponsavelProps {
   resumoPorExecutor: ResumoExecutor[];
