@@ -283,7 +283,7 @@ export function DashboardCompeticaoMacbook({ rankingMacbook, proprietarios }: Da
     const totalSeats = rankingMacbook.reduce((acc, v) => acc + v.seatsCapped, 0);
     const totalSeatsRaw = rankingMacbook.reduce((acc, v) => acc + v.seatsRaw, 0);
     const totalDeals = rankingMacbook.reduce((acc, v) => acc + v.dealsCount, 0);
-    const vendedoresCompetindo = rankingMacbook.filter(v => v.seatsCapped >= v.metaMinima).length;
+    const vendedoresCompetindo = rankingMacbook.filter(v => v.seatsRaw >= v.metaMinima).length;
     const totalVendedores = rankingCompleto.length;
     const seatsPerDeal = totalDeals > 0 ? totalSeats / totalDeals : 0;
     const melhorVendedor = rankingMacbook.length > 0 ? rankingMacbook[0] : null;
@@ -506,8 +506,8 @@ export function DashboardCompeticaoMacbook({ rankingMacbook, proprietarios }: Da
               </thead>
               <tbody>
                 {rankingCompleto.map((v) => {
-                  const dentroCompeticao = v.seatsCapped >= v.metaMinima;
-                  const progressPercent = Math.min((v.seatsCapped / v.metaMinima) * 100, 100);
+                  const dentroCompeticao = v.seatsRaw >= v.metaMinima;
+                  const progressPercent = Math.min((v.seatsRaw / v.metaMinima) * 100, 100);
                   const isZero = v.dealsCount === 0 && v.seatsCapped === 0;
 
                   return (
@@ -611,9 +611,9 @@ export function DashboardCompeticaoMacbook({ rankingMacbook, proprietarios }: Da
               <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Criterios de Participacao</h4>
               <ul className="space-y-2">
                 {[
-                  { icon: ShieldCheck, text: 'Minimo de 250 seats acumulados para competir', color: 'text-emerald-500' },
+                  { icon: ShieldCheck, text: 'Minimo de 250 seats brutos para participar (sem cap)', color: 'text-emerald-500' },
                   { icon: Briefcase, text: 'Produtos: BTG, Homeflex, Hotdesk, Open Space, Sala Privativa', color: 'text-violet-500' },
-                  { icon: Ban, text: 'Cada contrato tem cap de 20 seats na contagem', color: 'text-red-500' },
+                  { icon: Ban, text: 'Cap de 20 seats por contrato apenas para o ranking', color: 'text-red-500' },
                   { icon: CalendarDays, text: 'Periodo: 17/03/2026 a 15/12/2026', color: 'text-primary-500' },
                 ].map((rule, i) => (
                   <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
@@ -640,10 +640,13 @@ export function DashboardCompeticaoMacbook({ rankingMacbook, proprietarios }: Da
                 ))}
               </ul>
 
-              <div className="mt-4 p-3 rounded-lg bg-violet-50 dark:bg-violet-500/5 border border-violet-100 dark:border-violet-500/10">
+              <div className="mt-4 p-3 rounded-lg bg-violet-50 dark:bg-violet-500/5 border border-violet-100 dark:border-violet-500/10 space-y-1.5">
                 <p className="text-xs text-violet-700 dark:text-violet-400">
-                  <span className="font-semibold">Exemplo:</span> Se vender um contrato de 70 seats, contara <span className="font-semibold">20 seats</span> na competicao.
-                  Se vender um de 50 seats, contara <span className="font-semibold">20 seats</span>. O cap e por contrato (line item).
+                  <span className="font-semibold">Exemplo:</span> Se vender um contrato de 70 seats, contara <span className="font-semibold">20 seats no ranking</span>,
+                  porem os <span className="font-semibold">70 seats contam para o minimo</span> de 250 para participar.
+                </p>
+                <p className="text-xs text-violet-700 dark:text-violet-400">
+                  Ou seja, contratos grandes ajudam a atingir o minimo mais rapido, mas no ranking o cap de 20 por contrato garante que <span className="font-semibold">constancia vale mais que volume</span>.
                 </p>
               </div>
             </div>

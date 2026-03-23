@@ -352,12 +352,13 @@ export function useRankingFilters(
     const vendedores: VendedorCompeticao[] = Array.from(porVendedor.entries())
       .map(([ownerId, data]) => {
         const seatsCapped = Math.round(data.seatsCapped * 100) / 100;
-        const faltam = MACBOOK_META_MINIMA - seatsCapped;
+        const seatsRaw = Math.round(data.seatsRaw * 100) / 100;
+        const faltam = MACBOOK_META_MINIMA - seatsRaw;
         return {
           ownerId,
           ownerNome: data.ownerNome,
           seatsCapped,
-          seatsRaw: Math.round(data.seatsRaw * 100) / 100,
+          seatsRaw,
           dealsCount: data.dealsSet.size,
           ranking: 0,
           metaMinima: MACBOOK_META_MINIMA,
