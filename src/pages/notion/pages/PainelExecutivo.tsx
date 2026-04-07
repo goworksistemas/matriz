@@ -1,4 +1,4 @@
-import { AlertTriangle, Clock3, CheckCircle2, ClipboardList, UserCog, CalendarX, Layers3, Building2, ExternalLink, XCircle, PauseCircle, TrendingUp, Users2, Activity, MessageSquare, Timer, ShieldAlert, Trophy, Info, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, Clock3, CheckCircle2, ClipboardList, UserCog, CalendarX, Layers3, Building2, XCircle, PauseCircle, TrendingUp, Users2, Activity, MessageSquare, Timer, ShieldAlert, Trophy, Info, ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { BarChartComponent } from '@/components/charts/BarChartComponent';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
@@ -7,6 +7,7 @@ import type { DadosGrafico } from '@/types';
 import { CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, LabelList, Cell, Legend, PieChart, Pie } from 'recharts';
 import type { FiltrosNotion, FiltroCard, InsightNotion, KPIsNotion, SerieDemandaCapacidade, PerformanceAgente, InteracaoUsuario, GranularidadeTempo } from '../hooks/useNotionFilters';
 import type { TarefaProcessada } from '../services/api';
+import { TabelaNotion } from '../components/TabelaNotion';
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { Inbox, PauseOctagon, Ban } from 'lucide-react';
 
@@ -408,7 +409,7 @@ export function PainelExecutivo({
           label="Canceladas" value={kpis.canceladas} valueClassName="text-rose-600 dark:text-rose-400" />
         <KpiCard filtroCard={filtros.filtroCard} cardId="stand_by" onClick={handleCardClick} color="indigo"
           icon={<PauseCircle className="h-3.5 w-3.5 text-indigo-500" />}
-          label="Pausadas" value={kpis.emStandBy} valueClassName="text-indigo-600 dark:text-indigo-400" />
+          label="Stand-by" value={kpis.emStandBy} valueClassName="text-indigo-600 dark:text-indigo-400" />
         <KpiCard filtroCard={filtros.filtroCard} cardId="sem_prazo" onClick={handleCardClick} color="violet"
           icon={<CalendarX className="h-3.5 w-3.5 text-violet-500" />}
           label="Sem Prazo" value={kpis.semData} valueClassName="text-violet-600 dark:text-violet-400" />
@@ -1192,46 +1193,20 @@ export function PainelExecutivo({
           <div className="space-y-6">
 
             {anomaliasConcluidas.length > 0 && (
-              <Card className="border-amber-300 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/5">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between gap-2 text-base">
-                    <span className="inline-flex items-center gap-2">
-                      <ShieldAlert className="h-4 w-4 text-amber-600" /> Anomalia: Concluídas com prazo no futuro
-                      <InfoBadge texto="Tarefas com status 'Concluído' mas data fim (date_end) posterior à data de hoje. Indica inconsistência no preenchimento." />
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-bold">
-                      {anomaliasConcluidas.length}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-amber-700 dark:text-amber-400 mb-3">
-                    Estas tarefas estão marcadas como concluídas mas possuem data de finalização no futuro. Verifique se o status ou a data está incorreta.
-                  </p>
-                  <div className="space-y-2 max-h-[300px] overflow-auto pr-1">
-                    {anomaliasConcluidas.map(tarefa => (
-                      <div key={tarefa.id} className="flex items-center justify-between gap-3 p-2.5 rounded-lg border border-amber-200/80 dark:border-amber-500/20 bg-white/60 dark:bg-gray-900/40">
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tarefa.titulo}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {tarefa.executor} · Prazo: {tarefa.dataFim?.split('-').reverse().join('/')}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300">
-                            {tarefa.status}
-                          </span>
-                          {tarefa.notionUrl && (
-                            <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline">
-                              Notion <ExternalLink className="h-3 w-3" />
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <TabelaNotion
+                data={anomaliasConcluidas}
+                titulo="Anomalia: Concluídas com prazo no futuro"
+                icone={<ShieldAlert className="h-4 w-4 text-amber-600" />}
+                keyExtractor={row => row.id}
+                notionUrlAccessor={row => row.notionUrl}
+                defaultPageSize={20}
+                columns={[
+                  { key: 'titulo', header: 'Tarefa', accessor: r => r.titulo, sortable: true, filterable: 'text', width: '35%', render: r => <span className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{r.titulo}</span> },
+                  { key: 'executor', header: 'Executor', accessor: r => r.executor, sortable: true, filterable: 'select' },
+                  { key: 'dataFim', header: 'Prazo', accessor: r => r.dataFim, sortable: true, filterable: false, render: r => <span className="text-xs">{r.dataFim?.split('-').reverse().join('/') || '-'}</span> },
+                  { key: 'status', header: 'Status', accessor: r => r.status, sortable: true, filterable: 'select', render: r => <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300">{r.status}</span> },
+                ]}
+              />
             )}
 
             {/* Tempo médio por prioridade */}
@@ -1269,72 +1244,40 @@ export function PainelExecutivo({
               </CardContent>
             </Card>
 
-            {/* Tarefas atrasadas + Urgentes paradas (condicional) */}
-            {(topTarefasCriticas.length > 0 || gargalosCriticos.length > 0) && (
-              <div className={cn('grid gap-6', topTarefasCriticas.length > 0 && gargalosCriticos.length > 0 ? 'grid-cols-1 xl:grid-cols-2' : 'grid-cols-1')}>
-                {topTarefasCriticas.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between gap-2 text-base">
-                        <span className="inline-flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-500" /> Tarefas Mais Atrasadas</span>
-                        <span className="text-[11px] text-gray-500 dark:text-gray-400 font-normal">
-                          Atraso médio: {insights.atrasoMedioDias}d
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2 max-h-[400px] overflow-auto pr-1">
-                        {topTarefasCriticas.map(tarefa => (
-                          <div key={tarefa.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border border-red-200/60 dark:border-red-500/20 bg-red-50/40 dark:bg-red-500/5">
-                            <div className="min-w-0">
-                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tarefa.titulo}</p>
-                              <p className="text-xs text-gray-600 dark:text-gray-400">{tarefa.executor} · {tarefa.departamento}</p>
-                            </div>
-                            <div className="flex items-center gap-3 shrink-0">
-                              <span className="text-xs font-semibold text-red-700 dark:text-red-400">{tarefa.diasAtraso}d</span>
-                              {tarefa.notionUrl && (
-                                <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline">
-                                  Notion <ExternalLink className="h-3 w-3" />
-                                </a>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+            {topTarefasCriticas.length > 0 && (
+              <TabelaNotion
+                data={topTarefasCriticas}
+                titulo="Tarefas Mais Atrasadas"
+                icone={<AlertTriangle className="h-4 w-4 text-red-500" />}
+                keyExtractor={row => row.id}
+                notionUrlAccessor={row => row.notionUrl}
+                defaultSort={{ key: 'diasAtraso', dir: 'desc' }}
+                defaultPageSize={20}
+                extraActions={<span className="text-[11px] text-gray-500 dark:text-gray-400 font-normal">Atraso médio: {insights.atrasoMedioDias}d</span>}
+                columns={[
+                  { key: 'titulo', header: 'Tarefa', accessor: r => r.titulo, sortable: true, filterable: 'text', width: '35%', render: r => <span className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{r.titulo}</span> },
+                  { key: 'executor', header: 'Executor', accessor: r => r.executor, sortable: true, filterable: 'select' },
+                  { key: 'departamento', header: 'Departamento', accessor: r => r.departamento, sortable: true, filterable: 'select' },
+                  { key: 'diasAtraso', header: 'Atraso', accessor: r => r.diasAtraso, sortable: true, filterable: false, render: r => <span className="text-xs font-semibold text-red-700 dark:text-red-400">{r.diasAtraso}d</span> },
+                ]}
+              />
+            )}
 
-                {gargalosCriticos.length > 0 && (
-                  <Card className="border-red-200/60 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Activity className="h-4 w-4 text-red-500" /> Urgentes Paradas
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2 max-h-[400px] overflow-auto pr-1">
-                        {gargalosCriticos.slice(0, 10).map((tarefa) => (
-                          <div key={tarefa.id} className="p-2.5 rounded-lg border border-red-200/60 dark:border-red-500/20 bg-red-50/40 dark:bg-red-500/5">
-                            <p className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{tarefa.titulo}</p>
-                            <div className="mt-1 flex items-center justify-between gap-2 text-[11px] text-gray-600 dark:text-gray-400">
-                              <div className="flex items-center gap-2">
-                                <span className="px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300">Pausada</span>
-                                <span className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300">{tarefa.prioridade}</span>
-                              </div>
-                              {tarefa.notionUrl && (
-                                <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary-600 dark:text-primary-400 hover:underline">
-                                  Notion <ExternalLink className="h-3 w-3" />
-                                </a>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+            {gargalosCriticos.length > 0 && (
+              <TabelaNotion
+                data={gargalosCriticos}
+                titulo="Urgentes Paradas"
+                icone={<Activity className="h-4 w-4 text-red-500" />}
+                keyExtractor={row => row.id}
+                notionUrlAccessor={row => row.notionUrl}
+                defaultPageSize={20}
+                columns={[
+                  { key: 'titulo', header: 'Tarefa', accessor: r => r.titulo, sortable: true, filterable: 'text', width: '40%', render: r => <span className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{r.titulo}</span> },
+                  { key: 'prioridade', header: 'Prioridade', accessor: r => r.prioridade, sortable: true, filterable: 'select', render: r => <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300">{r.prioridade}</span> },
+                  { key: 'executor', header: 'Executor', accessor: r => r.executor, sortable: true, filterable: 'select' },
+                  { key: 'departamento', header: 'Departamento', accessor: r => r.departamento, sortable: true, filterable: 'select' },
+                ]}
+              />
             )}
 
             {/* Atrasos por departamento (condicional) */}
@@ -1422,52 +1365,25 @@ export function PainelExecutivo({
                     )}
                   </div>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Inbox className="h-4 w-4 text-blue-500" /> Fila de Solicitações
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {total === 0 ? (
-                        <EmptyState height={80}>Nenhuma solicitação pendente.</EmptyState>
-                      ) : (
-                        <div className="space-y-2 max-h-[500px] overflow-auto pr-1">
-                          {backlogTarefas.map(tarefa => (
-                            <div key={tarefa.id} className={cn(
-                              'flex items-center justify-between gap-3 p-3 rounded-lg border',
-                              tarefa.diasEspera > 14 ? 'border-red-200/60 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5' :
-                              tarefa.diasEspera > 7 ? 'border-amber-200/60 dark:border-amber-500/20 bg-amber-50/30 dark:bg-amber-500/5' :
-                              'border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50',
-                            )}>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tarefa.titulo}</p>
-                                <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
-                                  <span>{tarefa.departamento || 'Sem depto'}</span>
-                                  <span>·</span>
-                                  <span>{tarefa.prioridade || 'Sem prioridade'}</span>
-                                  {tarefa.criadoPor && <><span>·</span><span>por {nomeExibicao(tarefa.criadoPor)}</span></>}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3 shrink-0">
-                                <span className={cn(
-                                  'text-xs font-semibold',
-                                  tarefa.diasEspera > 14 ? 'text-red-600 dark:text-red-400' :
-                                  tarefa.diasEspera > 7 ? 'text-amber-600 dark:text-amber-400' :
-                                  'text-gray-500',
-                                )}>{tarefa.diasEspera}d</span>
-                                {tarefa.notionUrl && (
-                                  <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1">
-                                    Notion <ExternalLink className="h-3 w-3" />
-                                  </a>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <TabelaNotion
+                    data={backlogTarefas}
+                    titulo="Fila de Solicitações"
+                    icone={<Inbox className="h-4 w-4 text-blue-500" />}
+                    keyExtractor={row => row.id}
+                    notionUrlAccessor={row => row.notionUrl}
+                    defaultSort={{ key: 'diasEspera', dir: 'desc' }}
+                    defaultPageSize={20}
+                    emptyMessage="Nenhuma solicitação pendente."
+                    columns={[
+                      { key: 'titulo', header: 'Tarefa', accessor: r => r.titulo, sortable: true, filterable: 'text', width: '35%', render: r => <span className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{r.titulo}</span> },
+                      { key: 'departamento', header: 'Departamento', accessor: r => r.departamento || 'Sem depto', sortable: true, filterable: 'select' },
+                      { key: 'prioridade', header: 'Prioridade', accessor: r => r.prioridade || 'Sem prioridade', sortable: true, filterable: 'select' },
+                      { key: 'criadoPor', header: 'Solicitado por', accessor: r => nomeExibicao(r.criadoPor), sortable: true, filterable: 'select' },
+                      { key: 'diasEspera', header: 'Espera', accessor: r => r.diasEspera, sortable: true, filterable: false, render: r => (
+                        <span className={cn('text-xs font-semibold', r.diasEspera > 14 ? 'text-red-600 dark:text-red-400' : r.diasEspera > 7 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500')}>{r.diasEspera}d</span>
+                      )},
+                    ]}
+                  />
                 </>
               );
             })()}
@@ -1490,7 +1406,7 @@ export function PainelExecutivo({
                 <>
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                     <div className="rounded-xl border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-500/5 p-4">
-                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Pausadas</p>
+                      <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Stand-by</p>
                       <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{total}</p>
                     </div>
                     {criticas > 0 && (
@@ -1517,51 +1433,26 @@ export function PainelExecutivo({
                     </Card>
                   )}
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <PauseOctagon className="h-4 w-4 text-indigo-500" /> Tarefas Pausadas
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {total === 0 ? (
-                        <EmptyState height={80}>Nenhuma tarefa em stand-by.</EmptyState>
-                      ) : (
-                        <div className="space-y-2 max-h-[500px] overflow-auto pr-1">
-                          {standbyTarefas.map(tarefa => {
-                            const isCritica = tarefa.prioridade.toLowerCase().includes('urg') || tarefa.prioridade.toLowerCase().includes('import');
-                            return (
-                              <div key={tarefa.id} className={cn(
-                                'flex items-center justify-between gap-3 p-3 rounded-lg border',
-                                isCritica ? 'border-red-200/60 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5' :
-                                'border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50',
-                              )}>
-                                <div className="min-w-0 flex-1">
-                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tarefa.titulo}</p>
-                                  <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
-                                    <span className={cn(
-                                      'px-1.5 py-0.5 rounded text-[10px] font-medium',
-                                      isCritica ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300',
-                                    )}>{tarefa.prioridade || 'Sem prioridade'}</span>
-                                    <span>{tarefa.departamento || 'Sem depto'}</span>
-                                    {tarefa.executor && tarefa.executor !== 'Nao atribuido' && <><span>·</span><span>{nomeExibicao(tarefa.executor)}</span></>}
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-3 shrink-0">
-                                  <span className="text-xs text-gray-500">{tarefa.diasParada}d parada</span>
-                                  {tarefa.notionUrl && (
-                                    <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1">
-                                      Notion <ExternalLink className="h-3 w-3" />
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <TabelaNotion
+                    data={standbyTarefas}
+                    titulo="Tarefas em Stand-by"
+                    icone={<PauseOctagon className="h-4 w-4 text-indigo-500" />}
+                    keyExtractor={row => row.id}
+                    notionUrlAccessor={row => row.notionUrl}
+                    defaultSort={{ key: 'diasParada', dir: 'desc' }}
+                    defaultPageSize={20}
+                    emptyMessage="Nenhuma tarefa em stand-by."
+                    columns={[
+                      { key: 'titulo', header: 'Tarefa', accessor: r => r.titulo, sortable: true, filterable: 'text', width: '35%', render: r => <span className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{r.titulo}</span> },
+                      { key: 'prioridade', header: 'Prioridade', accessor: r => r.prioridade || 'Sem prioridade', sortable: true, filterable: 'select', render: r => {
+                        const isCritica = r.prioridade.toLowerCase().includes('urg') || r.prioridade.toLowerCase().includes('import');
+                        return <span className={cn('px-1.5 py-0.5 rounded text-[10px] font-medium', isCritica ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300')}>{r.prioridade || 'Sem prioridade'}</span>;
+                      }},
+                      { key: 'departamento', header: 'Departamento', accessor: r => r.departamento || 'Sem depto', sortable: true, filterable: 'select' },
+                      { key: 'executor', header: 'Executor', accessor: r => r.executor, sortable: true, filterable: 'select', render: r => <span className="text-gray-600 dark:text-gray-400">{r.executor && r.executor !== 'Nao atribuido' ? nomeExibicao(r.executor) : '-'}</span> },
+                      { key: 'diasParada', header: 'Parada', accessor: r => r.diasParada, sortable: true, filterable: false, render: r => <span className="text-xs text-gray-500">{r.diasParada}d</span> },
+                    ]}
+                  />
                 </>
               );
             })()}
@@ -1624,39 +1515,21 @@ export function PainelExecutivo({
                     )}
                   </div>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Ban className="h-4 w-4 text-rose-500" /> Tarefas Canceladas
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {total === 0 ? (
-                        <EmptyState height={80}>Nenhuma tarefa cancelada.</EmptyState>
-                      ) : (
-                        <div className="space-y-2 max-h-[500px] overflow-auto pr-1">
-                          {canceladas.map(tarefa => (
-                            <div key={tarefa.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-gray-900/50">
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate line-through">{tarefa.titulo}</p>
-                                <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
-                                  <span>{tarefa.departamento || 'Sem depto'}</span>
-                                  <span>·</span>
-                                  <span>{tarefa.prioridade || 'Sem prioridade'}</span>
-                                  {tarefa.executor && tarefa.executor !== 'Nao atribuido' && <><span>·</span><span>{nomeExibicao(tarefa.executor)}</span></>}
-                                </div>
-                              </div>
-                              {tarefa.notionUrl && (
-                                <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1 shrink-0">
-                                  Notion <ExternalLink className="h-3 w-3" />
-                                </a>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <TabelaNotion
+                    data={canceladas}
+                    titulo="Tarefas Canceladas"
+                    icone={<Ban className="h-4 w-4 text-rose-500" />}
+                    keyExtractor={row => row.id}
+                    notionUrlAccessor={row => row.notionUrl}
+                    defaultPageSize={20}
+                    emptyMessage="Nenhuma tarefa cancelada."
+                    columns={[
+                      { key: 'titulo', header: 'Tarefa', accessor: r => r.titulo, sortable: true, filterable: 'text', width: '35%', render: r => <span className="font-medium text-gray-500 dark:text-gray-400 line-through line-clamp-2">{r.titulo}</span> },
+                      { key: 'departamento', header: 'Departamento', accessor: r => r.departamento || 'Sem depto', sortable: true, filterable: 'select' },
+                      { key: 'prioridade', header: 'Prioridade', accessor: r => r.prioridade || 'Sem prioridade', sortable: true, filterable: 'select' },
+                      { key: 'executor', header: 'Executor', accessor: r => r.executor, sortable: true, filterable: 'select', render: r => <span className="text-gray-400">{r.executor && r.executor !== 'Nao atribuido' ? nomeExibicao(r.executor) : '-'}</span> },
+                    ]}
+                  />
                 </>
               );
             })()}
@@ -1833,61 +1706,32 @@ export function PainelExecutivo({
                     </Card>
                   )}
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between gap-2 text-base">
-                        <span className="inline-flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-red-500" /> Tarefas com Violações
-                        </span>
-                        <span className="text-[11px] text-gray-500 font-normal">{comViolacao.length} tarefas</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {comViolacao.length === 0 ? (
-                        <EmptyState height={80}>Todas as tarefas estão em conformidade com as regras da esteira.</EmptyState>
-                      ) : (
-                        <div className="space-y-3 max-h-[600px] overflow-auto pr-1">
-                          {comViolacao
-                            .sort((a, b) => b.violacoes.length - a.violacoes.length)
-                            .map(tarefa => (
-                            <div key={tarefa.id} className="p-3 rounded-lg border border-red-200/60 dark:border-red-500/15 bg-red-50/20 dark:bg-red-500/5">
-                              <div className="flex items-start justify-between gap-3">
-                                <div className="min-w-0 flex-1">
-                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tarefa.titulo}</p>
-                                  <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500">
-                                    <span className={cn('font-medium', coresCat[tarefa.statusCategoria])}>{tarefa.status}</span>
-                                    <span>·</span>
-                                    <span>{tarefa.departamento || 'Sem depto'}</span>
-                                    {tarefa.executor && tarefa.executor !== 'Nao atribuido' && <><span>·</span><span>{nomeExibicao(tarefa.executor)}</span></>}
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2 shrink-0">
-                                  <span className="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 text-[10px] font-bold">{tarefa.violacoes.length}</span>
-                                  {tarefa.notionUrl && (
-                                    <a href={tarefa.notionUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1">
-                                      Notion <ExternalLink className="h-3 w-3" />
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="mt-2 flex flex-wrap gap-1.5">
-                                {tarefa.violacoes.map((v, i) => (
-                                  <span key={i} className={cn(
-                                    'inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium',
-                                    v.tipo === 'proibido'
-                                      ? 'bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300'
-                                      : 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300',
-                                  )}>
-                                    {v.tipo === 'proibido' ? '⚠' : '✕'} {v.campo}: {v.regra}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
+                  <TabelaNotion
+                    data={[...comViolacao].sort((a, b) => b.violacoes.length - a.violacoes.length)}
+                    titulo="Tarefas com Violações"
+                    icone={<AlertTriangle className="h-4 w-4 text-red-500" />}
+                    keyExtractor={row => row.id}
+                    notionUrlAccessor={row => row.notionUrl}
+                    defaultSort={{ key: 'violacoes', dir: 'desc' }}
+                    defaultPageSize={20}
+                    emptyMessage="Todas as tarefas estão em conformidade com as regras da esteira."
+                    columns={[
+                      { key: 'titulo', header: 'Tarefa', accessor: r => r.titulo, sortable: true, filterable: 'text', width: '30%', render: r => <span className="font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{r.titulo}</span> },
+                      { key: 'status', header: 'Status', accessor: r => r.status, sortable: true, filterable: 'select', render: r => <span className={cn('text-xs font-medium', coresCat[r.statusCategoria])}>{r.status}</span> },
+                      { key: 'departamento', header: 'Departamento', accessor: r => r.departamento || 'Sem depto', sortable: true, filterable: 'select' },
+                      { key: 'executor', header: 'Executor', accessor: r => r.executor, sortable: true, filterable: 'select', render: r => <span className="text-gray-600 dark:text-gray-400">{r.executor && r.executor !== 'Nao atribuido' ? nomeExibicao(r.executor) : '-'}</span> },
+                      { key: 'violacoes', header: 'Violações', accessor: r => r.violacoes.length, sortable: true, filterable: false, render: r => (
+                        <div className="flex flex-wrap gap-1">
+                          <span className="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 text-[10px] font-bold">{r.violacoes.length}</span>
+                          {r.violacoes.map((v, i) => (
+                            <span key={i} className={cn('inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium', v.tipo === 'proibido' ? 'bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300' : 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300')}>
+                              {v.tipo === 'proibido' ? '⚠' : '✕'} {v.campo}
+                            </span>
                           ))}
                         </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                      )},
+                    ]}
+                  />
                 </>
               );
             })()}

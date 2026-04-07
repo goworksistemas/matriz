@@ -1,9 +1,10 @@
-import { useCallback, useEffect } from 'react';
-import { Clock, Loader2, AlertCircle, RefreshCw, Download, RotateCcw, Search, Calendar } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Clock, Loader2, AlertCircle, RefreshCw, Download, RotateCcw, Search, Calendar, CalendarRange } from 'lucide-react';
 import { format } from 'date-fns';
 import { exportToExcel } from '@/lib/exportExcel';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/Button';
+import { Select, SelectItem } from '@/components/ui/Select';
 import { MultiSelect } from '@/components/ui/MultiSelect';
 import { ListagemTarefas } from './pages/ListagemTarefas';
 import { PainelExecutivo } from './pages/PainelExecutivo';
@@ -56,6 +57,85 @@ export function NotionPage() {
     serieComentariosPorAgente,
     insightsComentarios,
   } = useNotionFilters(tarefas, comentarios);
+
+  const [periodoTipo, setPeriodoTipo] = useState<string>('');
+  const [periodoValor, setPeriodoValor] = useState<string>('');
+
+  const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+  const periodosDisponiveis = useMemo(() => {
+    const anos = new Set<number>();
+    for (const t of tarefas) {
+      const d = t.criadoEm || t.dataInicio;
+      if (d) anos.add(new Date(d).getFullYear());
+    }
+    const anosArr = Array.from(anos).sort((a, b) => b - a);
+    if (anosArr.length === 0) return [];
+
+    if (periodoTipo === 'ano') {
+      return anosArr.map(a => ({ label: String(a), value: String(a), start: `${a}-01-01`, end: `${a}-12-31` }));
+    }
+    if (periodoTipo === 'semestre') {
+      const items: { label: string; value: string; start: string; end: string }[] = [];
+      for (const a of anosArr) {
+        items.push({ label: `1° Sem ${a}`, value: `${a}-S1`, start: `${a}-01-01`, end: `${a}-06-30` });
+        items.push({ label: `2° Sem ${a}`, value: `${a}-S2`, start: `${a}-07-01`, end: `${a}-12-31` });
+      }
+      return items;
+    }
+    if (periodoTipo === 'trimestre') {
+      const items: { label: string; value: string; start: string; end: string }[] = [];
+      for (const a of anosArr) {
+        items.push({ label: `1° Tri ${a}`, value: `${a}-Q1`, start: `${a}-01-01`, end: `${a}-03-31` });
+        items.push({ label: `2° Tri ${a}`, value: `${a}-Q2`, start: `${a}-04-01`, end: `${a}-06-30` });
+        items.push({ label: `3° Tri ${a}`, value: `${a}-Q3`, start: `${a}-07-01`, end: `${a}-09-30` });
+        items.push({ label: `4° Tri ${a}`, value: `${a}-Q4`, start: `${a}-10-01`, end: `${a}-12-31` });
+      }
+      return items;
+    }
+    if (periodoTipo === 'mes') {
+      const items: { label: string; value: string; start: string; end: string }[] = [];
+      for (const a of anosArr) {
+        for (let m = 11; m >= 0; m--) {
+          const mm = String(m + 1).padStart(2, '0');
+          const lastDay = new Date(a, m + 1, 0).getDate();
+          items.push({ label: `${MESES[m]}/${a}`, value: `${a}-${mm}`, start: `${a}-${mm}-01`, end: `${a}-${mm}-${lastDay}` });
+        }
+      }
+      return items;
+    }
+    return [];
+  }, [periodoTipo, tarefas, MESES]);
+
+  const handlePeriodoTipoChange = useCallback((tipo: string) => {
+    setPeriodoTipo(tipo);
+    setPeriodoValor('');
+    if (!tipo) {
+      updateFiltro('dataInicial', null);
+      updateFiltro('dataFinal', null);
+    }
+  }, [updateFiltro]);
+
+  const handlePeriodoValorChange = useCallback((valor: string) => {
+    setPeriodoValor(valor);
+    if (!valor) {
+      updateFiltro('dataInicial', null);
+      updateFiltro('dataFinal', null);
+      return;
+    }
+    const periodo = periodosDisponiveis.find(p => p.value === valor);
+    if (periodo) {
+      updateFiltro('dataInicial', periodo.start);
+      updateFiltro('dataFinal', periodo.end);
+    }
+  }, [periodosDisponiveis, updateFiltro]);
+
+  const limparPeriodo = useCallback(() => {
+    setPeriodoTipo('');
+    setPeriodoValor('');
+    updateFiltro('dataInicial', null);
+    updateFiltro('dataFinal', null);
+  }, [updateFiltro]);
 
   const handleExportExcel = useCallback(async () => {
     const dadosExport = tarefasFiltradas.map(t => ({
@@ -132,7 +212,7 @@ export function NotionPage() {
                     conclusao: 'Concluídas',
                     concluidas: 'Concluídas',
                     canceladas: 'Canceladas',
-                    stand_by: 'Pausadas',
+                    stand_by: 'Stand-by',
                     sem_prazo: 'Sem Prazo',
                     sem_dono: 'Sem Responsável',
                   }[filtros.filtroCard]}
@@ -220,36 +300,73 @@ export function NotionPage() {
                 />
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                  <Calendar className="h-3 w-3" /> De
-                </label>
-                <input
-                  type="date"
-                  value={filtros.dataInicial || ''}
-                  onChange={(e) => updateFiltro('dataInicial', e.target.value || null)}
-                  className="h-9 px-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                  <Calendar className="h-3 w-3" /> Até
-                </label>
-                <input
-                  type="date"
-                  value={filtros.dataFinal || ''}
-                  onChange={(e) => updateFiltro('dataFinal', e.target.value || null)}
-                  className="h-9 px-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                />
-              </div>
-
               {hasActiveFilters && (
                 <Button variant="ghost" size="sm" onClick={resetFiltros} className="mb-0.5">
                   <RotateCcw className="h-4 w-4 mr-1.5" />
                   Limpar
                 </Button>
               )}
+            </div>
+
+            <div className="border-t border-gray-100 dark:border-white/[0.04] pt-4">
+              <div className="flex flex-wrap items-end gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <CalendarRange className="h-3 w-3" /> Período
+                  </label>
+                  <Select value={periodoTipo} onValueChange={handlePeriodoTipoChange} placeholder="Selecione..." className="min-w-[150px]">
+                    <SelectItem value="">Nenhum</SelectItem>
+                    <SelectItem value="ano">Ano</SelectItem>
+                    <SelectItem value="semestre">Semestre</SelectItem>
+                    <SelectItem value="trimestre">Trimestre</SelectItem>
+                    <SelectItem value="mes">Mês</SelectItem>
+                  </Select>
+                </div>
+
+                {periodoTipo && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Valor</label>
+                    <Select value={periodoValor} onValueChange={handlePeriodoValorChange} placeholder="Selecione..." className="min-w-[160px]">
+                      <SelectItem value="">Todos</SelectItem>
+                      {periodosDisponiveis.map(p => (
+                        <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                      ))}
+                    </Select>
+                  </div>
+                )}
+
+                {periodoValor && (
+                  <Button variant="ghost" size="sm" onClick={limparPeriodo} className="mb-0.5">
+                    <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                    Limpar período
+                  </Button>
+                )}
+
+                <div className="ml-auto flex items-end gap-3">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <Calendar className="h-3 w-3" /> De
+                    </label>
+                    <input
+                      type="date"
+                      value={filtros.dataInicial || ''}
+                      onChange={(e) => { updateFiltro('dataInicial', e.target.value || null); setPeriodoTipo(''); setPeriodoValor(''); }}
+                      className="h-9 px-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <Calendar className="h-3 w-3" /> Até
+                    </label>
+                    <input
+                      type="date"
+                      value={filtros.dataFinal || ''}
+                      onChange={(e) => { updateFiltro('dataFinal', e.target.value || null); setPeriodoTipo(''); setPeriodoValor(''); }}
+                      className="h-9 px-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

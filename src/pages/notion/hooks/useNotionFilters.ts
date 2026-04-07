@@ -180,7 +180,7 @@ function normalizarStatus(status: string): string {
   const s = status.trim().toLowerCase();
   if (s.includes('conclu')) return 'Concluido';
   if (s.includes('cancel')) return 'Cancelado';
-  if (s.includes('stand')) return 'Stand by';
+  if (s.includes('stand')) return 'Stand-by';
   if (s.includes('solicit')) return 'Solicitacao';
   if (s.includes('andamento') || s.includes('progresso')) return 'Em andamento';
   if (s.includes('agend')) return 'Agendado';
