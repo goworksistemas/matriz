@@ -201,12 +201,11 @@ function buildMatrizPreVendas(negocios: NegocioPreVendas[]): MatrizPreVendasRow[
     .sort((a, b) => b.totalReuniao - a.totalReuniao || a.ownerNome.localeCompare(b.ownerNome));
 }
 
-export function DashboardPreVendas({ ranking, negocios, proprietarios, competicao, periodo }: DashboardPreVendasProps) {
+export function DashboardPreVendas({ ranking, negocios, competicao, periodo }: DashboardPreVendasProps) {
   const [regrasAbertas, setRegrasAbertas] = useState(false);
   const [expandedMatriz, setExpandedMatriz] = useState<ExpandedState>({});
 
   const isVarejo = competicao === 'varejo';
-  const accentColor = isVarejo ? 'emerald' : 'emerald';
 
   const matrizData = useMemo(() => buildMatrizPreVendas(negocios), [negocios]);
 
