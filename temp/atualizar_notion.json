@@ -9,14 +9,15 @@
         256
       ],
       "id": "d4b259ec-c771-4dbb-bd31-594da6f94790",
-      "name": "When clicking 'Execute workflow'"
+      "name": "When clicking 'Execute workflow'",
+      "disabled": true
     },
     {
       "parameters": {
         "rule": {
           "interval": [
             {
-              "triggerAtHour": 8
+              "field": "hours"
             }
           ]
         }
@@ -29,22 +30,6 @@
         448
       ],
       "id": "5d06d594-c7ab-48f4-bf65-4a0225e90033"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "atualizar-bd-notion",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1632,
-        64
-      ],
-      "id": "87e05a42-4ad1-41d0-8f88-dce4dd9e9197",
-      "name": "Webhook1",
-      "webhookId": "f82f05c5-7edb-4c2a-aaea-59f215417cfd"
     },
     {
       "parameters": {
@@ -306,7 +291,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nreturn items.map(item => ({\n  json: { page_id: item.json.id }\n}));"
+        "jsCode": "const items = $input.all();\nconst workflowData = $getWorkflowStaticData('global');\nconst lastSync = workflowData.notion_comments_last_sync || null;\nconst lastSyncTs = lastSync ? new Date(lastSync).getTime() : null;\nlet maiorEditedTs = lastSyncTs || 0;\n\nconst results = [];\nfor (const item of items) {\n  const page = item.json;\n  const editedAt = page.last_edited_time || null;\n  const editedTs = editedAt ? new Date(editedAt).getTime() : null;\n  if (editedTs && editedTs > maiorEditedTs) maiorEditedTs = editedTs;\n  if (lastSyncTs && editedTs && editedTs <= lastSyncTs) continue;\n  results.push({ json: { page_id: page.id } });\n}\n\nif (maiorEditedTs > 0) {\n  workflowData.notion_comments_last_sync = new Date(maiorEditedTs).toISOString();\n}\n\nif (results.length === 0) return [];\nreturn results;"
       },
       "name": "Extrair Page IDs",
       "type": "n8n-nodes-base.code",
@@ -335,7 +320,7 @@
           "batching": {
             "batch": {
               "batchSize": 3,
-              "batchInterval": 1100
+              "batchInterval": 1500
             }
           }
         }
@@ -357,7 +342,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\n\nconst taskItems = $('Notion - Get All Tasks').all();\nconst userMap = new Map();\nfor (const item of taskItems) {\n  const page = item.json || {};\n  const props = page.properties || {};\n  for (const key of Object.keys(props)) {\n    const prop = props[key];\n    if (prop?.people) {\n      for (const p of prop.people) {\n        if (p.id && p.name) userMap.set(p.id, p.name);\n      }\n    }\n    if (prop?.created_by?.id && prop?.created_by?.name) {\n      userMap.set(prop.created_by.id, prop.created_by.name);\n    }\n  }\n  if (page.created_by?.id && page.created_by?.name) {\n    userMap.set(page.created_by.id, page.created_by.name);\n  }\n  if (page.last_edited_by?.id && page.last_edited_by?.name) {\n    userMap.set(page.last_edited_by.id, page.last_edited_by.name);\n  }\n}\n\nconst comments = [];\nfor (const item of items) {\n  const results = item.json.results || [];\n  for (const c of results) {\n    const richText = c.rich_text || [];\n    const text = richText.map(rt => rt.plain_text || '').join('');\n    const authorId = c.created_by?.id || '';\n    const authorName = userMap.get(authorId) || '';\n    comments.push({\n      json: {\n        comment_id: c.id || '',\n        notion_id: c.parent?.page_id || '',\n        text,\n        author: authorName,\n        commented_at: c.created_time || null,\n        _extracted_at: new Date().toISOString()\n      }\n    });\n  }\n}\nif (comments.length === 0) return [];\nreturn comments;"
+        "jsCode": "const items = $input.all();\n\nconst taskItems = $('Notion - Get All Tasks').all();\nconst userMap = new Map();\nfor (const item of taskItems) {\n  const page = item.json || {};\n  const props = page.properties || {};\n  for (const key of Object.keys(props)) {\n    const prop = props[key];\n    if (prop?.people) {\n      for (const p of prop.people) {\n        if (p.id && p.name) userMap.set(p.id, p.name);\n      }\n    }\n    if (prop?.created_by?.id && prop?.created_by?.name) {\n      userMap.set(prop.created_by.id, prop.created_by.name);\n    }\n  }\n  if (page.created_by?.id && page.created_by?.name) {\n    userMap.set(page.created_by.id, page.created_by.name);\n  }\n  if (page.last_edited_by?.id && page.last_edited_by?.name) {\n    userMap.set(page.last_edited_by.id, page.last_edited_by.name);\n  }\n}\n\nconst comments = [];\nfor (const item of items) {\n  const results = item.json.results || [];\n  for (const c of results) {\n    const richText = c.rich_text || [];\n    const text = richText.map(rt => rt.plain_text || '').join('');\n    const authorId = c.created_by?.id || '';\n    const authorName = userMap.get(authorId) || '';\n    comments.push({\n      json: {\n        comment_id: c.id || '',\n        notion_id: c.parent?.page_id || '',\n        text,\n        author: authorName,\n        commented_at: c.created_time || null,\n        _extracted_at: new Date().toISOString()\n      }\n    });\n  }\n}\nif (comments.length === 0) return [{ json: { _empty: true } }];\nreturn comments;"
       },
       "name": "Transformar Comentarios",
       "type": "n8n-nodes-base.code",
@@ -422,7 +407,7 @@
     },
     {
       "parameters": {
-        "url": "https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_task_comments?select=comment_id",
+        "url": "=https://xggqzueehfvautkmaojy.supabase.co/rest/v1/notion_task_comments?select=comment_id,notion_id&notion_id=in.{{ $json.notion_id_filter }}&limit=1000",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -436,22 +421,40 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "pagination": {
+            "paginationMode": "updateAParameterInEachRequest",
+            "parameters": {
+              "parameters": [
+                {
+                  "type": "query",
+                  "name": "offset",
+                  "value": "={{ $pageCount * 1000 }}"
+                }
+              ]
+            },
+            "paginationCompleteWhen": "responseIsEmpty",
+            "limitPagesFetched": true,
+            "maxRequests": 100
+          }
+        }
       },
       "name": "Supabase GET All Comments",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -576,
-        448
+        1104,
+        432
       ],
       "id": "fec4dd0b-2f6b-4b79-9b4b-7f9e68be411c"
     },
     {
-      "parameters": {},
-      "name": "Merge Comments",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
+      "parameters": {
+        "jsCode": "const pageItems = $('Extrair Page IDs').all();\nconst pageIds = [];\nfor (const item of pageItems) {\n  const pid = item.json?.page_id || '';\n  if (pid) pageIds.push(pid);\n}\n\nif (pageIds.length === 0) return [];\n\nconst filter = '(' + pageIds.map(id => '\"' + id + '\"').join(',') + ')';\nreturn [{ json: { notion_id_filter: filter } }];"
+      },
+      "name": "Trigger Limpeza",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         896,
         432
@@ -460,13 +463,13 @@
     },
     {
       "parameters": {
-        "jsCode": "const notionComments = $('Transformar Comentarios').all();\nconst notionCommentIds = new Set();\nfor (const item of notionComments) {\n  const cid = (item.json?.comment_id || '').replace(/-/g, '');\n  if (cid) notionCommentIds.add(cid);\n}\n\nconst supabaseComments = $('Supabase GET All Comments').all();\nconst removidos = [];\nfor (const item of supabaseComments) {\n  const cid = (item.json.comment_id || '').replace(/-/g, '');\n  if (!cid) continue;\n  if (!notionCommentIds.has(cid)) {\n    removidos.push({\n      json: { comment_id: item.json.comment_id }\n    });\n  }\n}\nreturn removidos;"
+        "jsCode": "const pageItems = $('Extrair Page IDs').all();\nconst checkedPageIds = new Set();\nfor (const item of pageItems) {\n  const pid = (item.json?.page_id || '').replace(/-/g, '');\n  if (pid) checkedPageIds.add(pid);\n}\n\nif (checkedPageIds.size === 0) return [];\n\nconst notionComments = $('Transformar Comentarios').all().filter(i => !i.json._empty);\nconst notionCommentIds = new Set();\nfor (const item of notionComments) {\n  const cid = (item.json?.comment_id || '').replace(/-/g, '');\n  if (cid) notionCommentIds.add(cid);\n}\n\nconst supabaseComments = $input.all();\nconst removidos = [];\nfor (const item of supabaseComments) {\n  const cid = (item.json.comment_id || '').replace(/-/g, '');\n  const nid = (item.json.notion_id || '').replace(/-/g, '');\n  if (!cid) continue;\n  if (!checkedPageIds.has(nid)) continue;\n  if (!notionCommentIds.has(cid)) {\n    removidos.push({\n      json: { comment_id: item.json.comment_id }\n    });\n  }\n}\nreturn removidos;"
       },
       "name": "Detectar Comentarios Removidos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1104,
+        1328,
         432
       ],
       "id": "ebced29c-2412-4dad-b747-77b64a3d7731"
@@ -494,10 +497,27 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1328,
+        1552,
         432
       ],
       "id": "6b21c8d0-3347-453f-a80b-40dc41e71eb4"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atualizar-bd-notion",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1632,
+        64
+      ],
+      "id": "87e05a42-4ad1-41d0-8f88-dce4dd9e9197",
+      "name": "Webhook1",
+      "webhookId": "f82f05c5-7edb-4c2a-aaea-59f215417cfd",
+      "disabled": true
     }
   ],
   "connections": {
@@ -511,11 +531,6 @@
           },
           {
             "node": "Supabase GET All Tasks",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Supabase GET All Comments",
             "type": "main",
             "index": 0
           }
@@ -532,32 +547,6 @@
           },
           {
             "node": "Supabase GET All Tasks",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Supabase GET All Comments",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook1": {
-      "main": [
-        [
-          {
-            "node": "Notion - Get All Tasks",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Supabase GET All Tasks",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Supabase GET All Comments",
             "type": "main",
             "index": 0
           }
@@ -698,7 +687,7 @@
             "index": 0
           },
           {
-            "node": "Merge Comments",
+            "node": "Trigger Limpeza",
             "type": "main",
             "index": 0
           }
@@ -716,18 +705,18 @@
         ]
       ]
     },
-    "Supabase GET All Comments": {
+    "Trigger Limpeza": {
       "main": [
         [
           {
-            "node": "Merge Comments",
+            "node": "Supabase GET All Comments",
             "type": "main",
-            "index": 1
+            "index": 0
           }
         ]
       ]
     },
-    "Merge Comments": {
+    "Supabase GET All Comments": {
       "main": [
         [
           {
@@ -743,6 +732,22 @@
         [
           {
             "node": "Supabase DELETE Comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Supabase GET All Tasks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notion - Get All Tasks",
             "type": "main",
             "index": 0
           }
