@@ -1,7 +1,7 @@
 {
-  "name": "NetworkGo — Central de Relatórios",
-  "short_name": "NetworkGo",
-  "description": "Dashboards e relatórios da NetworkGo",
+  "name": "ConectGo — Central de Relatórios",
+  "short_name": "ConectGo",
+  "description": "Dashboards e relatórios da ConectGo",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",

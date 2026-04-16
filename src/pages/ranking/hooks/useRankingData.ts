@@ -4,6 +4,7 @@ import {
   fetchLineItemsEnriquecidos,
   type DadosRankingBase,
 } from '../services/api';
+import { isSupabaseConfigured, supabaseConfigErrorMessage } from '../services/supabase';
 import type {
   DealProcessado,
   LineItemEnriquecido,
@@ -18,6 +19,8 @@ interface UseRankingDataReturn {
   proprietarios: Proprietario[];
   vendedoresUnicos: string[];
   ultimaAtualizacao: string | null;
+  reuniaoRealizadaStageIds: Set<string>;
+  virtualPipelineId: string | null;
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -40,6 +43,10 @@ export function useRankingData(): UseRankingDataReturn {
       if (!silent) {
         setIsLoading(true);
         setError(null);
+      }
+
+      if (!isSupabaseConfigured) {
+        throw new Error(supabaseConfigErrorMessage);
       }
 
       const baseResult = await fetchDadosRankingBase();
@@ -82,6 +89,8 @@ export function useRankingData(): UseRankingDataReturn {
     proprietarios: base?.proprietarios || [],
     vendedoresUnicos: base?.vendedoresUnicos || [],
     ultimaAtualizacao: base?.ultimaAtualizacao || null,
+    reuniaoRealizadaStageIds: base?.reuniaoRealizadaStageIds || new Set(),
+    virtualPipelineId: base?.virtualPipelineId || null,
     isLoading,
     error,
     refetch: async () => {

@@ -49,7 +49,7 @@ export function AdminTheme() {
 
   const handleReset = () => {
     setPrimaryColor('#0ea5e9');
-    setCompanyName('NetworkGo');
+    setCompanyName('ConectGo');
     setLogoUrl('');
   };
 

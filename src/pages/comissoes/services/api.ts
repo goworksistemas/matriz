@@ -316,12 +316,16 @@ export async function fetchUltimaAtualizacao(): Promise<string | null> {
   ];
 
   const promises = tabelas.map(async (tabela) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from(tabela)
       .select('_extracted_at')
       .order('_extracted_at', { ascending: false })
       .limit(1);
     
+    if (error) {
+      console.error(`Erro ao buscar _extracted_at de ${tabela}:`, error);
+      return null;
+    }
     if (data && data.length > 0) {
       const row = data[0] as { _extracted_at: string };
       return row._extracted_at;

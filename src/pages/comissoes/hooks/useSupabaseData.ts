@@ -4,6 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { fetchDadosDashboard, type DadosDashboardResult } from '../services/api';
+import { isSupabaseConfigured, supabaseConfigErrorMessage } from '../services/supabase';
 import type { Comissao, Proprietario } from '@/types';
 
 interface UseSupabaseDataReturn {
@@ -28,6 +29,11 @@ export function useSupabaseData(): UseSupabaseDataReturn {
     try {
       setIsLoading(true);
       setError(null);
+
+      if (!isSupabaseConfigured) {
+        throw new Error(supabaseConfigErrorMessage);
+      }
+
       const result = await fetchDadosDashboard();
       setData(result);
     } catch (err) {

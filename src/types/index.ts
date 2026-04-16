@@ -194,11 +194,65 @@ export interface DealProcessado {
   createDate: string | null;
   pipelineId: string | null;
   pipelineNome: string;
+  stageId: string;
+  stageLabel: string;
   ownerId: string | null;
   ownerNome: string;
   isClosedWon: boolean;
   mes: number;
   ano: number;
+  produto: string;
+}
+
+export interface NegocioVarejo {
+  dealHubspotId: string;
+  dealName: string;
+  ownerId: string;
+  ownerNome: string;
+  closeDate: string;
+  amount: number;
+  produto: string;
+  seats: number | null;
+  valido: boolean;
+  temLineItem: boolean;
+}
+
+export interface NegocioMacbook {
+  dealHubspotId: string;
+  dealName: string;
+  ownerId: string;
+  ownerNome: string;
+  closeDate: string;
+  amount: number;
+  produto: string;
+  seatsRaw: number | null;
+  seatsCapped: number | null;
+  temLineItem: boolean;
+}
+
+export interface NegocioPreVendas {
+  dealHubspotId: string;
+  dealName: string;
+  ownerId: string;
+  ownerNome: string;
+  pipelineNome: string;
+  stageLabel: string;
+  closeDate: string | null;
+  createDate: string | null;
+  amount: number;
+}
+
+export interface VendedorPreVendas {
+  ownerId: string;
+  ownerNome: string;
+  reunioes: number;
+  virtuais: number;
+  ranking: number;
+  /** Mínimo de reuniões para “competir” */
+  metaMinima: number;
+  /** Se definido (ex.: MacBook), também exige este mínimo de virtuais */
+  metaMinimaVirtuais?: number;
+  status: string;
 }
 
 // Line item enriquecido com dados do deal (para cálculos de seats)

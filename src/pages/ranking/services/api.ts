@@ -66,18 +66,119 @@ function createPipelinesMap(pipelines: HubspotPipeline[]): Map<string, string> {
   return new Map(pipelines.map(p => [p.hubspot_id, p.label || 'Sem nome']));
 }
 
-async function fetchWonStageIds(): Promise<Set<string>> {
+interface StageInfo {
+  stage_id: string;
+  pipeline_id: string | null;
+  label: string | null;
+  is_won: boolean;
+  display_order: number | null;
+}
+
+async function fetchAllStages(): Promise<StageInfo[]> {
   const { data, error } = await supabase
     .from('hubspot_pipeline_stages')
-    .select('stage_id')
-    .eq('is_won', true);
+    .select('stage_id, pipeline_id, label, is_won, display_order');
 
   if (error) {
-    console.error('Erro ao buscar stages ganhos:', error);
-    return new Set();
+    console.error('Erro ao buscar stages:', error);
+    throw new Error('Falha ao carregar stages.');
   }
 
-  return new Set((data || []).map(s => s.stage_id));
+  return (data || []) as StageInfo[];
+}
+
+/** Remove acentos e normaliza para comparação de labels HubSpot */
+function normalizeHubspotLabel(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function isReuniaoRealizadaStageLabel(label: string | null): boolean {
+  if (!label) return false;
+  const n = normalizeHubspotLabel(label);
+  return n.includes('reuniao realizada');
+}
+
+/**
+ * Pipeline da competição Pré-vendas: o Kanban "Virtual" com etapa "Reuniao realizada".
+ * Não usar includes('virtual') no nome — pega outro pipeline antes do correto.
+ */
+function resolveVirtualPreVendasPipelineId(
+  pipelinesMap: Map<string, string>,
+  stages: StageInfo[],
+): string | null {
+  // 1) Nome exato "Virtual" (case / acento insensitive)
+  for (const [pid, label] of pipelinesMap.entries()) {
+    if (normalizeHubspotLabel(label || '') === 'virtual') {
+      return pid;
+    }
+  }
+
+  // 2) Qualquer pipeline que tenha etapa "Reuniao realizada" (fonte de verdade no HubSpot)
+  const pidsComReuniao = new Set<string>();
+  for (const s of stages) {
+    if (s.pipeline_id && isReuniaoRealizadaStageLabel(s.label)) {
+      pidsComReuniao.add(s.pipeline_id);
+    }
+  }
+  if (pidsComReuniao.size === 1) {
+    return [...pidsComReuniao][0];
+  }
+  if (pidsComReuniao.size > 1) {
+    for (const pid of pidsComReuniao) {
+      const pl = normalizeHubspotLabel(pipelinesMap.get(pid) || '');
+      if (pl === 'virtual' || pl.startsWith('virtual -') || pl.startsWith('virtual ')) {
+        return pid;
+      }
+    }
+    return [...pidsComReuniao][0];
+  }
+
+  // 3) Fallback: label que seja só "Virtual" com sufixo curto (ex.: "Virtual (x)")
+  for (const [pid, label] of pipelinesMap.entries()) {
+    const pl = normalizeHubspotLabel(label || '');
+    if (pl === 'virtual' || /^virtual\b/.test(pl)) {
+      return pid;
+    }
+  }
+
+  return null;
+}
+
+function buildStageMaps(stages: StageInfo[], pipelinesMap: Map<string, string>) {
+  const wonStageIds = new Set<string>();
+  const stageLabelsMap = new Map<string, string>();
+  const reuniaoRealizadaStageIds = new Set<string>();
+
+  for (const s of stages) {
+    if (s.is_won) wonStageIds.add(s.stage_id);
+    stageLabelsMap.set(s.stage_id, s.label || '');
+  }
+
+  const virtualPipelineId = resolveVirtualPreVendasPipelineId(pipelinesMap, stages);
+
+  if (virtualPipelineId) {
+    const virtualStages = stages
+      .filter(s => s.pipeline_id === virtualPipelineId)
+      .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
+
+    const reuniaoStage = virtualStages.find(s => isReuniaoRealizadaStageLabel(s.label));
+
+    if (reuniaoStage) {
+      const minOrder = reuniaoStage.display_order ?? 0;
+      for (const s of virtualStages) {
+        if ((s.display_order ?? 0) >= minOrder) {
+          reuniaoRealizadaStageIds.add(s.stage_id);
+        }
+      }
+    }
+  }
+
+  return { wonStageIds, stageLabelsMap, reuniaoRealizadaStageIds, virtualPipelineId };
 }
 
 // ============================================
@@ -89,7 +190,7 @@ const DATA_MINIMA = '2025-01-01';
 // DEALS — paginação por cursor + filtro de data
 // ============================================
 
-const DEALS_COLUMNS = 'id, hubspot_id, deal_name, amount, close_date, create_date, pipeline_id, pipeline_stage_id, deal_stage, owner_id';
+const DEALS_COLUMNS = 'id, hubspot_id, deal_name, amount, close_date, create_date, pipeline_id, pipeline_stage_id, deal_stage, owner_id, raw_data';
 
 async function fetchDeals(): Promise<HubspotDeal[]> {
   const allRows: HubspotDeal[] = [];
@@ -101,7 +202,7 @@ async function fetchDeals(): Promise<HubspotDeal[]> {
       .from('hubspot_deals')
       .select(DEALS_COLUMNS)
       .eq('archived', false)
-      .gte('close_date', DATA_MINIMA)
+      .or(`close_date.gte.${DATA_MINIMA},close_date.is.null`)
       .order('id', { ascending: true })
       .limit(pageSize);
 
@@ -206,11 +307,36 @@ function parseDateParts(dateStr: string | null): { mes: number; ano: number } {
   return { mes: isNaN(mes) ? 0 : mes, ano: isNaN(ano) ? 0 : ano };
 }
 
+function parseRawDataProduto(rawData: unknown): string {
+  if (!rawData) return '';
+  try {
+    const obj = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+    if (!obj || typeof obj !== 'object') return '';
+    const o = obj as Record<string, unknown>;
+    const pick = (k: string) => {
+      const v = o[k];
+      return typeof v === 'string' ? v.trim() : '';
+    };
+    const direct = pick('produto') || pick('Produto');
+    if (direct) return direct;
+    // Alguns deals trazem o produto em outras chaves ou só em texto livre
+    for (const v of Object.values(o)) {
+      if (typeof v !== 'string') continue;
+      const t = v.trim();
+      if (t.length > 0 && t.toLowerCase().includes('sala privativ')) return t;
+    }
+    return '';
+  } catch {
+    return '';
+  }
+}
+
 function processDeals(
   deals: HubspotDeal[],
   ownersMap: Map<string, Proprietario>,
   pipelinesMap: Map<string, string>,
   wonStageIds: Set<string>,
+  stageLabelsMap: Map<string, string>,
 ): DealProcessado[] {
   return deals.map(d => {
     const closeDate = d.close_date || null;
@@ -226,11 +352,14 @@ function processDeals(
       createDate: d.create_date || null,
       pipelineId: d.pipeline_id || null,
       pipelineNome: d.pipeline_id ? (pipelinesMap.get(d.pipeline_id) || 'Desconhecido') : 'Sem pipeline',
+      stageId,
+      stageLabel: stageLabelsMap.get(stageId) || '',
       ownerId: d.owner_id || null,
       ownerNome: d.owner_id ? (ownersMap.get(d.owner_id)?.nome || 'Desconhecido') : 'Sem responsável',
       isClosedWon: wonStageIds.has(stageId),
       mes,
       ano,
+      produto: parseRawDataProduto(d.raw_data),
     };
   });
 }
@@ -294,11 +423,16 @@ function processSalesGoals(goals: SalesGoal[]): MetaVendas[] {
 
 async function fetchUltimaAtualizacao(): Promise<string | null> {
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('hubspot_deals')
       .select('_extracted_at')
       .order('_extracted_at', { ascending: false })
       .limit(1);
+
+    if (error) {
+      console.error('Erro ao buscar última atualização:', error);
+      return null;
+    }
 
     if (data && data.length > 0) {
       return (data[0] as { _extracted_at: string })._extracted_at;
@@ -360,20 +494,22 @@ export interface DadosRankingBase {
   vendedoresUnicos: string[];
   ultimaAtualizacao: string | null;
   wonDealsMap: Map<string, DealProcessado>;
+  reuniaoRealizadaStageIds: Set<string>;
+  virtualPipelineId: string | null;
 }
 
 export async function fetchDadosRankingBase(): Promise<DadosRankingBase> {
   const [
     ownersRaw,
     pipelinesRaw,
-    wonStageIds,
+    allStages,
     dealsRaw,
     salesGoalsRaw,
     ultimaAtualizacao,
   ] = await Promise.all([
     fetchOwners(),
     fetchPipelines(),
-    fetchWonStageIds(),
+    fetchAllStages(),
     fetchDeals(),
     fetchSalesGoals(),
     fetchUltimaAtualizacao(),
@@ -382,7 +518,8 @@ export async function fetchDadosRankingBase(): Promise<DadosRankingBase> {
   const proprietarios = processOwners(ownersRaw);
   const ownersMap = createOwnersMap(proprietarios);
   const pipelinesMap = createPipelinesMap(pipelinesRaw);
-  const deals = processDeals(dealsRaw, ownersMap, pipelinesMap, wonStageIds);
+  const { wonStageIds, stageLabelsMap, reuniaoRealizadaStageIds, virtualPipelineId } = buildStageMaps(allStages, pipelinesMap);
+  const deals = processDeals(dealsRaw, ownersMap, pipelinesMap, wonStageIds, stageLabelsMap);
 
   const wonDealsMap = new Map<string, DealProcessado>();
   deals.forEach(d => {
@@ -407,6 +544,8 @@ export async function fetchDadosRankingBase(): Promise<DadosRankingBase> {
     vendedoresUnicos,
     ultimaAtualizacao,
     wonDealsMap,
+    reuniaoRealizadaStageIds,
+    virtualPipelineId,
   };
 }
 

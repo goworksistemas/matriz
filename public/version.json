@@ -1,5 +1,5 @@
 {
-  "version": "2.4.0",
-  "buildDate": "2026-03-20T20:00:00Z",
-  "commitMessage": "feat(ranking): competicoes Varejo e MacBook com regras proprias, cronometro regressivo, podio e ETL corrigido"
+  "version": "2.5.0",
+  "buildDate": "2026-04-15T20:00:00Z",
+  "commitMessage": "fix(etl): retry/backoff 429, gap fill line items, associations v4; fix(notion): standalone sem user; fix(ranking): erro wonStageIds propagado"
 }

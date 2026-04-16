@@ -9,6 +9,7 @@ import { Select, SelectItem } from '@/components/ui/Select';
 import { DashboardMetaGlobal } from './pages/DashboardMetaGlobal';
 import { DashboardCompeticaoVarejo } from './pages/DashboardCompeticaoVarejo';
 import { DashboardCompeticaoMacbook } from './pages/DashboardCompeticaoMacbook';
+import { DashboardPreVendas } from './pages/DashboardPreVendas';
 import { DashboardVelocimetro } from './pages/DashboardVelocimetro';
 import { PainelMetas } from './pages/PainelMetas';
 import { useRankingData } from './hooks/useRankingData';
@@ -32,6 +33,8 @@ interface SyncState {
 export function RankingPage() {
   const { log } = useAuditLog();
   const [activeTab, setActiveTab] = useState('meta-global');
+  const [subTabVarejo, setSubTabVarejo] = useState<'vendas' | 'prevendas'>('vendas');
+  const [subTabMacbook, setSubTabMacbook] = useState<'vendas' | 'prevendas'>('vendas');
   const [syncState, setSyncState] = useState<SyncState>({ status: 'idle', message: null });
   const [syncProgress, setSyncProgress] = useState(0);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -76,6 +79,8 @@ export function RankingPage() {
     metas,
     proprietarios,
     ultimaAtualizacao,
+    reuniaoRealizadaStageIds,
+    virtualPipelineId,
     isLoading,
     error,
     refetch,
@@ -131,8 +136,14 @@ export function RankingPage() {
     dadosGraficoMensalSeats,
     dadosGraficoMensalDeals,
     rankingVarejo,
+    negociosVarejo,
     rankingMacbook,
-  } = useRankingFilters(deals, lineItems, metas);
+    negociosMacbook,
+    negociosPreVendasVarejo,
+    rankingPreVendasVarejo,
+    negociosPreVendasMacbook,
+    rankingPreVendasMacbook,
+  } = useRankingFilters(deals, lineItems, metas, reuniaoRealizadaStageIds, virtualPipelineId);
 
   const hasActiveFilters = useMemo(() => {
     const anoAtual = new Date().getFullYear();
@@ -353,17 +364,87 @@ export function RankingPage() {
           </TabsContent>
 
           <TabsContent value="competicao-varejo">
-            <DashboardCompeticaoVarejo
-              rankingVarejo={rankingVarejo}
-              proprietarios={proprietarios}
-            />
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setSubTabVarejo('vendas')}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    subTabVarejo === 'vendas'
+                      ? 'bg-amber-500 text-white shadow-sm'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Vendas
+                </button>
+                <button
+                  onClick={() => setSubTabVarejo('prevendas')}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    subTabVarejo === 'prevendas'
+                      ? 'bg-emerald-500 text-white shadow-sm'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Pré-vendas / Virtual
+                </button>
+              </div>
+              {subTabVarejo === 'vendas' ? (
+                <DashboardCompeticaoVarejo
+                  rankingVarejo={rankingVarejo}
+                  proprietarios={proprietarios}
+                  negociosVarejo={negociosVarejo}
+                />
+              ) : (
+                <DashboardPreVendas
+                  ranking={rankingPreVendasVarejo}
+                  negocios={negociosPreVendasVarejo}
+                  proprietarios={proprietarios}
+                  competicao="varejo"
+                  periodo="17/03/2026 a 18/05/2026"
+                />
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="competicao-macbook">
-            <DashboardCompeticaoMacbook
-              rankingMacbook={rankingMacbook}
-              proprietarios={proprietarios}
-            />
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setSubTabMacbook('vendas')}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    subTabMacbook === 'vendas'
+                      ? 'bg-violet-500 text-white shadow-sm'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Vendas
+                </button>
+                <button
+                  onClick={() => setSubTabMacbook('prevendas')}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    subTabMacbook === 'prevendas'
+                      ? 'bg-emerald-500 text-white shadow-sm'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Pré-vendas / Virtual
+                </button>
+              </div>
+              {subTabMacbook === 'vendas' ? (
+                <DashboardCompeticaoMacbook
+                  rankingMacbook={rankingMacbook}
+                  proprietarios={proprietarios}
+                  negociosMacbook={negociosMacbook}
+                />
+              ) : (
+                <DashboardPreVendas
+                  ranking={rankingPreVendasMacbook}
+                  negocios={negociosPreVendasMacbook}
+                  proprietarios={proprietarios}
+                  competicao="macbook"
+                  periodo="17/03/2026 a 15/12/2026"
+                />
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="velocimetro">

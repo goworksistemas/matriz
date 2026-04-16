@@ -54,15 +54,15 @@ export function useNotionData(): UseNotionDataReturn {
   }, []);
 
   useEffect(() => {
-    if (user) loadData();
-  }, [user, loadData]);
+    loadData();
+  }, [loadData]);
 
   useEffect(() => {
-    if (user && error && !hasLoaded.current) {
+    if (error && !hasLoaded.current) {
       const timer = setTimeout(() => loadData(), 1000);
       return () => clearTimeout(timer);
     }
-  }, [user, error, loadData]);
+  }, [error, loadData]);
 
   const scheduleRealtimeRefresh = useCallback(() => {
     if (refreshTimeoutRef.current) {

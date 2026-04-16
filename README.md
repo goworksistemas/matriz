@@ -1,6 +1,6 @@
-# Central de Relatorios NetworkGO
+# Central de Relatorios ConectGo
 
-Central unificada de relatorios, dashboards e ferramentas de gestao da NetworkGO.
+Central unificada de relatorios, dashboards e ferramentas de gestao da ConectGo.
 
 ---
 

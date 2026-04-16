@@ -31,7 +31,7 @@ export function EsqueciSenha() {
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center mb-4 shadow-lg shadow-primary-500/20">
             <Zap className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">NetworkGo</h1>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">ConectGo</h1>
           <p className="text-sm text-gray-500 mt-1">Recuperar senha</p>
         </div>
 

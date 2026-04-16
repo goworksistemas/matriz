@@ -1,4 +1,12 @@
-import { useMemo, useState, useEffect, useRef, type ImgHTMLAttributes } from 'react';
+import { Fragment, useMemo, useState, useEffect, useRef, type ImgHTMLAttributes } from 'react';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getExpandedRowModel,
+  flexRender,
+  type ColumnDef,
+  type ExpandedState,
+} from '@tanstack/react-table';
 import {
   Trophy,
   Medal,
@@ -16,21 +24,12 @@ import {
   ShieldCheck,
   Ban,
   TrendingUp,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-  LabelList,
-} from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { cn, formatNumber, formatCurrency } from '@/lib/utils';
-import type { VendedorCompeticao, Proprietario } from '@/types';
+import type { VendedorCompeticao, Proprietario, NegocioVarejo } from '@/types';
 
 const VAREJO_INICIO = new Date('2026-03-17T00:00:00');
 const VAREJO_FIM = new Date('2026-05-18T23:59:59');
@@ -38,6 +37,7 @@ const VAREJO_FIM = new Date('2026-05-18T23:59:59');
 interface DashboardCompeticaoVarejoProps {
   rankingVarejo: VendedorCompeticao[];
   proprietarios: Proprietario[];
+  negociosVarejo: NegocioVarejo[];
 }
 
 function getAvatarUrl(name: string, size = 128, bg = '0ea5e9'): string {
@@ -228,12 +228,6 @@ function Podium({ ranking, metrica }: { ranking: VendedorCompeticao[]; metrica: 
   );
 }
 
-const RANKING_BAR_COLORS = [
-  '#f59e0b', '#9ca3af', '#f97316',
-  '#6366f1', '#0ea5e9', '#10b981', '#ec4899', '#8b5cf6',
-  '#14b8a6', '#f43f5e', '#a855f7', '#06b6d4',
-];
-
 const VAREJO_META_MINIMA = 60;
 
 const VENDEDORES_COMPETICAO = [
@@ -251,8 +245,155 @@ function isVendedorFixo(nome: string): boolean {
   return VENDEDORES_COMPETICAO.some(v => lower.includes(v));
 }
 
-export function DashboardCompeticaoVarejo({ rankingVarejo, proprietarios }: DashboardCompeticaoVarejoProps) {
+/** Agrupa negócios da competição por vendedor para a matriz expandível */
+interface VarejoMatrizRow {
+  ownerId: string;
+  ownerNome: string;
+  negocios: NegocioVarejo[];
+  totalNegocios: number;
+  validosCount: number;
+  invalidosCount: number;
+  semItemCount: number;
+  seatsTotal: number;
+  valorTotal: number;
+}
+
+function buildMatrizVarejoPorVendedor(negocios: NegocioVarejo[]): VarejoMatrizRow[] {
+  const map = new Map<string, NegocioVarejo[]>();
+  negocios.forEach(n => {
+    const list = map.get(n.ownerId) || [];
+    list.push(n);
+    map.set(n.ownerId, list);
+  });
+
+  return Array.from(map.entries())
+    .map(([ownerId, lista]) => {
+      const ownerNome = lista[0]?.ownerNome ?? '';
+      const validos = lista.filter(x => x.valido);
+      const invalidos = lista.filter(x => !x.valido);
+      const semItem = lista.filter(x => !x.temLineItem);
+      const seatsTotal = validos.reduce((acc, x) => acc + (x.seats ?? 0), 0);
+      const valorTotal = lista.reduce((acc, x) => acc + x.amount, 0);
+      return {
+        ownerId,
+        ownerNome,
+        negocios: lista.sort((a, b) => b.closeDate.localeCompare(a.closeDate)),
+        totalNegocios: lista.length,
+        validosCount: validos.length,
+        invalidosCount: invalidos.length,
+        semItemCount: semItem.length,
+        seatsTotal,
+        valorTotal,
+      };
+    })
+    .sort((a, b) => b.validosCount - a.validosCount || b.seatsTotal - a.seatsTotal || a.ownerNome.localeCompare(b.ownerNome));
+}
+
+export function DashboardCompeticaoVarejo({ rankingVarejo, proprietarios, negociosVarejo }: DashboardCompeticaoVarejoProps) {
   const countdown = useCountdown();
+  const [regrasAbertas, setRegrasAbertas] = useState(false);
+  const [expandedMatrizVarejo, setExpandedMatrizVarejo] = useState<ExpandedState>({});
+
+  const matrizNegociosVarejo = useMemo(
+    () => buildMatrizVarejoPorVendedor(negociosVarejo),
+    [negociosVarejo],
+  );
+
+  const colunasMatrizVarejo = useMemo<ColumnDef<VarejoMatrizRow>[]>(
+    () => [
+      {
+        id: 'expander',
+        header: () => null,
+        cell: ({ row }) => (
+          <button
+            type="button"
+            onClick={() => row.toggleExpanded()}
+            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+            aria-expanded={row.getIsExpanded()}
+          >
+            {row.getIsExpanded() ? (
+              <ChevronDown className="h-4 w-4 text-gray-400" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+            )}
+          </button>
+        ),
+        size: 40,
+      },
+      {
+        accessorKey: 'ownerNome',
+        header: 'Vendedor',
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2.5">
+            <OwnerAvatar name={row.original.ownerNome} size={28} className="flex-shrink-0" />
+            <span className="font-medium text-gray-900 dark:text-gray-100">{row.original.ownerNome}</span>
+          </div>
+        ),
+      },
+      {
+        id: 'totalNegocios',
+        header: 'Negócios',
+        cell: ({ row }) => (
+          <span className="text-gray-600 dark:text-gray-300 tabular-nums">{row.original.totalNegocios}</span>
+        ),
+        size: 80,
+      },
+      {
+        id: 'validos',
+        header: 'Válidos',
+        cell: ({ row }) => (
+          <span className="font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">{row.original.validosCount}</span>
+        ),
+        size: 72,
+      },
+      {
+        id: 'invalidos',
+        header: '>20 seats',
+        cell: ({ row }) => (
+          <span className={cn('tabular-nums', row.original.invalidosCount > 0 ? 'text-red-500' : 'text-gray-400')}>
+            {row.original.invalidosCount}
+          </span>
+        ),
+        size: 88,
+      },
+      {
+        id: 'semItem',
+        header: 'Sem item',
+        cell: ({ row }) => (
+          <span className={cn('tabular-nums', row.original.semItemCount > 0 ? 'text-amber-500' : 'text-gray-400')}>
+            {row.original.semItemCount}
+          </span>
+        ),
+        size: 80,
+      },
+      {
+        id: 'seats',
+        header: 'Seats (comp.)',
+        cell: ({ row }) => (
+          <span className="text-gray-800 dark:text-gray-200 tabular-nums">{formatNumber(row.original.seatsTotal)}</span>
+        ),
+      },
+      {
+        id: 'valor',
+        header: 'Valor total',
+        cell: ({ row }) => (
+          <span className="text-gray-600 dark:text-gray-300">{formatCurrency(row.original.valorTotal)}</span>
+        ),
+      },
+    ],
+    [],
+  );
+
+  const tableMatrizVarejo = useReactTable({
+    data: matrizNegociosVarejo,
+    columns: colunasMatrizVarejo,
+    state: { expanded: expandedMatrizVarejo },
+    onExpandedChange: setExpandedMatrizVarejo,
+    getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getRowId: row => row.ownerId,
+    getRowCanExpand: row => row.original.negocios.length > 0,
+  });
 
   const rankingCompleto = useMemo<VendedorCompeticao[]>(() => {
     const existentes = new Set(rankingVarejo.map(v => v.ownerId));
@@ -289,14 +430,6 @@ export function DashboardCompeticaoVarejo({ rankingVarejo, proprietarios }: Dash
 
     return { totalSeats, totalDeals, vendedoresCompetindo, totalVendedores, mediaDeals, seatsPerDeal, melhorVendedor };
   }, [rankingVarejo, rankingCompleto]);
-
-  const dadosGraficoRanking = useMemo(() => {
-    return rankingVarejo.slice(0, 15).map((v) => ({
-      name: v.ownerNome.length > 18 ? v.ownerNome.slice(0, 18) + '...' : v.ownerNome,
-      deals: v.dealsCount,
-      seats: v.seatsCapped,
-    }));
-  }, [rankingVarejo]);
 
   return (
     <div className="space-y-6">
@@ -440,48 +573,142 @@ export function DashboardCompeticaoVarejo({ rankingVarejo, proprietarios }: Dash
         </div>
       </Card>
 
-      {/* Gráfico */}
+      {/* Matriz de negócios por vendedor (expandir = detalhe por deal) */}
       <Card>
-          <CardHeader>
+        <CardHeader>
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <CardTitle className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-primary-500" />
-              Ranking por Contratos
+              <Layers className="h-4 w-4 text-sky-500" />
+              Matriz de Negócios por Vendedor
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {dadosGraficoRanking.length === 0 ? (
-              <div className="h-[350px] flex items-center justify-center text-sm text-gray-400">
-                Nenhum dado no periodo da campanha
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height={Math.max(350, dadosGraficoRanking.length * 40)}>
-                <BarChart data={dadosGraficoRanking} layout="vertical" margin={{ top: 5, right: 50, left: 10, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-                  <XAxis type="number" stroke="var(--chart-axis)" fontSize={11} allowDecimals={false} />
-                  <YAxis type="category" dataKey="name" stroke="var(--chart-axis)" fontSize={11} width={140} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'var(--chart-tooltip-bg)',
-                      border: '1px solid var(--chart-tooltip-border)',
-                      borderRadius: '8px',
-                      color: 'var(--chart-tooltip-text)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    }}
-                    formatter={(value: number, name: string) => [
-                      formatNumber(value),
-                      name === 'deals' ? 'Contratos' : 'Seats',
-                    ]}
-                  />
-                  <Bar dataKey="deals" radius={[0, 4, 4, 0]}>
-                    <LabelList dataKey="deals" position="right" offset={8} fill="var(--chart-axis)" fontSize={11} formatter={(v: number) => `${v} deals`} />
-                    {dadosGraficoRanking.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={RANKING_BAR_COLORS[index % RANKING_BAR_COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+              <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3 text-emerald-500" />{negociosVarejo.filter(n => n.valido).length} válidos</span>
+              {negociosVarejo.filter(n => !n.valido).length > 0 && (
+                <span className="flex items-center gap-1"><Ban className="h-3 w-3 text-red-400" />{negociosVarejo.filter(n => !n.valido).length} descartados</span>
+              )}
+              {negociosVarejo.filter(n => !n.temLineItem).length > 0 && (
+                <span className="flex items-center gap-1 text-amber-500"><Info className="h-3 w-3" />{negociosVarejo.filter(n => !n.temLineItem).length} sem line item</span>
+              )}
+              <span>{negociosVarejo.length} negócios · {matrizNegociosVarejo.length} vendedores</span>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {negociosVarejo.length === 0 ? (
+            <div className="py-12 text-center text-sm text-gray-400 px-6">
+              Nenhum negócio de Sala Privativa fechado no período da campanha
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
+                  {tableMatrizVarejo.getHeaderGroups().map(hg => (
+                    <tr key={hg.id}>
+                      {hg.headers.map(header => (
+                        <th
+                          key={header.id}
+                          className="px-4 py-3 text-left font-semibold text-gray-500 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700"
+                          style={{ width: header.getSize() }}
+                        >
+                          {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody>
+                  {tableMatrizVarejo.getRowModel().rows.map(row => (
+                    <Fragment key={row.id}>
+                      <tr className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        {row.getVisibleCells().map(cell => (
+                          <td key={cell.id} className="px-4 py-3 align-middle">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        ))}
+                      </tr>
+                      {row.getIsExpanded() && (
+                        <tr>
+                          <td colSpan={colunasMatrizVarejo.length} className="p-0">
+                            <div className="px-4 py-4 bg-gray-50 dark:bg-gray-900/50 border-y border-gray-200 dark:border-gray-700">
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                Negócios — {row.original.ownerNome}
+                              </h4>
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-xs">
+                                  <thead className="bg-gray-100 dark:bg-gray-800">
+                                    <tr>
+                                      <th className="px-3 py-2 text-left text-gray-500 dark:text-gray-400 font-semibold">Status</th>
+                                      <th className="px-3 py-2 text-left text-gray-500 dark:text-gray-400 font-semibold">Negócio</th>
+                                      <th className="px-3 py-2 text-left text-gray-500 dark:text-gray-400 font-semibold">Produto</th>
+                                      <th className="px-3 py-2 text-right text-gray-500 dark:text-gray-400 font-semibold">Seats</th>
+                                      <th className="px-3 py-2 text-right text-gray-500 dark:text-gray-400 font-semibold">Valor</th>
+                                      <th className="px-3 py-2 text-left text-gray-500 dark:text-gray-400 font-semibold">Fechamento</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {row.original.negocios.map(n => (
+                                      <tr
+                                        key={n.dealHubspotId}
+                                        className={cn(
+                                          'border-b border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800/30',
+                                          !n.valido && 'opacity-70',
+                                        )}
+                                      >
+                                        <td className="px-3 py-2 whitespace-nowrap">
+                                          {!n.temLineItem ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-500">
+                                              <Info className="h-3 w-3" />
+                                              Sem item
+                                            </span>
+                                          ) : n.valido ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                                              <CheckCircle className="h-3 w-3" />
+                                              Válido
+                                            </span>
+                                          ) : (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-red-500">
+                                              <Ban className="h-3 w-3" />
+                                              {'>20 seats'}
+                                            </span>
+                                          )}
+                                        </td>
+                                        <td className="px-3 py-2 text-gray-800 dark:text-gray-200 max-w-[220px]">
+                                          <span className="block truncate" title={n.dealName}>{n.dealName}</span>
+                                        </td>
+                                        <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[180px] truncate" title={n.produto}>
+                                          {n.produto || '—'}
+                                        </td>
+                                        <td className="px-3 py-2 text-right whitespace-nowrap">
+                                          {n.seats !== null ? (
+                                            <span className={cn('font-semibold', n.valido ? 'text-gray-900 dark:text-gray-100' : 'text-red-500')}>
+                                              {formatNumber(n.seats)}
+                                            </span>
+                                          ) : (
+                                            <span className="text-amber-500 italic">pendente</span>
+                                          )}
+                                        </td>
+                                        <td className="px-3 py-2 text-right text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                                          {formatCurrency(n.amount)}
+                                        </td>
+                                        <td className="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                                          {new Date(n.closeDate + 'T12:00:00').toLocaleDateString('pt-BR')}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
       </Card>
 
       {/* Tabela Completa — todos os vendedores */}
@@ -592,57 +819,63 @@ export function DashboardCompeticaoVarejo({ rankingVarejo, proprietarios }: Dash
         </CardContent>
       </Card>
 
-      {/* Regras da Competição */}
+      {/* Regras da Competição — retrátil */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+        <button
+          onClick={() => setRegrasAbertas(p => !p)}
+          className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors rounded-xl"
+        >
+          <span className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300">
             <Info className="h-4 w-4 text-gray-400" />
             Regras da Competicao
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Criterios de Participacao</h4>
-              <ul className="space-y-2">
-                {[
-                  { icon: ShieldCheck, text: 'Minimo de 60 seats acumulados para competir', color: 'text-emerald-500' },
-                  { icon: Briefcase, text: 'Apenas contratos de Sala Privativa', color: 'text-amber-500' },
-                  { icon: Ban, text: 'Contratos com mais de 20 seats sao descartados', color: 'text-red-500' },
-                  { icon: CalendarDays, text: 'Periodo: 17/03/2026 a 18/05/2026', color: 'text-primary-500' },
-                ].map((rule, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
-                    <rule.icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', rule.color)} />
-                    {rule.text}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          </span>
+          <svg className={cn('h-4 w-4 text-gray-400 transition-transform duration-200', regrasAbertas && 'rotate-180')} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        {regrasAbertas && (
+          <CardContent className="pt-0 pb-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Criterios de Participacao</h4>
+                <ul className="space-y-2">
+                  {[
+                    { icon: ShieldCheck, text: 'Minimo de 60 seats acumulados para competir', color: 'text-emerald-500' },
+                    { icon: Briefcase, text: 'Apenas contratos de Sala Privativa', color: 'text-amber-500' },
+                    { icon: Ban, text: 'Contratos com mais de 20 seats sao descartados', color: 'text-red-500' },
+                    { icon: CalendarDays, text: 'Periodo: 17/03/2026 a 18/05/2026', color: 'text-primary-500' },
+                  ].map((rule, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
+                      <rule.icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', rule.color)} />
+                      {rule.text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-            <div className="space-y-3">
-              <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Criterio de Classificacao</h4>
-              <ul className="space-y-2">
-                {[
-                  { icon: Trophy, text: 'Ranking ordenado por quantidade de contratos fechados', color: 'text-amber-500' },
-                  { icon: Layers, text: 'Desempate por total de seats acumulados', color: 'text-sky-500' },
-                  { icon: Award, text: '1o lugar: R$ 1.500,00 / 2o lugar: R$ 750,00', color: 'text-violet-500' },
-                ].map((rule, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
-                    <rule.icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', rule.color)} />
-                    {rule.text}
-                  </li>
-                ))}
-              </ul>
+              <div className="space-y-3">
+                <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Criterio de Classificacao</h4>
+                <ul className="space-y-2">
+                  {[
+                    { icon: Trophy, text: 'Ranking ordenado por quantidade de contratos fechados', color: 'text-amber-500' },
+                    { icon: Layers, text: 'Desempate por total de seats acumulados', color: 'text-sky-500' },
+                    { icon: Award, text: '1o lugar: R$ 1.500,00 / 2o lugar: R$ 750,00', color: 'text-violet-500' },
+                  ].map((rule, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
+                      <rule.icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', rule.color)} />
+                      {rule.text}
+                    </li>
+                  ))}
+                </ul>
 
-              <div className="mt-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10">
-                <p className="text-xs text-amber-700 dark:text-amber-400">
-                  <span className="font-semibold">Exemplo:</span> Se um vendedor fechar um contrato de 30 seats de sala privativa,
-                  esse contrato <span className="font-semibold">nao sera contabilizado</span> na competicao (excede o limite de 20 seats por contrato).
-                </p>
+                <div className="mt-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/10">
+                  <p className="text-xs text-amber-700 dark:text-amber-400">
+                    <span className="font-semibold">Exemplo:</span> Se um vendedor fechar um contrato de 30 seats de sala privativa,
+                    esse contrato <span className="font-semibold">nao sera contabilizado</span> na competicao (excede o limite de 20 seats por contrato).
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
     </div>
   );

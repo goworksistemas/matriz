@@ -1,4 +1,12 @@
-import { useMemo, useState, useEffect, useRef, type ImgHTMLAttributes } from 'react';
+import { Fragment, useMemo, useState, useEffect, useRef, type ImgHTMLAttributes } from 'react';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getExpandedRowModel,
+  flexRender,
+  type ColumnDef,
+  type ExpandedState,
+} from '@tanstack/react-table';
 import {
   Trophy,
   Users,
@@ -16,21 +24,12 @@ import {
   TrendingUp,
   Laptop,
   Watch,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-  LabelList,
-} from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { cn, formatNumber } from '@/lib/utils';
-import type { VendedorCompeticao, Proprietario } from '@/types';
+import { cn, formatNumber, formatCurrency } from '@/lib/utils';
+import type { VendedorCompeticao, Proprietario, NegocioMacbook } from '@/types';
 
 const MACBOOK_INICIO = new Date('2026-03-17T00:00:00');
 const MACBOOK_FIM = new Date('2026-12-15T23:59:59');
@@ -39,6 +38,7 @@ const MACBOOK_META_MINIMA = 250;
 interface DashboardCompeticaoMacbookProps {
   rankingMacbook: VendedorCompeticao[];
   proprietarios: Proprietario[];
+  negociosMacbook: NegocioMacbook[];
 }
 
 function getAvatarUrl(name: string, size = 128, bg = '0ea5e9'): string {
@@ -231,12 +231,6 @@ function Podium({ ranking }: { ranking: VendedorCompeticao[] }) {
   );
 }
 
-const RANKING_BAR_COLORS = [
-  '#8b5cf6', '#9ca3af', '#f97316',
-  '#6366f1', '#0ea5e9', '#10b981', '#ec4899', '#f59e0b',
-  '#14b8a6', '#f43f5e', '#a855f7', '#06b6d4',
-];
-
 const VENDEDORES_COMPETICAO = [
   'camila carvalho',
   'maria cristina',
@@ -252,8 +246,146 @@ function isVendedorFixo(nome: string): boolean {
   return VENDEDORES_COMPETICAO.some(v => lower.includes(v));
 }
 
-export function DashboardCompeticaoMacbook({ rankingMacbook, proprietarios }: DashboardCompeticaoMacbookProps) {
+// ================================================
+// Matriz por vendedor (expandível)
+// ================================================
+
+interface MacbookMatrizRow {
+  ownerId: string;
+  ownerNome: string;
+  negocios: NegocioMacbook[];
+  totalNegocios: number;
+  seatsRaw: number;
+  seatsCapped: number;
+  semItemCount: number;
+  valorTotal: number;
+}
+
+function buildMatrizMacbookPorVendedor(negocios: NegocioMacbook[]): MacbookMatrizRow[] {
+  const map = new Map<string, NegocioMacbook[]>();
+  negocios.forEach(n => {
+    const list = map.get(n.ownerId) || [];
+    list.push(n);
+    map.set(n.ownerId, list);
+  });
+
+  return Array.from(map.entries())
+    .map(([ownerId, lista]) => {
+      const ownerNome = lista[0]?.ownerNome ?? '';
+      const semItem = lista.filter(x => !x.temLineItem);
+      const seatsRaw = lista.reduce((acc, x) => acc + (x.seatsRaw ?? 0), 0);
+      const seatsCapped = lista.reduce((acc, x) => acc + (x.seatsCapped ?? 0), 0);
+      const valorTotal = lista.reduce((acc, x) => acc + x.amount, 0);
+      return {
+        ownerId,
+        ownerNome,
+        negocios: lista.sort((a, b) => b.closeDate.localeCompare(a.closeDate)),
+        totalNegocios: lista.length,
+        seatsRaw,
+        seatsCapped,
+        semItemCount: semItem.length,
+        valorTotal,
+      };
+    })
+    .sort((a, b) => b.seatsCapped - a.seatsCapped || b.seatsRaw - a.seatsRaw || a.ownerNome.localeCompare(b.ownerNome));
+}
+
+export function DashboardCompeticaoMacbook({ rankingMacbook, proprietarios, negociosMacbook }: DashboardCompeticaoMacbookProps) {
   const countdown = useCountdown();
+  const [regrasAbertas, setRegrasAbertas] = useState(false);
+  const [expandedMatriz, setExpandedMatriz] = useState<ExpandedState>({});
+
+  const matrizNegociosMacbook = useMemo(
+    () => buildMatrizMacbookPorVendedor(negociosMacbook),
+    [negociosMacbook],
+  );
+
+  const colunasMatriz = useMemo<ColumnDef<MacbookMatrizRow>[]>(
+    () => [
+      {
+        id: 'expander',
+        header: () => null,
+        cell: ({ row }) => (
+          <button
+            type="button"
+            onClick={() => row.toggleExpanded()}
+            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+            aria-expanded={row.getIsExpanded()}
+          >
+            {row.getIsExpanded() ? (
+              <ChevronDown className="h-4 w-4 text-gray-400" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+            )}
+          </button>
+        ),
+        size: 40,
+      },
+      {
+        accessorKey: 'ownerNome',
+        header: 'Vendedor',
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2.5">
+            <OwnerAvatar name={row.original.ownerNome} size={28} className="flex-shrink-0" />
+            <span className="font-medium text-gray-900 dark:text-gray-100">{row.original.ownerNome}</span>
+          </div>
+        ),
+      },
+      {
+        id: 'totalNegocios',
+        header: 'Negócios',
+        cell: ({ row }) => (
+          <span className="text-gray-600 dark:text-gray-300 tabular-nums">{row.original.totalNegocios}</span>
+        ),
+        size: 80,
+      },
+      {
+        id: 'seatsCapped',
+        header: 'Seats (cap)',
+        cell: ({ row }) => (
+          <span className="font-semibold text-violet-600 dark:text-violet-400 tabular-nums">{formatNumber(row.original.seatsCapped)}</span>
+        ),
+        size: 100,
+      },
+      {
+        id: 'seatsRaw',
+        header: 'Seats (bruto)',
+        cell: ({ row }) => (
+          <span className="text-gray-500 dark:text-gray-400 tabular-nums">{formatNumber(row.original.seatsRaw)}</span>
+        ),
+        size: 100,
+      },
+      {
+        id: 'semItem',
+        header: 'Sem item',
+        cell: ({ row }) => (
+          <span className={cn('tabular-nums', row.original.semItemCount > 0 ? 'text-amber-500' : 'text-gray-400')}>
+            {row.original.semItemCount}
+          </span>
+        ),
+        size: 80,
+      },
+      {
+        id: 'valor',
+        header: 'Valor total',
+        cell: ({ row }) => (
+          <span className="text-gray-600 dark:text-gray-300">{formatCurrency(row.original.valorTotal)}</span>
+        ),
+      },
+    ],
+    [],
+  );
+
+  const tableMatriz = useReactTable({
+    data: matrizNegociosMacbook,
+    columns: colunasMatriz,
+    state: { expanded: expandedMatriz },
+    onExpandedChange: setExpandedMatriz,
+    getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getRowId: row => row.ownerId,
+    getRowCanExpand: row => row.original.negocios.length > 0,
+  });
 
   const rankingCompleto = useMemo<VendedorCompeticao[]>(() => {
     const existentes = new Set(rankingMacbook.map(v => v.ownerId));
@@ -290,14 +422,6 @@ export function DashboardCompeticaoMacbook({ rankingMacbook, proprietarios }: Da
 
     return { totalSeats, totalSeatsRaw, totalDeals, vendedoresCompetindo, totalVendedores, seatsPerDeal, melhorVendedor };
   }, [rankingMacbook, rankingCompleto]);
-
-  const dadosGraficoRanking = useMemo(() => {
-    return rankingMacbook.slice(0, 15).map((v) => ({
-      name: v.ownerNome.length > 18 ? v.ownerNome.slice(0, 18) + '...' : v.ownerNome,
-      seats: v.seatsCapped,
-      meta: v.metaMinima,
-    }));
-  }, [rankingMacbook]);
 
   return (
     <div className="space-y-6">
@@ -438,51 +562,128 @@ export function DashboardCompeticaoMacbook({ rankingMacbook, proprietarios }: Da
         </div>
       </Card>
 
-      {/* Gráfico */}
+      {/* Matriz de negócios por vendedor */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Layers className="h-4 w-4 text-violet-500" />
-            Ranking por Seats
-          </CardTitle>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <CardTitle className="flex items-center gap-2">
+              <Layers className="h-4 w-4 text-violet-500" />
+              Matriz de Negócios por Vendedor
+            </CardTitle>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+              {negociosMacbook.filter(n => !n.temLineItem).length > 0 && (
+                <span className="flex items-center gap-1 text-amber-500"><Info className="h-3 w-3" />{negociosMacbook.filter(n => !n.temLineItem).length} sem line item</span>
+              )}
+              <span>{negociosMacbook.length} negócios · {matrizNegociosMacbook.length} vendedores</span>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          {dadosGraficoRanking.length === 0 ? (
-            <div className="h-[350px] flex items-center justify-center text-sm text-gray-400">
-              Nenhum dado no periodo da campanha
+        <CardContent className="p-0">
+          {negociosMacbook.length === 0 ? (
+            <div className="py-12 text-center text-sm text-gray-400 px-6">
+              Nenhum negócio dos produtos da competição fechado no período
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={Math.max(350, dadosGraficoRanking.length * 40)}>
-              <BarChart data={dadosGraficoRanking} layout="vertical" margin={{ top: 5, right: 50, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-                <XAxis type="number" stroke="var(--chart-axis)" fontSize={11} />
-                <YAxis type="category" dataKey="name" stroke="var(--chart-axis)" fontSize={11} width={140} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'var(--chart-tooltip-bg)',
-                    border: '1px solid var(--chart-tooltip-border)',
-                    borderRadius: '8px',
-                    color: 'var(--chart-tooltip-text)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  }}
-                  formatter={(value: number, name: string) => [
-                    formatNumber(value),
-                    name === 'seats' ? 'Seats (c/ cap)' : 'Meta Minima',
-                  ]}
-                />
-                <Bar dataKey="seats" radius={[0, 4, 4, 0]}>
-                  <LabelList dataKey="seats" position="right" offset={8} fill="var(--chart-axis)" fontSize={11} formatter={(v: number) => formatNumber(v)} />
-                  {dadosGraficoRanking.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={RANKING_BAR_COLORS[index % RANKING_BAR_COLORS.length]} />
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
+                  {tableMatriz.getHeaderGroups().map(hg => (
+                    <tr key={hg.id}>
+                      {hg.headers.map(header => (
+                        <th
+                          key={header.id}
+                          className="px-4 py-3 text-left font-semibold text-gray-500 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700"
+                          style={{ width: header.getSize() }}
+                        >
+                          {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        </th>
+                      ))}
+                    </tr>
                   ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                </thead>
+                <tbody>
+                  {tableMatriz.getRowModel().rows.map(row => (
+                    <Fragment key={row.id}>
+                      <tr className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        {row.getVisibleCells().map(cell => (
+                          <td key={cell.id} className="px-4 py-3 align-middle">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        ))}
+                      </tr>
+                      {row.getIsExpanded() && (
+                        <tr>
+                          <td colSpan={colunasMatriz.length} className="p-0">
+                            <div className="px-4 py-4 bg-gray-50 dark:bg-gray-900/50 border-y border-gray-200 dark:border-gray-700">
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                Negócios — {row.original.ownerNome}
+                              </h4>
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-xs">
+                                  <thead className="bg-gray-100 dark:bg-gray-800">
+                                    <tr>
+                                      <th className="px-3 py-2 text-left text-gray-500 dark:text-gray-400 font-semibold">Negócio</th>
+                                      <th className="px-3 py-2 text-left text-gray-500 dark:text-gray-400 font-semibold">Produto</th>
+                                      <th className="px-3 py-2 text-right text-gray-500 dark:text-gray-400 font-semibold">Seats (bruto)</th>
+                                      <th className="px-3 py-2 text-right text-gray-500 dark:text-gray-400 font-semibold">Seats (cap)</th>
+                                      <th className="px-3 py-2 text-right text-gray-500 dark:text-gray-400 font-semibold">Valor</th>
+                                      <th className="px-3 py-2 text-left text-gray-500 dark:text-gray-400 font-semibold">Fechamento</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {row.original.negocios.map(n => (
+                                      <tr
+                                        key={n.dealHubspotId}
+                                        className={cn(
+                                          'border-b border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800/30',
+                                          !n.temLineItem && 'opacity-70',
+                                        )}
+                                      >
+                                        <td className="px-3 py-2 text-gray-800 dark:text-gray-200 max-w-[220px]">
+                                          <span className="block truncate" title={n.dealName}>{n.dealName}</span>
+                                        </td>
+                                        <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[180px] truncate" title={n.produto}>
+                                          {n.produto || '—'}
+                                        </td>
+                                        <td className="px-3 py-2 text-right whitespace-nowrap">
+                                          {n.seatsRaw !== null ? (
+                                            <span className="text-gray-700 dark:text-gray-200">{formatNumber(n.seatsRaw)}</span>
+                                          ) : (
+                                            <span className="text-amber-500 italic">pendente</span>
+                                          )}
+                                        </td>
+                                        <td className="px-3 py-2 text-right whitespace-nowrap">
+                                          {n.seatsCapped !== null ? (
+                                            <span className="font-semibold text-violet-600 dark:text-violet-400">{formatNumber(n.seatsCapped)}</span>
+                                          ) : (
+                                            <span className="text-amber-500 italic">pendente</span>
+                                          )}
+                                        </td>
+                                        <td className="px-3 py-2 text-right text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                                          {formatCurrency(n.amount)}
+                                        </td>
+                                        <td className="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                                          {new Date(n.closeDate + 'T12:00:00').toLocaleDateString('pt-BR')}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Tabela Completa */}
+      {/* Tabela Completa — todos os vendedores */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -597,61 +798,67 @@ export function DashboardCompeticaoMacbook({ rankingMacbook, proprietarios }: Da
         </CardContent>
       </Card>
 
-      {/* Regras */}
+      {/* Regras — retrátil */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+        <button
+          onClick={() => setRegrasAbertas(p => !p)}
+          className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors rounded-xl"
+        >
+          <span className="text-sm font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-300">
             <Info className="h-4 w-4 text-gray-400" />
             Regras da Competicao
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Criterios de Participacao</h4>
-              <ul className="space-y-2">
-                {[
-                  { icon: ShieldCheck, text: 'Minimo de 250 seats brutos para participar (sem cap)', color: 'text-emerald-500' },
-                  { icon: Briefcase, text: 'Produtos: BTG, Homeflex, Hotdesk, Open Space, Sala Privativa', color: 'text-violet-500' },
-                  { icon: Ban, text: 'Cap de 20 seats por contrato apenas para o ranking', color: 'text-red-500' },
-                  { icon: CalendarDays, text: 'Periodo: 17/03/2026 a 15/12/2026', color: 'text-primary-500' },
-                ].map((rule, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
-                    <rule.icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', rule.color)} />
-                    {rule.text}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          </span>
+          <svg className={cn('h-4 w-4 text-gray-400 transition-transform duration-200', regrasAbertas && 'rotate-180')} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        {regrasAbertas && (
+          <CardContent className="pt-0 pb-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Criterios de Participacao</h4>
+                <ul className="space-y-2">
+                  {[
+                    { icon: ShieldCheck, text: 'Minimo de 250 seats brutos para participar (sem cap)', color: 'text-emerald-500' },
+                    { icon: Briefcase, text: 'Produtos: BTG, Homeflex, Hotdesk, Open Space, Sala Privativa', color: 'text-violet-500' },
+                    { icon: Ban, text: 'Cap de 20 seats por contrato apenas para o ranking', color: 'text-red-500' },
+                    { icon: CalendarDays, text: 'Periodo: 17/03/2026 a 15/12/2026', color: 'text-primary-500' },
+                  ].map((rule, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
+                      <rule.icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', rule.color)} />
+                      {rule.text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-            <div className="space-y-3">
-              <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Criterio de Classificacao</h4>
-              <ul className="space-y-2">
-                {[
-                  { icon: Trophy, text: 'Ranking ordenado por total de seats (com cap)', color: 'text-violet-500' },
-                  { icon: TrendingUp, text: 'Desempate por quantidade de contratos', color: 'text-sky-500' },
-                  { icon: Laptop, text: '1o lugar: MacBook', color: 'text-violet-500' },
-                  { icon: Watch, text: '2o lugar: Apple Watch', color: 'text-gray-500' },
-                ].map((rule, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
-                    <rule.icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', rule.color)} />
-                    {rule.text}
-                  </li>
-                ))}
-              </ul>
+              <div className="space-y-3">
+                <h4 className="text-xs uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">Criterio de Classificacao</h4>
+                <ul className="space-y-2">
+                  {[
+                    { icon: Trophy, text: 'Ranking ordenado por total de seats (com cap)', color: 'text-violet-500' },
+                    { icon: TrendingUp, text: 'Desempate por quantidade de contratos', color: 'text-sky-500' },
+                    { icon: Laptop, text: '1o lugar: MacBook', color: 'text-violet-500' },
+                    { icon: Watch, text: '2o lugar: Apple Watch', color: 'text-gray-500' },
+                  ].map((rule, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
+                      <rule.icon className={cn('h-4 w-4 mt-0.5 flex-shrink-0', rule.color)} />
+                      {rule.text}
+                    </li>
+                  ))}
+                </ul>
 
-              <div className="mt-4 p-3 rounded-lg bg-violet-50 dark:bg-violet-500/5 border border-violet-100 dark:border-violet-500/10 space-y-1.5">
-                <p className="text-xs text-violet-700 dark:text-violet-400">
-                  <span className="font-semibold">Exemplo:</span> Se vender um contrato de 70 seats, contara <span className="font-semibold">20 seats no ranking</span>,
-                  porem os <span className="font-semibold">70 seats contam para o minimo</span> de 250 para participar.
-                </p>
-                <p className="text-xs text-violet-700 dark:text-violet-400">
-                  Ou seja, contratos grandes ajudam a atingir o minimo mais rapido, mas no ranking o cap de 20 por contrato garante que <span className="font-semibold">constancia vale mais que volume</span>.
-                </p>
+                <div className="mt-4 p-3 rounded-lg bg-violet-50 dark:bg-violet-500/5 border border-violet-100 dark:border-violet-500/10 space-y-1.5">
+                  <p className="text-xs text-violet-700 dark:text-violet-400">
+                    <span className="font-semibold">Exemplo:</span> Se vender um contrato de 70 seats, contara <span className="font-semibold">20 seats no ranking</span>,
+                    porem os <span className="font-semibold">70 seats contam para o minimo</span> de 250 para participar.
+                  </p>
+                  <p className="text-xs text-violet-700 dark:text-violet-400">
+                    Ou seja, contratos grandes ajudam a atingir o minimo mais rapido, mas no ranking o cap de 20 por contrato garante que <span className="font-semibold">constancia vale mais que volume</span>.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
     </div>
   );

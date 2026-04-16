@@ -1,2 +1,2 @@
 // Re-exporta o cliente Supabase compartilhado
-export { supabase } from '@/lib/supabase';
+export { supabase, isSupabaseConfigured, supabaseConfigErrorMessage } from '@/lib/supabase';

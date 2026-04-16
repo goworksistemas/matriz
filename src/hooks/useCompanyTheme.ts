@@ -12,7 +12,7 @@ export interface CompanyTheme {
 
 const DEFAULT_THEME: CompanyTheme = {
   id: '',
-  company_name: 'NetworkGo',
+  company_name: 'ConectGo',
   logo_url: null,
   primary_color: '#0ea5e9',
   sidebar_color: null,

@@ -200,7 +200,7 @@ function StandaloneReport() {
           </div>
           <div>
             <h1 className="text-sm font-semibold tracking-tight">{title}</h1>
-            <p className="text-[10px] text-gray-500">NetworkGo</p>
+            <p className="text-[10px] text-gray-500">ConectGo</p>
           </div>
         </div>
         <button onClick={toggleTheme} className="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors">
