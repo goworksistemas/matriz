@@ -298,11 +298,11 @@ export function DashboardPreVendas({ ranking, negocios, competicao, periodo }: D
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-300 max-w-xl">
               {isVarejo ? (
-                <>Premiado será quem mais realizar reuniões ou gerar resultado no virtual. 1 virtual = 2 reuniões realizadas.</>
+                <>Pré-vendedores: moveu para Reunião realizada nos pipelines GoWork Vendas / Go Corporate = 1 ponto. Virtual: Ganho no pipeline GoWork - Virtual (End. Comercial / Fiscal / Insc. Estadual) = 2 pontos.</>
               ) : (
                 <>
-                  Campanha com foco mais macro: acompanha a performance em um período maior. Premiado será quem mais realizar reuniões ou gerar resultado no virtual.
-                  {' '}1 virtual = 2 reuniões realizadas.
+                  Campanha macro. Pré-vendedores: moveu para Reunião realizada nos pipelines GoWork Vendas / Go Corporate = 1 ponto.
+                  {' '}Virtual: Ganho no pipeline GoWork - Virtual (End. Comercial / Fiscal / Insc. Estadual) = 2 pontos.
                 </>
               )}
             </p>
@@ -419,7 +419,7 @@ export function DashboardPreVendas({ ranking, negocios, competicao, periodo }: D
         <CardContent className="p-0">
           {negocios.length === 0 ? (
             <div className="py-12 text-center text-sm text-gray-400 px-6">
-              Nenhuma reunião realizada no período da campanha
+              Nenhuma venda virtual no período da campanha
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -632,15 +632,15 @@ export function DashboardPreVendas({ ranking, negocios, competicao, periodo }: D
                 <ul className="space-y-2">
                   {(isVarejo
                     ? [
-                        { icon: ShieldCheck, text: 'Mínimo de 100 reuniões realizadas para participar', color: 'text-emerald-500' },
-                        { icon: Monitor, text: 'Pipeline: Virtual · Etapa: Reunião realizada (ou posterior)', color: 'text-sky-500' },
-                        { icon: Headphones, text: '1 virtual = 2 reuniões realizadas', color: 'text-violet-500' },
+                        { icon: ShieldCheck, text: 'Mínimo de 100 reuniões para participar', color: 'text-emerald-500' },
+                        { icon: Monitor, text: 'Pré-vendedores: GoWork Vendas / Go Corporate · Reunião realizada = 1 ponto', color: 'text-sky-500' },
+                        { icon: Headphones, text: 'Virtual: GoWork - Virtual · Ganho · End. Comercial, End. Fiscal, Insc. Estadual · 1 venda = 2 pontos', color: 'text-violet-500' },
                         { icon: CalendarDays, text: `Período: ${periodo}`, color: 'text-primary-500' },
                       ]
                     : [
-                        { icon: ShieldCheck, text: 'Mínimo de 400 reuniões realizadas e 250 virtuais para participar', color: 'text-emerald-500' },
-                        { icon: Monitor, text: 'Pipeline: Virtual · Etapa: Reunião realizada (ou posterior)', color: 'text-sky-500' },
-                        { icon: Headphones, text: '1 virtual = 2 reuniões realizadas', color: 'text-violet-500' },
+                        { icon: ShieldCheck, text: 'Mínimo de 400 reuniões e 250 virtuais para participar', color: 'text-emerald-500' },
+                        { icon: Monitor, text: 'Pré-vendedores: GoWork Vendas / Go Corporate · Reunião realizada = 1 ponto', color: 'text-sky-500' },
+                        { icon: Headphones, text: 'Virtual: GoWork - Virtual · Ganho · End. Comercial, End. Fiscal, Insc. Estadual · 1 venda = 2 pontos', color: 'text-violet-500' },
                         { icon: CalendarDays, text: `Período: ${periodo} (campanha macro)`, color: 'text-primary-500' },
                       ]
                   ).map((rule, i) => (

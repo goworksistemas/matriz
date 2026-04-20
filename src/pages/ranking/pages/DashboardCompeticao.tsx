@@ -257,7 +257,7 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
               <div className="space-y-1.5 text-gray-500 dark:text-gray-400 ml-4">
                 <p><span className="font-medium text-gray-700 dark:text-gray-300">Vendas — 1° colocado:</span> Mais contratos no periodo <span className="text-xs text-gray-400">• Min. 105 seats</span></p>
                 <p><span className="font-medium text-gray-700 dark:text-gray-300">Vendas — 2° colocado:</span> Segundo que mais vendeu contratos <span className="text-xs text-gray-400">• Min. 105 seats</span></p>
-                <p><span className="font-medium text-gray-700 dark:text-gray-300">Pre-Vendas e Virtual:</span> Mais reunioes realizadas ou vendas virtual <span className="text-xs text-gray-400">• Min. 180 reunioes</span></p>
+                <p><span className="font-medium text-gray-700 dark:text-gray-300">Pre-Vendas e Virtual:</span> Pré-vendedores (GoWork Vendas / Go Corporate → Reunião realizada = 1 pt) + Virtual (GoWork - Virtual → Ganho = 2 pts) <span className="text-xs text-gray-400">• Min. 100 reuniões</span></p>
               </div>
               <div className="ml-4 text-[11px] text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-white/[0.04] pt-2">
                 Meta minima da campanha atingida • Limite de 30 posicoes por contrato
@@ -276,7 +276,7 @@ export function DashboardCompeticao({ rankingCompeticao }: DashboardCompeticaoPr
               <div className="space-y-1.5 text-gray-500 dark:text-gray-400 ml-4">
                 <p><span className="font-medium text-gray-700 dark:text-gray-300">Vendas — 1° colocado:</span> Mais seats vendidos no periodo <span className="text-xs text-gray-400">• Min. 250 seats</span></p>
                 <p><span className="font-medium text-gray-700 dark:text-gray-300">Vendas — 2° colocado:</span> Segundo que mais vendeu seats <span className="text-xs text-gray-400">• Min. 250 seats</span></p>
-                <p><span className="font-medium text-gray-700 dark:text-gray-300">Pre-Vendas e Virtual:</span> Mais reunioes ou vendas virtual <span className="text-xs text-gray-400">• Min. 400 reunioes / 250 virtuais</span></p>
+                <p><span className="font-medium text-gray-700 dark:text-gray-300">Pre-Vendas e Virtual:</span> Pré-vendedores (GoWork Vendas / Go Corporate → Reunião realizada = 1 pt) + Virtual (GoWork - Virtual → Ganho = 2 pts) <span className="text-xs text-gray-400">• Min. 400 reuniões / 250 virtuais</span></p>
               </div>
               <div className="ml-4 text-[11px] text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-white/[0.04] pt-2">
                 Meta minima da campanha atingida • Limite de 30 posicoes por contrato

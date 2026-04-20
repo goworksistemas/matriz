@@ -13,6 +13,7 @@ import type {
   NegocioPreVendas,
   VendedorPreVendas,
 } from '@/types';
+import type { DealStageHistoryEntry } from '../services/api';
 
 export interface DadoGraficoMensalDeals {
   mes: string;
@@ -51,6 +52,9 @@ export function useRankingFilters(
   metas: MetaVendas[],
   reuniaoRealizadaStageIds: Set<string> = new Set(),
   virtualPipelineId: string | null = null,
+  preVendasPipelineIds: string[] = [],
+  stageHistory: DealStageHistoryEntry[] = [],
+  wonStageIds: Set<string> = new Set(),
 ) {
   const [filtrosGlobal, setFiltrosGlobal] = useState<FiltrosMetaGlobal>(FILTROS_INICIAL);
 
@@ -471,8 +475,8 @@ export function useRankingFilters(
 
   // ============================================
   // PRÉ-VENDAS / VIRTUAL — ambas competições (Varejo + MacBook)
-  // Pipeline "Virtual", etapa "Reunião realizada" ou posterior
-  // 2 reuniões = 1 virtual
+  //   1) Pré-vendedores: GoWork Vendas + GoWork Go Corporate → Reunião realizada → 1 deal movido = 1 ponto
+  //   2) Virtual: GoWork - Virtual → Ganho → End. Comercial/Fiscal/Insc. Estadual → 1 venda = 2 pontos
   // Varejo: mín. 100 reuniões | MacBook: mín. 400 reuniões e 250 virtuais
   // ============================================
 
@@ -480,14 +484,69 @@ export function useRankingFilters(
   const PRE_VENDAS_META_MACBOOK_REUNIOES = 400;
   const PRE_VENDAS_META_MACBOOK_VIRTUAIS = 250;
 
-  const negociosPreVendas = useMemo<NegocioPreVendas[]>(() => {
-    if (!virtualPipelineId || reuniaoRealizadaStageIds.size === 0) return [];
+  // Vendedores autorizados
+  const PREVENDAS_VENDEDORES_PERMITIDOS = ['ana santiago', 'matheus lopes'];
+  const VIRTUAL_VENDEDORES_PERMITIDOS = ['jaqueline menezes'];
+
+  function normalizarNome(nome: string): string {
+    return nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  }
+
+  const VIRTUAL_PRODUTOS = ['endereço comercial', 'endereco comercial', 'endereço fiscal', 'endereco fiscal', 'inscrição estadual', 'inscricao estadual'];
+
+  function matchVirtualProduto(text: string): boolean {
+    const lower = text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    return VIRTUAL_PRODUTOS.some(p => lower.includes(p.normalize('NFD').replace(/[\u0300-\u036f]/g, '')));
+  }
+
+  const preVendasPipelineIdSet = useMemo(() => new Set(preVendasPipelineIds), [preVendasPipelineIds]);
+
+  // Indexa histórico: deal+stage → conjunto de datas (YYYY-MM-DD)
+  const stageHistoryIndex = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const entry of stageHistory) {
+      const ts = entry.timestamp.substring(0, 10);
+      const key = `${entry.deal_hubspot_id}__${entry.stage_id}`;
+      if (!map.has(key)) map.set(key, new Set());
+      map.get(key)!.add(ts);
+    }
+    return map;
+  }, [stageHistory]);
+
+  function dealEnteredStagesInPeriod(dealId: string, stageIds: Set<string>, inicio: string, fim: string): boolean {
+    for (const sid of stageIds) {
+      const dates = stageHistoryIndex.get(`${dealId}__${sid}`);
+      if (dates) {
+        for (const d of dates) {
+          if (d >= inicio && d <= fim) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // Deals que já passaram por Ganho (won) em algum momento
+  const dealsQueJaGanharam = useMemo(() => {
+    const s = new Set<string>();
+    for (const entry of stageHistory) {
+      if (wonStageIds.has(entry.stage_id)) s.add(entry.deal_hubspot_id);
+    }
+    return s;
+  }, [stageHistory, wonStageIds]);
+
+  const hasHistory = stageHistory.length > 0;
+
+  // Fonte 1: Pré-vendedores (GoWork Vendas + Go Corporate)
+  // Pega todos deals nesses pipelines; filtro de período é feito depois
+  const negociosPreVendedores = useMemo<NegocioPreVendas[]>(() => {
+    if (preVendasPipelineIdSet.size === 0) return [];
 
     return deals
       .filter(d => {
         if (!d.ownerId) return false;
-        if (d.pipelineId !== virtualPipelineId) return false;
-        if (!reuniaoRealizadaStageIds.has(d.stageId)) return false;
+        if (!preVendasPipelineIdSet.has(d.pipelineId || '')) return false;
+        if (!PREVENDAS_VENDEDORES_PERMITIDOS.includes(normalizarNome(d.ownerNome))) return false;
+        if (!hasHistory) return reuniaoRealizadaStageIds.has(d.stageId);
         return true;
       })
       .map(d => ({
@@ -500,27 +559,81 @@ export function useRankingFilters(
         closeDate: d.closeDate,
         createDate: d.createDate,
         amount: d.amount,
-      }))
+      }));
+  }, [deals, preVendasPipelineIdSet, reuniaoRealizadaStageIds, hasHistory]);
+
+  // Fonte 2: Virtual (GoWork - Virtual → Ganho em algum momento + produtos)
+  const negociosVirtual = useMemo<NegocioPreVendas[]>(() => {
+    if (!virtualPipelineId) return [];
+
+    const lineItemsByDeal = new Map<string, boolean>();
+    lineItems.forEach(li => {
+      if (!li.dealHubspotId) return;
+      if (matchVirtualProduto(li.name)) {
+        lineItemsByDeal.set(li.dealHubspotId, true);
+      }
+    });
+
+    return deals
+      .filter(d => {
+        if (!d.ownerId) return false;
+        if (d.pipelineId !== virtualPipelineId) return false;
+        if (!VIRTUAL_VENDEDORES_PERMITIDOS.includes(normalizarNome(d.ownerNome))) return false;
+        const wasWon = hasHistory ? dealsQueJaGanharam.has(d.hubspotId) : d.isClosedWon;
+        if (!wasWon) return false;
+        const matchProduto = matchVirtualProduto(d.produto);
+        const matchLI = lineItemsByDeal.has(d.hubspotId);
+        return matchProduto || matchLI;
+      })
+      .map(d => ({
+        dealHubspotId: d.hubspotId,
+        dealName: d.dealName,
+        ownerId: d.ownerId!,
+        ownerNome: d.ownerNome,
+        pipelineNome: d.pipelineNome,
+        stageLabel: d.stageLabel,
+        closeDate: d.closeDate,
+        createDate: d.createDate,
+        amount: d.amount,
+      }));
+  }, [deals, lineItems, virtualPipelineId, hasHistory, dealsQueJaGanharam]);
+
+  // Combinar todos (usados para exibir na matriz de negócios)
+  const negociosPreVendas = useMemo<NegocioPreVendas[]>(() => {
+    return [...negociosPreVendedores, ...negociosVirtual]
       .sort((a, b) => {
         const dateA = a.closeDate || a.createDate || '';
         const dateB = b.closeDate || b.createDate || '';
         return dateB.localeCompare(dateA);
       });
-  }, [deals, virtualPipelineId, reuniaoRealizadaStageIds]);
+  }, [negociosPreVendedores, negociosVirtual]);
+
+  // IDs dos deals virtuais (para saber quem é virtual no buildRanking)
+  const virtualDealIds = useMemo(() => new Set(negociosVirtual.map(n => n.dealHubspotId)), [negociosVirtual]);
 
   const negociosPreVendasVarejo = useMemo<NegocioPreVendas[]>(() => {
     return negociosPreVendas.filter(n => {
+      const isVirtual = virtualDealIds.has(n.dealHubspotId);
+      if (hasHistory) {
+        const targetStages = isVirtual ? wonStageIds : reuniaoRealizadaStageIds;
+        return dealEnteredStagesInPeriod(n.dealHubspotId, targetStages, VAREJO_INICIO, VAREJO_FIM);
+      }
       const date = (n.closeDate || n.createDate || '').substring(0, 10);
       return date >= VAREJO_INICIO && date <= VAREJO_FIM;
     });
-  }, [negociosPreVendas]);
+  }, [negociosPreVendas, hasHistory, virtualDealIds, wonStageIds, reuniaoRealizadaStageIds]);
 
   const negociosPreVendasMacbook = useMemo<NegocioPreVendas[]>(() => {
     return negociosPreVendas.filter(n => {
+      const isVirtual = virtualDealIds.has(n.dealHubspotId);
+      if (hasHistory) {
+        const targetStages = isVirtual ? wonStageIds : reuniaoRealizadaStageIds;
+        return dealEnteredStagesInPeriod(n.dealHubspotId, targetStages, MACBOOK_INICIO, MACBOOK_FIM);
+      }
       const date = (n.closeDate || n.createDate || '').substring(0, 10);
       return date >= MACBOOK_INICIO && date <= MACBOOK_FIM;
     });
-  }, [negociosPreVendas]);
+  }, [negociosPreVendas, hasHistory, virtualDealIds, wonStageIds, reuniaoRealizadaStageIds]);
 
   function buildRankingPreVendas(
     negocios: NegocioPreVendas[],
@@ -530,7 +643,8 @@ export function useRankingFilters(
 
     negocios.forEach(n => {
       const existing = porVendedor.get(n.ownerId) || { ownerNome: n.ownerNome, reunioes: 0 };
-      existing.reunioes += 1;
+      const isVirtual = virtualDealIds.has(n.dealHubspotId);
+      existing.reunioes += isVirtual ? 2 : 1;
       porVendedor.set(n.ownerId, existing);
     });
 

@@ -161,24 +161,32 @@ function buildStageMaps(stages: StageInfo[], pipelinesMap: Map<string, string>) 
 
   const virtualPipelineId = resolveVirtualPreVendasPipelineId(pipelinesMap, stages);
 
-  if (virtualPipelineId) {
-    const virtualStages = stages
-      .filter(s => s.pipeline_id === virtualPipelineId)
-      .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
+  // Pré-vendedores: pipelines "GoWork - Vendas" e "GoWork - GoCorporate"
+  const preVendasPipelineIds: string[] = [];
+  for (const [pid, label] of pipelinesMap.entries()) {
+    const nl = normalizeHubspotLabel(label || '');
+    if (nl === 'gowork vendas' || nl === 'gowork - vendas' ||
+        nl === 'gowork gocorporate' || nl === 'gowork - gocorporate' ||
+        nl === 'gowork go corporate' || nl === 'gowork - go corporate') {
+      preVendasPipelineIds.push(pid);
+    }
+  }
 
-    const reuniaoStage = virtualStages.find(s => isReuniaoRealizadaStageLabel(s.label));
-
-    if (reuniaoStage) {
-      const minOrder = reuniaoStage.display_order ?? 0;
-      for (const s of virtualStages) {
-        if ((s.display_order ?? 0) >= minOrder) {
-          reuniaoRealizadaStageIds.add(s.stage_id);
-        }
+  // Inclui APENAS o stage "Reunião realizada" (não posteriores).
+  // Com histórico, contamos quando o deal entrou especificamente nessa etapa.
+  for (const pvPid of preVendasPipelineIds) {
+    const pvStages = stages.filter(s => s.pipeline_id === pvPid);
+    for (const s of pvStages) {
+      if (isReuniaoRealizadaStageLabel(s.label)) {
+        reuniaoRealizadaStageIds.add(s.stage_id);
       }
     }
   }
 
-  return { wonStageIds, stageLabelsMap, reuniaoRealizadaStageIds, virtualPipelineId };
+  return {
+    wonStageIds, stageLabelsMap, reuniaoRealizadaStageIds,
+    virtualPipelineId, preVendasPipelineIds,
+  };
 }
 
 // ============================================
@@ -496,6 +504,9 @@ export interface DadosRankingBase {
   wonDealsMap: Map<string, DealProcessado>;
   reuniaoRealizadaStageIds: Set<string>;
   virtualPipelineId: string | null;
+  preVendasPipelineIds: string[];
+  wonStageIds: Set<string>;
+  stageHistory: DealStageHistoryEntry[];
 }
 
 export async function fetchDadosRankingBase(): Promise<DadosRankingBase> {
@@ -518,7 +529,7 @@ export async function fetchDadosRankingBase(): Promise<DadosRankingBase> {
   const proprietarios = processOwners(ownersRaw);
   const ownersMap = createOwnersMap(proprietarios);
   const pipelinesMap = createPipelinesMap(pipelinesRaw);
-  const { wonStageIds, stageLabelsMap, reuniaoRealizadaStageIds, virtualPipelineId } = buildStageMaps(allStages, pipelinesMap);
+  const { wonStageIds, stageLabelsMap, reuniaoRealizadaStageIds, virtualPipelineId, preVendasPipelineIds } = buildStageMaps(allStages, pipelinesMap);
   const deals = processDeals(dealsRaw, ownersMap, pipelinesMap, wonStageIds, stageLabelsMap);
 
   const wonDealsMap = new Map<string, DealProcessado>();
@@ -537,6 +548,16 @@ export async function fetchDadosRankingBase(): Promise<DadosRankingBase> {
       .filter(n => n !== 'Sem responsável' && n !== 'Desconhecido')
   )].sort();
 
+  let stageHistory: DealStageHistoryEntry[] = [];
+  try {
+    // Carrega apenas stages relevantes: Reunião Realizada (pré-vendas) + Won (virtual)
+    const relevantStages = [...reuniaoRealizadaStageIds, ...wonStageIds];
+    stageHistory = await fetchDealStageHistory(relevantStages);
+    console.log(`[stageHistory] Carregados ${stageHistory.length} registros de ${relevantStages.length} stages relevantes`);
+  } catch (err) {
+    console.warn('Stage history não disponível:', err);
+  }
+
   return {
     deals,
     metas,
@@ -546,7 +567,83 @@ export async function fetchDadosRankingBase(): Promise<DadosRankingBase> {
     wonDealsMap,
     reuniaoRealizadaStageIds,
     virtualPipelineId,
+    preVendasPipelineIds,
+    wonStageIds,
+    stageHistory,
   };
+}
+
+// ============================================
+// HISTÓRICO DE ETAPAS (deal stage history)
+// ============================================
+
+export interface DealStageHistoryEntry {
+  deal_hubspot_id: string;
+  stage_id: string;
+  timestamp: string;
+  /** HubSpot user id (Owners.hubspot_id) que moveu o card — vem do sync com propertiesWithHistory */
+  changed_by_user_id?: string | null;
+}
+
+export async function fetchDealStageHistory(relevantStageIds: string[]): Promise<DealStageHistoryEntry[]> {
+  if (relevantStageIds.length === 0) return [];
+
+  const allRows: DealStageHistoryEntry[] = [];
+  const pageSize = 1000;
+
+  // Paginação baseada em cursor (timestamp + deal_hubspot_id) para não cair em limites
+  let cursor: { timestamp: string; id: string } | null = null;
+
+  while (true) {
+    let query = supabase
+      .from('hubspot_deal_stage_history')
+      .select('deal_hubspot_id,stage_id,timestamp,changed_by_user_id')
+      .in('stage_id', relevantStageIds)
+      .gte('timestamp', '2026-03-01T00:00:00Z')
+      .order('timestamp', { ascending: true })
+      .order('deal_hubspot_id', { ascending: true })
+      .limit(pageSize);
+
+    if (cursor) {
+      query = query.or(`timestamp.gt.${cursor.timestamp},and(timestamp.eq.${cursor.timestamp},deal_hubspot_id.gt.${cursor.id})`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw new Error(`Erro ao buscar stage history: ${error.message}`);
+    if (!data || data.length === 0) break;
+    allRows.push(...data);
+
+    if (data.length < pageSize) break;
+    const last = data[data.length - 1];
+    cursor = { timestamp: last.timestamp, id: last.deal_hubspot_id };
+  }
+
+  return allRows;
+}
+
+// ============================================
+// RPC: Ranking Pré-vendas (bypassa RLS)
+// ============================================
+
+export interface PrevendasRankingRow {
+  owner_id: string;
+  owner_nome: string;
+  reunioes: number;
+  virtuais: number;
+  fonte: string;
+}
+
+export async function fetchRankingPrevendasRPC(inicio: string, fim: string): Promise<PrevendasRankingRow[]> {
+  const { data, error } = await supabase.rpc('get_ranking_prevendas', {
+    p_inicio: inicio,
+    p_fim: fim,
+  });
+  if (error) {
+    console.error('Erro RPC get_ranking_prevendas:', error);
+    return [];
+  }
+  return data || [];
 }
 
 export async function fetchLineItemsEnriquecidos(

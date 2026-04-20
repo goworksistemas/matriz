@@ -81,6 +81,11 @@ export function RankingPage() {
     ultimaAtualizacao,
     reuniaoRealizadaStageIds,
     virtualPipelineId,
+    preVendasPipelineIds,
+    wonStageIds,
+    stageHistory,
+    rankingPrevendasVarejoRPC,
+    rankingPrevendasMacbookRPC,
     isLoading,
     error,
     refetch,
@@ -140,10 +145,56 @@ export function RankingPage() {
     rankingMacbook,
     negociosMacbook,
     negociosPreVendasVarejo,
-    rankingPreVendasVarejo,
     negociosPreVendasMacbook,
-    rankingPreVendasMacbook,
-  } = useRankingFilters(deals, lineItems, metas, reuniaoRealizadaStageIds, virtualPipelineId);
+  } = useRankingFilters(deals, lineItems, metas, reuniaoRealizadaStageIds, virtualPipelineId, preVendasPipelineIds, stageHistory, wonStageIds);
+
+  // Rankings de pré-vendas vêm do RPC (bypassa RLS)
+  const rankingPreVendasVarejo = useMemo(() => {
+    const META = 100;
+    const rows = [...rankingPrevendasVarejoRPC]
+      .sort((a, b) => b.reunioes - a.reunioes || b.virtuais - a.virtuais)
+      .map((r, i) => ({
+        ownerId: r.owner_id,
+        ownerNome: r.owner_nome,
+        reunioes: r.reunioes,
+        virtuais: r.virtuais,
+        ranking: i + 1,
+        metaMinima: META,
+        status: r.reunioes >= META
+          ? 'Dentro da Competição'
+          : `Faltam ${Math.ceil(META - r.reunioes)} reuniões`,
+      }));
+    return rows;
+  }, [rankingPrevendasVarejoRPC]);
+
+  const rankingPreVendasMacbook = useMemo(() => {
+    const META_R = 400;
+    const META_V = 250;
+    const rows = [...rankingPrevendasMacbookRPC]
+      .sort((a, b) => b.reunioes - a.reunioes || b.virtuais - a.virtuais)
+      .map((r, i) => {
+        const okR = r.reunioes >= META_R;
+        const okV = r.virtuais >= META_V;
+        let status = 'Dentro da Competição';
+        if (!okR || !okV) {
+          const parts: string[] = [];
+          if (!okR) parts.push(`${Math.ceil(META_R - r.reunioes)} reuniões`);
+          if (!okV) parts.push(`${Math.ceil(META_V - r.virtuais)} virtuais`);
+          status = `Faltam ${parts.join(' e ')}`;
+        }
+        return {
+          ownerId: r.owner_id,
+          ownerNome: r.owner_nome,
+          reunioes: r.reunioes,
+          virtuais: r.virtuais,
+          ranking: i + 1,
+          metaMinima: META_R,
+          metaMinimaVirtuais: META_V,
+          status,
+        };
+      });
+    return rows;
+  }, [rankingPrevendasMacbookRPC]);
 
   const hasActiveFilters = useMemo(() => {
     const anoAtual = new Date().getFullYear();
