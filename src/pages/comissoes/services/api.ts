@@ -15,14 +15,21 @@ import type {
 
 // ============================================
 // MAPEAMENTO DE STAGES DE COMISSÕES
-// (não existem na tabela hubspot_pipeline_stages)
+// Pipeline "Fluxo de aprovação de comissão" (id=743040776) do objeto custom 2-45314755.
+// (Stages não existem na tabela hubspot_pipeline_stages — mapeadas manualmente)
 // ============================================
 
 const COMMISSION_STAGES: Record<string, string> = {
+  '1082066475': 'Aguardando Financeiro',
+  '1082066476': 'Reprovado no Financeiro',
+  '1095088530': 'Aguardando Comercial',
+  '1095038556': 'Reprovado no Comercial',
+  '1081973923': 'Aguardando Jurídico',
+  '1081973924': 'Reprovado no Jurídico',
+  '1288640900': 'Aguardando Arquitetura',
+  '1288640901': 'Reprovado na Arquitetura',
   '1081973925': 'Comissão Aprovada',
-  '1095088530': 'Aguardando Aprovação',
-  '1082066475': 'Em Análise',
-  '1230818823': 'Comissão Reprovada',
+  '1230818823': 'Arquivo',
 };
 
 // ============================================
@@ -204,6 +211,7 @@ export function processCommissions(
     const statusFinanceiro = (raw['status_financeiro'] || '') as string;
     const statusComercial = (raw['status_comercial'] || '') as string;
     const statusJuridico = (raw['status_juridico'] || '') as string;
+    const statusArquitetura = (raw['status_arquitetura'] || '') as string;
     const hsPipelineStage = String(raw['hs_pipeline_stage'] || '');
     const nomeCliente = (raw['nome_do_cliente'] || c.name || '') as string;
     const sdrResponsavel = (raw['sdr_responsavel'] || '') as string;
@@ -274,6 +282,7 @@ export function processCommissions(
       statusComercial,
       statusFinanceiro,
       statusJuridico,
+      statusArquitetura,
       valorNegocio,
       vendaImpacto,
       nomeEtapa,

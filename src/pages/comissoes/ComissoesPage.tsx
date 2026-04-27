@@ -151,6 +151,7 @@ export function ComissoesPage() {
       'Status Financeiro': c.statusFinanceiro,
       'Status Comercial': c.statusComercial,
       'Status Jurídico': c.statusJuridico,
+      'Status Arquitetura': c.statusArquitetura,
       'Etapa': c.nomeEtapa,
       'Venda de Impacto': c.vendaImpacto ? 'Sim' : 'Não',
       'Tipo Produto': c.tipoProduto === 'fisico' ? 'Físico' : 'Virtual',
@@ -161,7 +162,7 @@ export function ComissoesPage() {
       data: dadosExport,
       sheetName: 'Comissões',
       fileName: `comissoes_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.xlsx`,
-      columnWidths: [30, 20, 20, 20, 15, 12, 14, 10, 12, 16, 14, 18, 18, 16, 20, 15, 12, 15],
+      columnWidths: [30, 20, 20, 20, 15, 12, 14, 10, 12, 16, 14, 18, 18, 16, 18, 20, 15, 12, 15],
     });
     log('export_excel', 'report', 'comissoes', { records: comissoesFiltradas.length });
   }, [comissoesFiltradas, log]);

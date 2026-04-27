@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { startOfDay, endOfDay } from 'date-fns';
 import type { Comissao, FiltrosGlobais, FiltrosVendedor, FiltrosSDR } from '@/types';
 
 // Estado inicial dos filtros globais
@@ -52,18 +53,18 @@ export function useFilters(comissoes: Comissao[]) {
         return false;
       }
 
-      // Filtro por data início
+      // Filtro por data início (inclusivo: a partir de 00:00:00 do dia)
       if (filtrosGlobais.dataInicio && c.dataFechamento) {
         const dataFechamento = new Date(c.dataFechamento);
-        if (dataFechamento < filtrosGlobais.dataInicio) {
+        if (dataFechamento < startOfDay(filtrosGlobais.dataInicio)) {
           return false;
         }
       }
 
-      // Filtro por data fim
+      // Filtro por data fim (inclusivo: até 23:59:59.999 do dia)
       if (filtrosGlobais.dataFim && c.dataFechamento) {
         const dataFechamento = new Date(c.dataFechamento);
-        if (dataFechamento > filtrosGlobais.dataFim) {
+        if (dataFechamento > endOfDay(filtrosGlobais.dataFim)) {
           return false;
         }
       }

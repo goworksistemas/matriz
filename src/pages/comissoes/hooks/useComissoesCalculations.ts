@@ -252,12 +252,23 @@ export function useComissoesCalculations(comissoesFiltradas: Comissao[]) {
     const contagemPorStatusJuridico: DadosGrafico[] = Array.from(porStatusJuridico.entries())
       .map(([name, value]) => ({ name, value }));
 
+    // Contagem por status arquitetura
+    const porStatusArquitetura = new Map<string, number>();
+    comissoesFiltradas.forEach(c => {
+      if (c.statusArquitetura) {
+        porStatusArquitetura.set(c.statusArquitetura, (porStatusArquitetura.get(c.statusArquitetura) || 0) + 1);
+      }
+    });
+    const contagemPorStatusArquitetura: DadosGrafico[] = Array.from(porStatusArquitetura.entries())
+      .map(([name, value]) => ({ name, value }));
+
     return {
       contagemPorProprietario,
       contagemPorProduto,
       contagemPorStatusComercial,
       contagemPorStatusFinanceiro,
       contagemPorStatusJuridico,
+      contagemPorStatusArquitetura,
     };
   }, [comissoesFiltradas]);
 

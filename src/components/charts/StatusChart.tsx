@@ -14,11 +14,13 @@ interface StatusChartProps {
   comercial: DadosGrafico[];
   financeiro: DadosGrafico[];
   juridico: DadosGrafico[];
+  arquitetura: DadosGrafico[];
   height?: number;
 }
 
 const STATUS_COLORS: Record<string, string> = {
   Aprovado: '#10b981',
+  Aguardando: '#f59e0b',
   Pendente: '#f59e0b',
   Reprovado: '#ef4444',
 };
@@ -27,18 +29,21 @@ export function StatusChart({
   comercial,
   financeiro,
   juridico,
+  arquitetura,
   height = 250,
 }: StatusChartProps) {
   const combinedData = [
     { name: 'Comercial', ...Object.fromEntries(comercial.map(d => [d.name, d.value])) },
     { name: 'Financeiro', ...Object.fromEntries(financeiro.map(d => [d.name, d.value])) },
     { name: 'Jurídico', ...Object.fromEntries(juridico.map(d => [d.name, d.value])) },
+    { name: 'Arquitetura', ...Object.fromEntries(arquitetura.map(d => [d.name, d.value])) },
   ];
 
   const allStatus = [...new Set([
     ...comercial.map(d => d.name),
     ...financeiro.map(d => d.name),
     ...juridico.map(d => d.name),
+    ...arquitetura.map(d => d.name),
   ])];
 
   return (

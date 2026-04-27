@@ -58,6 +58,7 @@ export interface Comissao {
   statusComercial: string;
   statusFinanceiro: string;
   statusJuridico: string;
+  statusArquitetura: string;
   valorNegocio: number;
   vendaImpacto: boolean;
   nomeEtapa: string;

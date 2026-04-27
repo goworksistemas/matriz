@@ -31,6 +31,7 @@ interface VisaoGeralProps {
     contagemPorStatusComercial: DadosGrafico[];
     contagemPorStatusFinanceiro: DadosGrafico[];
     contagemPorStatusJuridico: DadosGrafico[];
+    contagemPorStatusArquitetura: DadosGrafico[];
   };
   kpis: {
     totalNegocios: number;
@@ -223,7 +224,8 @@ export function VisaoGeral({
             comercial={dadosGraficos.contagemPorStatusComercial}
             financeiro={dadosGraficos.contagemPorStatusFinanceiro}
             juridico={dadosGraficos.contagemPorStatusJuridico}
-            height={200}
+            arquitetura={dadosGraficos.contagemPorStatusArquitetura}
+            height={240}
           />
         </CardContent>
       </Card>
